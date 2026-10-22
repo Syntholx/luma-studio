@@ -1,9 +1,6 @@
 import { type Product } from "../products";
-
-const formatter = new Intl.NumberFormat("pl-Pl", {
-  style: "currency",
-  currency: "PLN",
-});
+import { Link } from "react-router-dom";
+import { formatPrice } from "../format-price";
 
 export function ProductCard(props: { product: Product }) {
   return (
@@ -16,8 +13,14 @@ export function ProductCard(props: { product: Product }) {
         {props.product.description}
       </p>
       <p className="mt-[16px] text-[18px] font-[600]">
-        {formatter.format(props.product.price)}
+        {formatPrice(props.product.price)}
       </p>
+      <Link
+        to={`/produkty/${props.product.slug}`}
+        className="mt-[16px] min-h-[44px] inline-flex items-center w-fit text-[#765341] font-[600] hover:underline"
+      >
+        Zobacz produkt
+      </Link>
     </article>
   );
 }
