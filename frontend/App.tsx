@@ -1,15 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { products } from "./products";
 import { ProductList } from "./components/ProductList";
 import { Routes, Route } from "react-router-dom";
 import { ProductDetailsPage } from "./components/ProductDetailsPage";
 import { Link } from "react-router-dom";
+import { type CartItem } from "./cart";
+import { CartPage } from "./components/CartPage";
+import { loadCart } from "./cart";
 
 export function App() {
+  const [cart, setCart] = useState<CartItem[]>(loadCart);
   const [categoryFilter, setCategoryFilter] = useState("Wszystkie");
   const [searchProducts, setSearchProducts] = useState("");
   const normalizedSearch = searchProducts.trim().toLowerCase();
   const [priceSort, setPriceSort] = useState("default");
+  useEffect(() => {
+    try {
+      localStorage.setItem("luma-studio-cart", JSON.stringify(cart));
+    } catch (error) {
+      console.warn("Nie udało się zapisać koszyka");
+    }
+  }, [cart]);
   const filteredProducts = products.filter(
     (product) =>
       (categoryFilter === "Wszystkie" || product.category === categoryFilter) &&
@@ -24,22 +35,66 @@ export function App() {
     }
     return 0;
   });
+  function addToCart(productId: number, variantId: number) {
+    setCart((previousCart) => {
+      const existingItem = previousCart.find(
+        (cartItem) =>
+          cartItem.productId === productId && cartItem.variantId === variantId,
+      );
+      if (existingItem !== undefined) {
+        return previousCart.map((cartItem) =>
+          cartItem.productId === productId && cartItem.variantId === variantId
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            : cartItem,
+        );
+      }
+      return [...previousCart, { productId, variantId, quantity: 1 }];
+    });
+  }
+  function removeFromCart(variantId: number) {
+    setCart((previousCart) => {
+      const removeCart = previousCart.filter(
+        (cartItem) => cartItem.variantId !== variantId,
+      );
+      return removeCart;
+    });
+  }
+  function changeQuantity(variantId: number, change: number) {
+    setCart((previousCart) => {
+      const updatedCart = previousCart.map((cartItem) =>
+        cartItem.variantId === variantId
+          ? { ...cartItem, quantity: Math.max(1, cartItem.quantity + change) }
+          : cartItem,
+      );
+      return updatedCart;
+    });
+  }
+  const cartQuantity = cart.reduce(
+    (sum, cartItem) => sum + cartItem.quantity,
+    0,
+  );
   return (
     <>
       <header className="flex items-center justify-between p-6">
-        <a href="/" className="text-xl font-bold">
+        <Link to="/" className="text-xl font-bold">
           Luma Studio
-        </a>
+        </Link>
         <nav aria-label="Nawigacja główna" className="flex gap-6">
-          <a href="/#o-marce" className="min-h-[44px] inline-flex items-center">
+          <Link
+            to="/#o-marce"
+            className="min-h-[44px] inline-flex items-center"
+          >
             O marce
-          </a>
-          <a
-            href="/#kolekcja"
+          </Link>
+          <Link
+            to="/#kolekcja"
             className="min-h-[44px] inline-flex items-center"
           >
             Kolekcja
-          </a>
+          </Link>
+          <Link to="/koszyk" className="min-h-[44px] inline-flex items-center">
+            Koszyk ({cartQuantity})
+          </Link>
         </nav>
       </header>
       <main className="max-w-[1120px] mx-auto px-[24px]">
@@ -157,7 +212,10 @@ export function App() {
               </>
             }
           />
-          <Route path={"/produkty/:slug"} element={<ProductDetailsPage />} />
+          <Route
+            path={"/produkty/:slug"}
+            element={<ProductDetailsPage onAddCart={addToCart} />}
+          />
           <Route
             path="*"
             element={
@@ -172,6 +230,16 @@ export function App() {
                   Wróć na stronę główną
                 </Link>
               </section>
+            }
+          />
+          <Route
+            path={"/koszyk"}
+            element={
+              <CartPage
+                items={cart}
+                onRemoveFromCart={removeFromCart}
+                onChangeQuantity={changeQuantity}
+              />
             }
           />
         </Routes>
