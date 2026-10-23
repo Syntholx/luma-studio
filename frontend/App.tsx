@@ -161,19 +161,17 @@ export function App() {
           <Route
             path="*"
             element={
-              <>
-                <section className="py-[48px]">
-                  <h1 className="text-[30px] font-[600]">
-                    Nie znaleziono strony
-                  </h1>
-                  <Link
-                    to="/"
-                    className="mt-[24px] min-h-[44px]  inline-flex items-center text-[#765341] font-[600] hover:underline"
-                  >
-                    Wróć na stronę główną
-                  </Link>
-                </section>
-              </>
+              <section className="py-[48px]">
+                <h1 className="text-[30px] font-[600]">
+                  Nie znaleziono strony
+                </h1>
+                <Link
+                  to="/"
+                  className="mt-[24px] min-h-[44px]  inline-flex items-center text-[#765341] font-[600] hover:underline"
+                >
+                  Wróć na stronę główną
+                </Link>
+              </section>
             }
           />
         </Routes>
