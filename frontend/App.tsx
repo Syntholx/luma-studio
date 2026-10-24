@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { type CartItem } from "./cart";
 import { CartPage } from "./components/CartPage";
 import { loadCart } from "./cart";
+import { CheckoutPage } from "./components/CheckoutPage";
 
 export function App() {
   const [cart, setCart] = useState<CartItem[]>(loadCart);
@@ -35,6 +36,9 @@ export function App() {
     }
     return 0;
   });
+  function clearCart() {
+    setCart([]);
+  }
   function addToCart(productId: number, variantId: number) {
     setCart((previousCart) => {
       const existingItem = previousCart.find(
@@ -241,6 +245,10 @@ export function App() {
                 onChangeQuantity={changeQuantity}
               />
             }
+          />
+          <Route
+            path={"/zamowienie"}
+            element={<CheckoutPage items={cart} onClearCart={clearCart} />}
           />
         </Routes>
       </main>

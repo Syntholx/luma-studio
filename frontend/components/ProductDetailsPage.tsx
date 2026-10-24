@@ -7,6 +7,7 @@ export function ProductDetailsPage(props: {
   onAddCart: (productId: number, variantId: number) => void;
 }) {
   const { slug } = useParams();
+  const [addedVariantId, setAddedVariantId] = useState("");
   const [selectedVariantId, setVariantId] = useState("");
 
   const product = products.find((product) => product.slug === slug);
@@ -59,7 +60,10 @@ export function ProductDetailsPage(props: {
           className="w-full max-w-[320px] min-h-[44px] border-[1px] border-[#e5ddd3] rounded-[8px] bg-[white] text-[#29241f] px-[12px] py-[10px]"
           name="size"
           value={selectedVariantId}
-          onChange={(event) => setVariantId(event.currentTarget.value)}
+          onChange={(event) => {
+            setVariantId(event.currentTarget.value);
+            setAddedVariantId("");
+          }}
         >
           <option value="" disabled>
             Wybierz rozmiar
@@ -76,10 +80,16 @@ export function ProductDetailsPage(props: {
             if (selectedVariant === undefined || !selectedVariant.isAvailable)
               return;
             props.onAddCart(product.id, selectedVariant.id);
+            setAddedVariantId(selectedVariantId);
           }}
         >
           Dodaj do koszyka
         </button>
+        <p role="status">
+          {addedVariantId !== "" && addedVariantId === selectedVariantId
+            ? "Dodano do koszyka"
+            : ""}
+        </p>
         {selectedVariant !== undefined && (
           <p>Wybrany rozmiar: {selectedVariant.size}</p>
         )}

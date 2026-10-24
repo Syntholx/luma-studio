@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { parseCart } from "../cart";
+import { getCartTotal, parseCart } from "../cart";
 
 test("zwraca pusty koszyk dla null", () => {
   expect(parseCart(null)).toEqual([]);
@@ -50,4 +50,21 @@ test("zachowuje poprawne wpisy i pomija błędne", () => {
       },
     ]),
   ).toEqual([{ productId: 1, variantId: 204, quantity: 2 }]);
+});
+
+test("sumuje ceny wariantów z uwzględnieniem ilości", () => {
+  expect(
+    getCartTotal([
+      {
+        productId: 1,
+        variantId: 204,
+        quantity: 2,
+      },
+      {
+        productId: 1,
+        variantId: 202,
+        quantity: 1,
+      },
+    ]),
+  ).toBeCloseTo(273.5, 2);
 });

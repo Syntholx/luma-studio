@@ -1,6 +1,7 @@
-import { type CartItem } from "../cart";
+import { getCartTotal, type CartItem } from "../cart";
 import { products } from "../products";
 import { formatPrice } from "../format-price";
+import { Link } from "react-router-dom";
 export function CartPage(props: {
   items: CartItem[];
   onRemoveFromCart: (variantId: number) => void;
@@ -11,25 +12,21 @@ export function CartPage(props: {
     0,
   );
 
-  const totalPrice = props.items.reduce((sum, cartItem) => {
-    const product = products.find(
-      (product) => product.id === cartItem.productId,
-    );
-    if (product === undefined) return sum;
-
-    const variant = product.variants.find(
-      (variant) => variant.id === cartItem.variantId,
-    );
-    if (variant === undefined) return sum;
-
-    return sum + variant.price * cartItem.quantity;
-  }, 0);
+  const totalPrice = getCartTotal(props.items);
   return (
     <section className="py-[48px]">
       <h1 className="text-[36px] font-[600]">Koszyk</h1>
       <p>Liczba sztuk: {totalQuantity}</p>
       {props.items.length === 0 && (
-        <p className="mt-[24px]">Twój koszyk jest pusty </p>
+        <>
+          <p className="mt-[24px]">Twój koszyk jest pusty </p>
+          <Link
+            to="/#kolekcja"
+            className="mt-[16px] min-h-[44px] inline-flex items-center text-[#765341] font-[600] hover:underline"
+          >
+            Przejdź do kolekcji
+          </Link>
+        </>
       )}
       {props.items.map((cartItem) => {
         const product = products.find(
@@ -48,7 +45,14 @@ export function CartPage(props: {
           px-[24px] py-[24px] mt-[16px] flex flex-col gap-[8px]
           "
           >
-            <h2 className="text-[20px] font-[600]">{product.name}</h2>
+            <h2 className="text-[20px] font-[600]">
+              <Link
+                to={`/produkty/${product.slug}`}
+                className="hover:underline"
+              >
+                {product.name}
+              </Link>
+            </h2>
             <p className="text-[#6b6259]">
               Rozmiar: {variant.size} · Ilość: {cartItem.quantity}
             </p>
@@ -93,6 +97,12 @@ export function CartPage(props: {
           <p className="mt-[12px] text-[24px] font-[600]">
             Razem: {formatPrice(totalPrice)}
           </p>
+          <Link
+            to={"/zamowienie"}
+            className="mt-[24px] min-h-[44px] px-[24px] bg-[#765341] text-[white] rounded-[8px] w-auto inline-flex items-center "
+          >
+            Przejdź do zamówienia
+          </Link>
         </div>
       )}
     </section>

@@ -45,3 +45,20 @@ export function loadCart(): CartItem[] {
     return [];
   }
 }
+
+export function getCartTotal(items: CartItem[]): number {
+  const totalPrice = items.reduce((sum, cartItem) => {
+    const product = products.find(
+      (product) => product.id === cartItem.productId,
+    );
+    if (product === undefined) return sum;
+
+    const variant = product.variants.find(
+      (variant) => variant.id === cartItem.variantId,
+    );
+    if (variant === undefined) return sum;
+
+    return sum + variant.price * cartItem.quantity;
+  }, 0);
+  return totalPrice;
+}
