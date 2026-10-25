@@ -2,11 +2,13 @@ import { getCartTotal, type CartItem } from "../cart";
 import { products } from "../products";
 import { formatPrice } from "../format-price";
 import { Link } from "react-router-dom";
+import { hasUnavailableCartItems } from "../cart";
 export function CartPage(props: {
   items: CartItem[];
   onRemoveFromCart: (variantId: number) => void;
   onChangeQuantity: (variantId: number, change: number) => void;
 }) {
+  const hasUnavailableCart = hasUnavailableCartItems(props.items);
   const totalQuantity = props.items.reduce(
     (sum, cartItem) => sum + cartItem.quantity,
     0,
@@ -103,6 +105,12 @@ export function CartPage(props: {
           <p className="mt-[12px] text-[24px] font-[600]">
             Razem: {formatPrice(totalPrice)}
           </p>
+          {hasUnavailableCart && (
+            <p className="text-[14px] text-[#9b2c2c] mt-[16px]">
+              Koszyk zawiera niedostępne produkty. Usuń je przed zatwierdzeniem
+              zamówienia.
+            </p>
+          )}
           <Link
             to={"/zamowienie"}
             className="mt-[24px] min-h-[44px] px-[24px] bg-[#765341] text-[white] rounded-[8px] w-auto inline-flex items-center "

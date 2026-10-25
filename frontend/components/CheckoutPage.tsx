@@ -6,16 +6,23 @@ import { formatPrice } from "../format-price";
 import { products } from "../products";
 import { useRef } from "react";
 import { hasUnavailableCartItems } from "../cart";
-
+import { deliveryMethods } from "../delivery";
 type OrderConfirmation = {
   totalQuantity: number;
   totalPrice: number;
+  deliveryName: string;
+  deliveryPrice: number;
+  grandTotal: number;
 };
 
 export function CheckoutPage(props: {
   items: CartItem[];
   onClearCart: () => void;
 }) {
+  const [selectedDeliveryId, setSelectedDeliveryId] = useState("pickup");
+  const selectedDelivery = deliveryMethods.find(
+    (delivery) => delivery.id === selectedDeliveryId,
+  );
   const hasUnavailableItems = hasUnavailableCartItems(props.items);
   const [orderConfirmation, setOrderConfirmation] =
     useState<OrderConfirmation | null>(null);
@@ -28,7 +35,10 @@ export function CheckoutPage(props: {
       setFormError("Usuń niedostępne produkty, by kontynuować.");
       return;
     }
-
+    if (selectedDelivery === undefined) {
+      setFormError("Wybierz sposób dostawy");
+      return;
+    }
     const formData = new FormData(event.currentTarget);
     const email = formData.get("email");
     const firstName = formData.get("firstName");
@@ -43,6 +53,9 @@ export function CheckoutPage(props: {
     setOrderConfirmation({
       totalPrice,
       totalQuantity,
+      deliveryName: selectedDelivery.name,
+      deliveryPrice: selectedDelivery.price,
+      grandTotal,
     });
     props.onClearCart();
   }
@@ -65,11 +78,18 @@ export function CheckoutPage(props: {
           To tylko symulacja. Nie utworzono prawdziwego zamówienia ani
           płatności.
         </p>
-        <p className="text-[24px] font-[600]">
+        <p className="text-[16px] font-[400]">
           Ilość sztuk: {orderConfirmation.totalQuantity}
         </p>
+        <p className="text-[16px] font-[400]">
+          Produkty {formatPrice(orderConfirmation.totalPrice)}
+        </p>
+        <p className="text-[16px] font-[400]">
+          Dostawa {orderConfirmation.deliveryName}{" "}
+          {formatPrice(orderConfirmation.deliveryPrice)}
+        </p>
         <p className="text-[24px] font-[600]">
-          Suma: {formatPrice(orderConfirmation.totalPrice)}{" "}
+          Razem {formatPrice(orderConfirmation.grandTotal)}
         </p>
         <Link
           to={"/#kolekcja"}
@@ -94,7 +114,21 @@ export function CheckoutPage(props: {
       </section>
     );
   }
+
+  if (selectedDelivery === undefined) {
+    return (
+      <section className="py-[48px]">
+        <h1 className="text-[36px] font-[600]">
+          Nie znaleziono sposobu dostawy
+        </h1>
+        <p>Wróć do koszyka i spróbuj ponownie.</p>
+      </section>
+    );
+  }
+
   const totalPrice = getCartTotal(props.items);
+  const grandTotal = totalPrice + selectedDelivery.price;
+
   const totalQuantity = props.items.reduce(
     (sum, cartItem) => sum + cartItem.quantity,
     0,
@@ -132,6 +166,33 @@ export function CheckoutPage(props: {
             autoComplete="email"
           ></input>
         </div>
+
+        <fieldset>
+          <legend>Sposób dostawy</legend>
+          <div className="flex flex-col gap-[12px]">
+            {deliveryMethods.map((delivery) => {
+              return (
+                <label
+                  key={delivery.id}
+                  className="flex items-center gap-[8px] min-h-[44px]"
+                >
+                  <input
+                    className="w-[20px] h-[20px] shrink-0"
+                    name="delivery"
+                    type="radio"
+                    value={delivery.id}
+                    checked={delivery.id === selectedDeliveryId}
+                    onChange={(event) =>
+                      setSelectedDeliveryId(event.currentTarget.value)
+                    }
+                  ></input>
+                  {delivery.name} {formatPrice(delivery.price)}
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
+
         {hasUnavailableItems && (
           <p className="text-[14px] text-[#9b2c2c]">
             Usuń niedostępne produkty z koszyka, aby zatwierdzić zamówienie.
@@ -169,14 +230,25 @@ export function CheckoutPage(props: {
                   Rozmiar: {variant.size} · Ilość: {cartItem.quantity}
                 </p>
                 <p>{formatPrice(variant.price * cartItem.quantity)}</p>
+                {!variant.isAvailable && (
+                  <p className="text-[14px] font-[600] text-[#9b2c2c]">
+                    Produkt niedostępny
+                  </p>
+                )}
               </li>
             );
           })}
         </ul>
 
-        <p className="text-[24px] font-[600]"> Ilość: {totalQuantity}</p>
+        <p className="text-[16px] font-[400]"> Ilość: {totalQuantity}</p>
+        <p className="text-[16px] font-[400]">
+          Produkty: {formatPrice(totalPrice)}
+        </p>
+        <p>
+          Dostawa: {selectedDelivery.name} {formatPrice(selectedDelivery.price)}
+        </p>
         <p className="text-[24px] font-[600]">
-          Suma: {formatPrice(totalPrice)}
+          Razem {formatPrice(grandTotal)}
         </p>
       </section>
       <Link

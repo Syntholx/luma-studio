@@ -109,3 +109,20 @@ test("blokuje wariant niepasujący do produktu", () => {
     ]),
   ).toBe(true);
 });
+
+test("wykrywa niedostępny wariant w mieszanym koszyku", () => {
+  expect(
+    hasUnavailableCartItems([
+      {
+        productId: 1,
+        variantId: 204,
+        quantity: 1,
+      },
+      {
+        productId: 1,
+        variantId: 203,
+        quantity: 1,
+      },
+    ]),
+  ).toBe(true);
+});
