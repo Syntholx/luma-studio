@@ -65,6 +65,21 @@ export function App() {
   }
   function changeQuantity(variantId: number, change: number) {
     setCart((previousCart) => {
+      const existingItem = previousCart.find(
+        (cartItem) => cartItem.variantId === variantId,
+      );
+      if (existingItem === undefined) return previousCart;
+      const product = products.find(
+        (product) => product.id === existingItem.productId,
+      );
+      if (product === undefined) return previousCart;
+
+      const variant = product.variants.find(
+        (variant) => variant.id === variantId,
+      );
+      if (variant === undefined) return previousCart;
+      if (!variant.isAvailable && change > 0) return previousCart;
+
       const updatedCart = previousCart.map((cartItem) =>
         cartItem.variantId === variantId
           ? { ...cartItem, quantity: Math.max(1, cartItem.quantity + change) }

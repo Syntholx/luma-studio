@@ -5,6 +5,7 @@ import { getCartTotal } from "../cart";
 import { formatPrice } from "../format-price";
 import { products } from "../products";
 import { useRef } from "react";
+import { hasUnavailableCartItems } from "../cart";
 
 type OrderConfirmation = {
   totalQuantity: number;
@@ -15,6 +16,7 @@ export function CheckoutPage(props: {
   items: CartItem[];
   onClearCart: () => void;
 }) {
+  const hasUnavailableItems = hasUnavailableCartItems(props.items);
   const [orderConfirmation, setOrderConfirmation] =
     useState<OrderConfirmation | null>(null);
   const confirmationHeadingRef = useRef<HTMLHeadingElement>(null);
@@ -22,6 +24,10 @@ export function CheckoutPage(props: {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFormError("");
+    if (hasUnavailableItems) {
+      setFormError("Usuń niedostępne produkty, by kontynuować.");
+      return;
+    }
 
     const formData = new FormData(event.currentTarget);
     const email = formData.get("email");
@@ -126,9 +132,15 @@ export function CheckoutPage(props: {
             autoComplete="email"
           ></input>
         </div>
+        {hasUnavailableItems && (
+          <p className="text-[14px] text-[#9b2c2c]">
+            Usuń niedostępne produkty z koszyka, aby zatwierdzić zamówienie.
+          </p>
+        )}
         <button
           type="submit"
-          className="px-[24px] rounded-[8px]  inline-flex self-start items-center justify-center min-h-[44px] text-[white] bg-[#765341] font-[600]"
+          disabled={hasUnavailableItems}
+          className="px-[24px] rounded-[8px]  inline-flex self-start items-center justify-center min-h-[44px] text-[white] bg-[#765341] font-[600] disabled:opacity-[50%] disabled:cursor-not-allowed"
         >
           Zatwierdź zamówienie demonstracyjne
         </button>

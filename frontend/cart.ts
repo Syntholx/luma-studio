@@ -62,3 +62,19 @@ export function getCartTotal(items: CartItem[]): number {
   }, 0);
   return totalPrice;
 }
+
+export function hasUnavailableCartItems(items: CartItem[]): boolean {
+  const hasUnavailableItems = items.some((cartItem) => {
+    const product = products.find(
+      (product) => product.id === cartItem.productId,
+    );
+    if (product === undefined) return true;
+
+    const variant = product.variants.find(
+      (variants) => variants.id === cartItem.variantId,
+    );
+    if (variant === undefined) return true;
+    return !variant.isAvailable;
+  });
+  return hasUnavailableItems;
+}

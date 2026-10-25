@@ -56,6 +56,11 @@ export function CartPage(props: {
             <p className="text-[#6b6259]">
               Rozmiar: {variant.size} · Ilość: {cartItem.quantity}
             </p>
+            {!variant.isAvailable && (
+              <p className="text-[14px] font-[600] text-[#9b2c2c]">
+                Produkt niedostępny
+              </p>
+            )}
             <p>Cena jednej sztuki: {formatPrice(variant.price)} </p>
             <p className="font-[600]">
               Wartość pozycji: {formatPrice(variant.price * cartItem.quantity)}
@@ -72,9 +77,10 @@ export function CartPage(props: {
               </button>
               <span>{cartItem.quantity}</span>
               <button
+                disabled={!variant.isAvailable}
                 aria-label={`Zwiększ ilość ${product.name} ${variant.size}`}
                 type="button"
-                className="h-[44px] w-[44px] border-[#e5ddd3] border-[1px] rounded-[8px]"
+                className="h-[44px] w-[44px] border-[#e5ddd3] border-[1px] rounded-[8px] disabled:opacity-[50%] disabled:cursor-not-allowed"
                 onClick={() => props.onChangeQuantity(cartItem.variantId, +1)}
               >
                 +

@@ -1,5 +1,6 @@
 import { expect, test } from "vitest";
 import { getCartTotal, parseCart } from "../cart";
+import { hasUnavailableCartItems } from "../cart";
 
 test("zwraca pusty koszyk dla null", () => {
   expect(parseCart(null)).toEqual([]);
@@ -67,4 +68,44 @@ test("sumuje ceny wariantów z uwzględnieniem ilości", () => {
       },
     ]),
   ).toBeCloseTo(273.5, 2);
+});
+
+test("wykrywa niedostępny wariant w koszyku", () => {
+  expect(
+    hasUnavailableCartItems([
+      {
+        productId: 1,
+        variantId: 203,
+        quantity: 1,
+      },
+    ]),
+  ).toBe(true);
+});
+test("Nie blokuje dostępnych wariantów", () => {
+  expect(
+    hasUnavailableCartItems([
+      {
+        productId: 1,
+        variantId: 204,
+        quantity: 2,
+      },
+      {
+        productId: 3,
+        variantId: 205,
+        quantity: 1,
+      },
+    ]),
+  ).toBe(false);
+});
+
+test("blokuje wariant niepasujący do produktu", () => {
+  expect(
+    hasUnavailableCartItems([
+      {
+        productId: 1,
+        variantId: 205,
+        quantity: 1,
+      },
+    ]),
+  ).toBe(true);
 });
