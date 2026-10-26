@@ -16,3 +16,15 @@ export const deliveryMethods: DeliveryMethod[] = [
     price: 14.99,
   },
 ];
+
+export function getDeliveryPrice(
+  productsTotal: number,
+  basePrice: number,
+): number {
+  if (productsTotal < freeDeliveryThreshold) {
+    return basePrice;
+  }
+  return 0;
+}
+
+export const freeDeliveryThreshold = 200;

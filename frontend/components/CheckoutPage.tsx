@@ -7,6 +7,9 @@ import { products } from "../products";
 import { useRef } from "react";
 import { hasUnavailableCartItems } from "../cart";
 import { deliveryMethods } from "../delivery";
+import { freeDeliveryThreshold } from "../delivery";
+import { getDeliveryPrice } from "../delivery";
+
 type OrderConfirmation = {
   totalQuantity: number;
   totalPrice: number;
@@ -54,7 +57,7 @@ export function CheckoutPage(props: {
       totalPrice,
       totalQuantity,
       deliveryName: selectedDelivery.name,
-      deliveryPrice: selectedDelivery.price,
+      deliveryPrice: deliveryPrice,
       grandTotal,
     });
     props.onClearCart();
@@ -127,7 +130,8 @@ export function CheckoutPage(props: {
   }
 
   const totalPrice = getCartTotal(props.items);
-  const grandTotal = totalPrice + selectedDelivery.price;
+  const deliveryPrice = getDeliveryPrice(totalPrice, selectedDelivery.price);
+  const grandTotal = totalPrice + deliveryPrice;
 
   const totalQuantity = props.items.reduce(
     (sum, cartItem) => sum + cartItem.quantity,
@@ -186,11 +190,18 @@ export function CheckoutPage(props: {
                       setSelectedDeliveryId(event.currentTarget.value)
                     }
                   ></input>
-                  {delivery.name} {formatPrice(delivery.price)}
+                  {delivery.name}{" "}
+                  {formatPrice(getDeliveryPrice(totalPrice, delivery.price))}
                 </label>
               );
             })}
           </div>
+          <p className="mt-[12px] text-[14px] text-[#6b6259]">
+            {totalPrice >= freeDeliveryThreshold
+              ? "Darmowa dostawa"
+              : "Do darmowej dostawy brakuje " +
+                formatPrice(freeDeliveryThreshold - totalPrice)}
+          </p>
         </fieldset>
 
         {hasUnavailableItems && (
@@ -245,7 +256,7 @@ export function CheckoutPage(props: {
           Produkty: {formatPrice(totalPrice)}
         </p>
         <p>
-          Dostawa: {selectedDelivery.name} {formatPrice(selectedDelivery.price)}
+          Dostawa: {selectedDelivery.name} {formatPrice(deliveryPrice)}
         </p>
         <p className="text-[24px] font-[600]">
           Razem {formatPrice(grandTotal)}
