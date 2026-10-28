@@ -16,6 +16,7 @@ type OrderConfirmation = {
   deliveryName: string;
   deliveryPrice: number;
   grandTotal: number;
+  pickupPoint: string | null;
 };
 
 export function CheckoutPage(props: {
@@ -34,6 +35,7 @@ export function CheckoutPage(props: {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFormError("");
+    let normalizedPickupPoint: string | null = null;
     if (hasUnavailableItems) {
       setFormError("Usuń niedostępne produkty, by kontynuować.");
       return;
@@ -45,6 +47,7 @@ export function CheckoutPage(props: {
     const formData = new FormData(event.currentTarget);
     const email = formData.get("email");
     const firstName = formData.get("firstName");
+    const pickupPoint = formData.get("pickupPoint");
     if (typeof email !== "string" || typeof firstName !== "string") return;
     const normalizedEmail = email.trim();
     const normalizedFirstName = firstName.trim();
@@ -52,13 +55,24 @@ export function CheckoutPage(props: {
       setFormError("Uzupelnij imię i adres e-mail");
       return;
     }
-
+    if (selectedDelivery.id === "pickup") {
+      if (typeof pickupPoint !== "string") {
+        setFormError("Podaj kod punktu odbioru");
+        return;
+      }
+      normalizedPickupPoint = pickupPoint.trim();
+      if (normalizedPickupPoint === "") {
+        setFormError("Podaj kod punktu odbioru.");
+        return;
+      }
+    }
     setOrderConfirmation({
       totalPrice,
       totalQuantity,
       deliveryName: selectedDelivery.name,
       deliveryPrice: deliveryPrice,
       grandTotal,
+      pickupPoint: normalizedPickupPoint,
     });
     props.onClearCart();
   }
@@ -91,6 +105,9 @@ export function CheckoutPage(props: {
           Dostawa {orderConfirmation.deliveryName}{" "}
           {formatPrice(orderConfirmation.deliveryPrice)}
         </p>
+        {orderConfirmation.pickupPoint !== null && (
+          <p>Kod punktu odbioru: {orderConfirmation.pickupPoint}</p>
+        )}
         <p className="text-[24px] font-[600]">
           Razem {formatPrice(orderConfirmation.grandTotal)}
         </p>
@@ -204,6 +221,22 @@ export function CheckoutPage(props: {
           </p>
         </fieldset>
 
+        {selectedDelivery.id === "pickup" && (
+          <div className="flex flex-col gap-[8px]">
+            <label htmlFor="pickupPoint">Kod punktu odbioru</label>
+            <input
+              className="bg-[white] border-[#e5ddd3] rounded-[8px] min-h-[44px] px-[12px] py-[10px] border-[1px]"
+              type="text"
+              id="pickupPoint"
+              name="pickupPoint"
+              required
+            ></input>
+            <p className="text-[14px] text-[#6b6259]">
+              Wpisz fikcyjny kod, np. DEMO01.
+            </p>
+          </div>
+        )}
+
         {hasUnavailableItems && (
           <p className="text-[14px] text-[#9b2c2c]">
             Usuń niedostępne produkty z koszyka, aby zatwierdzić zamówienie.
@@ -258,6 +291,7 @@ export function CheckoutPage(props: {
         <p>
           Dostawa: {selectedDelivery.name} {formatPrice(deliveryPrice)}
         </p>
+
         <p className="text-[24px] font-[600]">
           Razem {formatPrice(grandTotal)}
         </p>
