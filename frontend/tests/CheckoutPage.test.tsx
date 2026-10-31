@@ -90,3 +90,41 @@ test("zatwierdza odbiór i pokazuje kod bez skrajnych spacji", async () => {
   ).toBeInTheDocument();
   expect(onClearCart).toHaveBeenCalledTimes(1);
 });
+test("zatwierdza dostawę kurirem bez kodu punktu odbioru", async () => {
+  const onClearCart = vi.fn();
+  render(
+    <MemoryRouter>
+      <CheckoutPage
+        items={[
+          {
+            productId: 1,
+            variantId: 204,
+            quantity: 1,
+          },
+        ]}
+        onClearCart={onClearCart}
+      />
+    </MemoryRouter>,
+  );
+  const user = userEvent.setup();
+  await user.click(screen.getByRole("radio", { name: /Kurier/ }));
+  expect(screen.queryByLabelText("Kod punktu odbioru")).not.toBeInTheDocument();
+  await user.type(screen.getByLabelText("Imię"), "Tester");
+  await user.type(
+    screen.getByLabelText("Podaj swój e-mail"),
+    "demo@example.test",
+  );
+  await user.click(
+    screen.getByRole("button", {
+      name: "Zatwierdź zamówienie demonstracyjne",
+    }),
+  );
+  expect(
+    screen.getByRole("heading", {
+      name: "Zamówienie demonstracyjne zatwierdzone",
+      level: 1,
+    }),
+  ).toBeInTheDocument();
+  expect(onClearCart).toHaveBeenCalledTimes(1);
+  expect(screen.queryByText(/Kod punktu odbioru:/)).not.toBeInTheDocument();
+});
