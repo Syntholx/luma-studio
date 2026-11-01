@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { products } from "./products";
 import { ProductList } from "./components/ProductList";
 import { Routes, Route } from "react-router-dom";
 import { ProductDetailsPage } from "./components/ProductDetailsPage";
@@ -8,8 +7,13 @@ import { type CartItem } from "./cart";
 import { CartPage } from "./components/CartPage";
 import { loadCart } from "./cart";
 import { CheckoutPage } from "./components/CheckoutPage";
+import type { Product } from "./products";
+import { getProducts } from "./services/products";
 
 export function App() {
+  const [catalogProducts, setCatalogProducts] = useState<Product[]>([]);
+  const [isCatalogLoading, setIsCatalogLoading] = useState(true);
+  const [catalogError, setCatalogError] = useState("");
   const [cart, setCart] = useState<CartItem[]>(loadCart);
   const [categoryFilter, setCategoryFilter] = useState("Wszystkie");
   const [searchProducts, setSearchProducts] = useState("");
@@ -22,7 +26,10 @@ export function App() {
       console.warn("Nie udało się zapisać koszyka");
     }
   }, [cart]);
-  const filteredProducts = products.filter(
+  useEffect(() => {
+    void loadCatalog();
+  }, []);
+  const filteredProducts = catalogProducts.filter(
     (product) =>
       (categoryFilter === "Wszystkie" || product.category === categoryFilter) &&
       product.name.toLowerCase().includes(normalizedSearch),
@@ -69,7 +76,7 @@ export function App() {
         (cartItem) => cartItem.variantId === variantId,
       );
       if (existingItem === undefined) return previousCart;
-      const product = products.find(
+      const product = catalogProducts.find(
         (product) => product.id === existingItem.productId,
       );
       if (product === undefined) return previousCart;
@@ -92,6 +99,17 @@ export function App() {
     (sum, cartItem) => sum + cartItem.quantity,
     0,
   );
+  async function loadCatalog() {
+    setIsCatalogLoading(true);
+    setCatalogError("");
+    try {
+      setCatalogProducts(await getProducts());
+    } catch {
+      setCatalogError("Nie udało się załadować katalogu. Spróbuj ponownie.");
+    } finally {
+      setIsCatalogLoading(false);
+    }
+  }
   return (
     <>
       <header className="flex items-center justify-between p-6">
@@ -161,79 +179,109 @@ export function App() {
                     Subtelny akcent na co dzień czy dodatek na wyjątkową okazję?
                     Sprawdź, co przygotowaliśmy.
                   </p>
-                  <div className="mt-[24px] flex flex-col gap-[8px]">
-                    <label htmlFor="price-sort">Sortowanie</label>
-                    <select
-                      className="w-full max-w-[320px] min-h-[44px] px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px]"
-                      id="price-sort"
-                      name="price-sort"
-                      value={priceSort}
-                      onChange={(event) =>
-                        setPriceSort(event.currentTarget.value)
-                      }
-                    >
-                      <option value="default">Domyślnie</option>
-                      <option value="price-asc">Cena rosnąco</option>
-                      <option value="price-desc">Cena malejąco</option>
-                    </select>
-                  </div>
 
-                  <div className="flex mt-[24px] flex-col gap-[8px]">
-                    <label htmlFor="search-product">Szukaj produktu</label>
-                    <input
-                      className="w-full max-w-[320px] min-h-[44px] px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px] "
-                      id="search-product"
-                      name="search-product"
-                      value={searchProducts}
-                      onChange={(event) =>
-                        setSearchProducts(event.currentTarget.value)
-                      }
-                    ></input>
-                  </div>
-
-                  <div className="mt-[24px] flex flex-col gap-[8px]">
-                    <label htmlFor="category">Kategoria</label>
-                    <select
-                      className="min-h-[44px] max-w-[320px] w-full px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px]"
-                      id="category"
-                      value={categoryFilter}
-                      onChange={(event) =>
-                        setCategoryFilter(event.currentTarget.value)
-                      }
-                    >
-                      <option value="Wszystkie">Wszystkie</option>
-                      <option value="Bransoletki">Bransoletki</option>
-                      <option value="Naszyjniki">Naszyjniki</option>
-                      <option value="Kolczyki">Kolczyki</option>
-                    </select>
-                  </div>
-                  <button
-                    type="button"
-                    className="mt-[12px] min-h-[44px] px-[16px] py-[10px] border-[1px] border-[#e5ddd3] rounded-[8px] bg-[white] text-[#29241f] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-                    disabled={
-                      categoryFilter === "Wszystkie" &&
-                      searchProducts === "" &&
-                      priceSort === "default"
-                    }
-                    onClick={() => {
-                      setCategoryFilter("Wszystkie");
-                      setSearchProducts("");
-                      setPriceSort("default");
-                    }}
-                  >
-                    Resetuj widok
-                  </button>
-                  <p className="mt-[16px] text-[14px] text-[#6b6259]">
-                    Widoczne produkty: {filteredProducts.length}
+                  <p role="status" className="mt-[16px]">
+                    {isCatalogLoading ? "Ładowanie katalogu..." : ""}
                   </p>
-                  <ProductList products={sortedProducts} />
+
+                  <p role="alert" className="mt-[16px]">
+                    {catalogError}
+                  </p>
+
+                  {!isCatalogLoading && catalogError !== "" && (
+                    <button
+                      type="button"
+                      onClick={loadCatalog}
+                      className="mt-[12px] min-h-[44px] px-[16px] py-[10px] border-[1px] border-[#e5ddd3] rounded-[8px] bg-[white] text-[#29241f]"
+                    >
+                      Spróbuj ponownie
+                    </button>
+                  )}
+                  {!isCatalogLoading && catalogError === "" && (
+                    <>
+                      <div className="mt-[24px] flex flex-col gap-[8px]">
+                        <label htmlFor="price-sort">Sortowanie</label>
+                        <select
+                          className="w-full max-w-[320px] min-h-[44px] px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px]"
+                          id="price-sort"
+                          name="price-sort"
+                          value={priceSort}
+                          onChange={(event) =>
+                            setPriceSort(event.currentTarget.value)
+                          }
+                        >
+                          <option value="default">Domyślnie</option>
+                          <option value="price-asc">Cena rosnąco</option>
+                          <option value="price-desc">Cena malejąco</option>
+                        </select>
+                      </div>
+
+                      <div className="flex mt-[24px] flex-col gap-[8px]">
+                        <label htmlFor="search-product">Szukaj produktu</label>
+                        <input
+                          className="w-full max-w-[320px] min-h-[44px] px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px] "
+                          id="search-product"
+                          name="search-product"
+                          value={searchProducts}
+                          onChange={(event) =>
+                            setSearchProducts(event.currentTarget.value)
+                          }
+                        ></input>
+                      </div>
+
+                      <div className="mt-[24px] flex flex-col gap-[8px]">
+                        <label htmlFor="category">Kategoria</label>
+                        <select
+                          className="min-h-[44px] max-w-[320px] w-full px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px]"
+                          id="category"
+                          value={categoryFilter}
+                          onChange={(event) =>
+                            setCategoryFilter(event.currentTarget.value)
+                          }
+                        >
+                          <option value="Wszystkie">Wszystkie</option>
+                          <option value="Bransoletki">Bransoletki</option>
+                          <option value="Naszyjniki">Naszyjniki</option>
+                          <option value="Kolczyki">Kolczyki</option>
+                        </select>
+                      </div>
+                      <button
+                        type="button"
+                        className="mt-[12px] min-h-[44px] px-[16px] py-[10px] border-[1px] border-[#e5ddd3] rounded-[8px] bg-[white] text-[#29241f] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                        disabled={
+                          categoryFilter === "Wszystkie" &&
+                          searchProducts === "" &&
+                          priceSort === "default"
+                        }
+                        onClick={() => {
+                          setCategoryFilter("Wszystkie");
+                          setSearchProducts("");
+                          setPriceSort("default");
+                        }}
+                      >
+                        Resetuj widok
+                      </button>
+                      <p className="mt-[16px] text-[14px] text-[#6b6259]">
+                        Widoczne produkty: {filteredProducts.length}
+                      </p>
+                      <ProductList products={sortedProducts} />
+                    </>
+                  )}
                 </section>
               </>
             }
           />
           <Route
             path={"/produkty/:slug"}
-            element={<ProductDetailsPage onAddCart={addToCart} />}
+            element={
+              <ProductDetailsPage
+                onAddCart={addToCart}
+                products={catalogProducts}
+                isLoading={isCatalogLoading}
+                catalogError={catalogError}
+                onRetry={loadCatalog}
+              />
+            }
           />
           <Route
             path="*"
@@ -255,7 +303,11 @@ export function App() {
             path={"/koszyk"}
             element={
               <CartPage
+                isLoading={isCatalogLoading}
+                catalogError={catalogError}
+                onRetry={loadCatalog}
                 items={cart}
+                products={catalogProducts}
                 onRemoveFromCart={removeFromCart}
                 onChangeQuantity={changeQuantity}
               />
@@ -263,7 +315,16 @@ export function App() {
           />
           <Route
             path={"/zamowienie"}
-            element={<CheckoutPage items={cart} onClearCart={clearCart} />}
+            element={
+              <CheckoutPage
+                items={cart}
+                onClearCart={clearCart}
+                products={catalogProducts}
+                isLoading={isCatalogLoading}
+                catalogError={catalogError}
+                onRetry={loadCatalog}
+              />
+            }
           />
         </Routes>
       </main>

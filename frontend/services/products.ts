@@ -49,7 +49,7 @@ function isProduct(value: unknown): value is Product {
 export async function getProducts(): Promise<Product[]> {
   const productResponse = await fetch("/api/products");
   if (!productResponse.ok) {
-    throw new Error("Nie udało się pobrac produktów.");
+    throw new Error("Nie udało się pobrać produktów.");
   }
   const productsData: unknown = await productResponse.json();
   if (!Array.isArray(productsData)) {

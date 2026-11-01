@@ -2,9 +2,21 @@
 
 API asystenta wspierające naukę frontendu: ASP.NET Core10, trzy fikcyjne produkty
 w pamięci, bez bazy, kont, edycji i zamówień. Nie jest wdrożeniem produkcyjnym.
-Widok frontendu nadal czyta products.ts. Dodano klienta frontend/api/products.ts
-z walidacją odpowiedzi, ale jeszcze nie jest podłączony do aplikacji ani testowany
-mockiem fetch. Integracja widoku pozostaje osobnym krokiem.
+Klient frontend/services/products.ts waliduje odpowiedź. App pobiera wspólny
+katalog i przekazuje go do szczegółów, koszyka i checkoutu. Ceny i dostępność
+helperów koszyka pochodzą z przekazanego katalogu; products.ts pozostaje źródłem
+typów i danych przykładowych testów, nie runtime katalogu.
+
+Widoki obsługują ładowanie, błąd i ponowienie. parseCart sprawdza strukturę
+lokalnego zapisu bez sprawdzania istnienia ID w statycznych danych. Brak produktu
+lub wariantu jest widoczny w koszyku jako pozycja do usunięcia i blokuje checkout.
+Potwierdzenie zamówienia nadal jest lokalną symulacją, nie żądaniem POST.
+
+Checkpoint integracji: brak jeszcze anulowania/ochrony przed nieaktualnym
+żądaniem w loadCatalog, osobnego komunikatu pustego katalogu (jest komunikat
+ProductList), testów stanów pobierania App i testu usuwania brakującej pozycji.
+Nie traktować aktualnego klienta jako kompletnej integracji produkcyjnej.
+Folder services zastąpił api: moduły /api/*.ts kolidowały z proxy /api.
 
 ## Uruchomienie
 

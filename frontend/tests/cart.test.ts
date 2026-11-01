@@ -1,6 +1,7 @@
 import { expect, test } from "vitest";
 import { getCartTotal, parseCart } from "../cart";
 import { hasUnavailableCartItems } from "../cart";
+import { products } from "../products";
 
 test("zwraca pusty koszyk dla null", () => {
   expect(parseCart(null)).toEqual([]);
@@ -24,7 +25,7 @@ test("odrzuca pozycje z ujemną ilością", () => {
   ).toEqual([]);
 });
 
-test("odrzuca wariant niepasujący do produktu", () => {
+test("zachowuje poprawny struktualnie wpis bez sprawdzania katalogu", () => {
   expect(
     parseCart([
       {
@@ -33,7 +34,7 @@ test("odrzuca wariant niepasujący do produktu", () => {
         quantity: 1,
       },
     ]),
-  ).toEqual([]);
+  ).toEqual([{ productId: 1, variantId: 205, quantity: 1 }]);
 });
 
 test("zachowuje poprawne wpisy i pomija błędne", () => {
@@ -55,74 +56,89 @@ test("zachowuje poprawne wpisy i pomija błędne", () => {
 
 test("sumuje ceny wariantów z uwzględnieniem ilości", () => {
   expect(
-    getCartTotal([
-      {
-        productId: 1,
-        variantId: 204,
-        quantity: 2,
-      },
-      {
-        productId: 1,
-        variantId: 202,
-        quantity: 1,
-      },
-    ]),
+    getCartTotal(
+      [
+        {
+          productId: 1,
+          variantId: 204,
+          quantity: 2,
+        },
+        {
+          productId: 1,
+          variantId: 202,
+          quantity: 1,
+        },
+      ],
+      products,
+    ),
   ).toBeCloseTo(273.5, 2);
 });
 
 test("wykrywa niedostępny wariant w koszyku", () => {
   expect(
-    hasUnavailableCartItems([
-      {
-        productId: 1,
-        variantId: 203,
-        quantity: 1,
-      },
-    ]),
+    hasUnavailableCartItems(
+      [
+        {
+          productId: 1,
+          variantId: 203,
+          quantity: 1,
+        },
+      ],
+      products,
+    ),
   ).toBe(true);
 });
 test("Nie blokuje dostępnych wariantów", () => {
   expect(
-    hasUnavailableCartItems([
-      {
-        productId: 1,
-        variantId: 204,
-        quantity: 2,
-      },
-      {
-        productId: 3,
-        variantId: 205,
-        quantity: 1,
-      },
-    ]),
+    hasUnavailableCartItems(
+      [
+        {
+          productId: 1,
+          variantId: 204,
+          quantity: 2,
+        },
+        {
+          productId: 3,
+          variantId: 205,
+          quantity: 1,
+        },
+      ],
+      products,
+    ),
   ).toBe(false);
 });
 
 test("blokuje wariant niepasujący do produktu", () => {
   expect(
-    hasUnavailableCartItems([
-      {
-        productId: 1,
-        variantId: 205,
-        quantity: 1,
-      },
-    ]),
+    hasUnavailableCartItems(
+      [
+        {
+          productId: 1,
+          variantId: 205,
+          quantity: 1,
+        },
+      ],
+      products,
+    ),
   ).toBe(true);
 });
 
 test("wykrywa niedostępny wariant w mieszanym koszyku", () => {
   expect(
-    hasUnavailableCartItems([
-      {
-        productId: 1,
-        variantId: 204,
-        quantity: 1,
-      },
-      {
-        productId: 1,
-        variantId: 203,
-        quantity: 1,
-      },
-    ]),
+    hasUnavailableCartItems(
+      [
+        {
+          productId: 1,
+          variantId: 204,
+          quantity: 1,
+        },
+        {
+          productId: 1,
+          variantId: 203,
+          quantity: 1,
+        },
+      ],
+      products,
+    ),
   ).toBe(true);
 });

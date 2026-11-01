@@ -3,13 +3,18 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { CheckoutPage } from "../components/CheckoutPage";
+import { products } from "../products";
 
 test("pokazuje pole kodu dla domyślnego punktu odbioru", () => {
   render(
     <MemoryRouter>
       <CheckoutPage
         items={[{ productId: 1, variantId: 204, quantity: 1 }]}
+        products={products}
         onClearCart={vi.fn()}
+        isLoading={false}
+        catalogError={""}
+        onRetry={vi.fn()}
       />
     </MemoryRouter>,
   );
@@ -22,6 +27,10 @@ test("ukrywa pole koduy po wybraniu kuriera", async () => {
     <MemoryRouter>
       <CheckoutPage
         items={[{ productId: 1, variantId: 204, quantity: 1 }]}
+        products={products}
+        isLoading={false}
+        catalogError={""}
+        onRetry={vi.fn()}
         onClearCart={vi.fn()}
       />
     </MemoryRouter>,
@@ -39,6 +48,10 @@ test("ponownie pokazuje pole po powrocie do punktu odbioru", async () => {
       <CheckoutPage
         items={[{ productId: 1, variantId: 204, quantity: 1 }]}
         onClearCart={vi.fn()}
+        products={products}
+        isLoading={false}
+        catalogError={""}
+        onRetry={vi.fn()}
       />
     </MemoryRouter>,
   );
@@ -55,6 +68,7 @@ test("zatwierdza odbiór i pokazuje kod bez skrajnych spacji", async () => {
   render(
     <MemoryRouter>
       <CheckoutPage
+        products={products}
         items={[
           {
             productId: 1,
@@ -63,6 +77,9 @@ test("zatwierdza odbiór i pokazuje kod bez skrajnych spacji", async () => {
           },
         ]}
         onClearCart={onClearCart}
+        isLoading={false}
+        catalogError={""}
+        onRetry={vi.fn()}
       />
     </MemoryRouter>,
   );
@@ -95,6 +112,7 @@ test("zatwierdza dostawę kurirem bez kodu punktu odbioru", async () => {
   render(
     <MemoryRouter>
       <CheckoutPage
+        products={products}
         items={[
           {
             productId: 1,
@@ -103,6 +121,9 @@ test("zatwierdza dostawę kurirem bez kodu punktu odbioru", async () => {
           },
         ]}
         onClearCart={onClearCart}
+        isLoading={false}
+        catalogError={""}
+        onRetry={vi.fn()}
       />
     </MemoryRouter>,
   );

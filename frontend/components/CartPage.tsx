@@ -1,5 +1,5 @@
 import { getCartTotal, type CartItem } from "../cart";
-import { products } from "../products";
+import type { Product } from "../products";
 import { formatPrice } from "../format-price";
 import { Link } from "react-router-dom";
 import { hasUnavailableCartItems } from "../cart";
@@ -7,14 +7,48 @@ export function CartPage(props: {
   items: CartItem[];
   onRemoveFromCart: (variantId: number) => void;
   onChangeQuantity: (variantId: number, change: number) => void;
+  products: Product[];
+  isLoading: boolean;
+  catalogError: string;
+  onRetry: () => void;
 }) {
-  const hasUnavailableCart = hasUnavailableCartItems(props.items);
+  if (props.isLoading) {
+    return (
+      <section className="py-[48px]">
+        <p role="status" className="mt-[16px]">
+          Ładowanie koszyka...
+        </p>
+      </section>
+    );
+  }
+  if (props.catalogError) {
+    return (
+      <section className="py-[48px]">
+        <p role="alert" className="mt-[16px] text-[#9b2c2c]">
+          {props.catalogError}
+        </p>
+        <button
+          type="button"
+          className="mt-[16px] min-h-[44px] px-[16px] py-[10px] border-[1px] border-[#e5ddd3] rounded-[8px] bg-[white] text-[#29241f] cursor-pointer"
+          onClick={props.onRetry}
+        >
+          Spróbuj ponownie
+        </button>
+      </section>
+    );
+  }
+
+  const hasUnavailableCart = hasUnavailableCartItems(
+    props.items,
+    props.products,
+  );
+
   const totalQuantity = props.items.reduce(
     (sum, cartItem) => sum + cartItem.quantity,
     0,
   );
 
-  const totalPrice = getCartTotal(props.items);
+  const totalPrice = getCartTotal(props.items, props.products);
   return (
     <section className="py-[48px]">
       <h1 className="text-[36px] font-[600]">Koszyk</h1>
@@ -31,14 +65,54 @@ export function CartPage(props: {
         </>
       )}
       {props.items.map((cartItem) => {
-        const product = products.find(
+        const product = props.products.find(
           (product) => product.id === cartItem.productId,
         );
-        if (product === undefined) return null;
+        if (product === undefined) {
+          return (
+            <div
+              key={cartItem.variantId}
+              className="bg-[white] border-[1px] border-[#e5ddd3] rounded-[12px]
+          px-[24px] py-[24px] mt-[16px] flex flex-col gap-[8px]
+          "
+            >
+              <p role="status" className="text-[#9b2c2c]">
+                Ta pozycja nie jest już dostępna w katalogu.
+              </p>
+              <button
+                type="button"
+                className="text-left min-h-[44px] self-start px-[16px] border-[1px] border-[#e5ddd3] rounded-[8px]"
+                onClick={() => props.onRemoveFromCart(cartItem.variantId)}
+              >
+                Usuń
+              </button>
+            </div>
+          );
+        }
         const variant = product.variants.find(
           (variant) => variant.id === cartItem.variantId,
         );
-        if (variant === undefined) return null;
+        if (variant === undefined) {
+          return (
+            <div
+              key={cartItem.variantId}
+              className="bg-[white] border-[1px] border-[#e5ddd3] rounded-[12px]
+          px-[24px] py-[24px] mt-[16px] flex flex-col gap-[8px]
+          "
+            >
+              <p role="status" className="text-[#9b2c2c]">
+                Ta pozycja nie jest już dostępna w katalogu.
+              </p>
+              <button
+                type="button"
+                className="text-left min-h-[44px] self-start px-[16px] border-[1px] border-[#e5ddd3] rounded-[8px]"
+                onClick={() => props.onRemoveFromCart(cartItem.variantId)}
+              >
+                Usuń
+              </button>
+            </div>
+          );
+        }
 
         return (
           <div

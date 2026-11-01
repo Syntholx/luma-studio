@@ -1,16 +1,40 @@
 import { useParams } from "react-router-dom";
-import { products } from "../products";
+import type { Product } from "../products";
 import { Link } from "react-router-dom";
 import { formatPrice } from "../format-price";
 import { useState } from "react";
 export function ProductDetailsPage(props: {
   onAddCart: (productId: number, variantId: number) => void;
+  products: Product[];
+  isLoading: boolean;
+  catalogError: string;
+  onRetry: () => void;
 }) {
   const { slug } = useParams();
   const [addedVariantId, setAddedVariantId] = useState("");
   const [selectedVariantId, setVariantId] = useState("");
 
-  const product = products.find((product) => product.slug === slug);
+  const product = props.products.find((product) => product.slug === slug);
+
+  if (props.isLoading)
+    return (
+      <section className="py-[48px]">
+        <p role="status">Ładowanie produktu...</p>
+      </section>
+    );
+  if (props.catalogError !== "")
+    return (
+      <section className="py-[48px]">
+        <p role="alert">{props.catalogError}</p>
+        <button
+          type="button"
+          className="mt-[12px] min-h-[44px] px-[16px] py-[10px] border-[1px] border-[#e5ddd3] rounded-[8px] bg-[white] text-[#29241f]"
+          onClick={props.onRetry}
+        >
+          Spróbuj ponownie
+        </button>
+      </section>
+    );
 
   if (product === undefined) {
     return (

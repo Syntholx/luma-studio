@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useState, type FormEvent, useEffect } from "react";
 import { getCartTotal } from "../cart";
 import { formatPrice } from "../format-price";
-import { products } from "../products";
+import type { Product } from "../products";
 import { useRef } from "react";
 import { hasUnavailableCartItems } from "../cart";
 import { deliveryMethods } from "../delivery";
@@ -22,12 +22,19 @@ type OrderConfirmation = {
 export function CheckoutPage(props: {
   items: CartItem[];
   onClearCart: () => void;
+  products: Product[];
+  isLoading: boolean;
+  catalogError: string;
+  onRetry: () => void;
 }) {
   const [selectedDeliveryId, setSelectedDeliveryId] = useState("pickup");
   const selectedDelivery = deliveryMethods.find(
     (delivery) => delivery.id === selectedDeliveryId,
   );
-  const hasUnavailableItems = hasUnavailableCartItems(props.items);
+  const hasUnavailableItems = hasUnavailableCartItems(
+    props.items,
+    props.products,
+  );
   const [orderConfirmation, setOrderConfirmation] =
     useState<OrderConfirmation | null>(null);
   const confirmationHeadingRef = useRef<HTMLHeadingElement>(null);
@@ -120,7 +127,29 @@ export function CheckoutPage(props: {
       </section>
     );
   }
-
+  if (props.isLoading) {
+    return (
+      <section className="py-[48px]">
+        <p role="status">Ładowanie zamówienia...</p>
+      </section>
+    );
+  }
+  if (props.catalogError) {
+    return (
+      <section className="py-[48px]">
+        <p role="alert" className="mt-[16px] text-[#9b2c2c]">
+          {props.catalogError}
+        </p>
+        <button
+          type="button"
+          className="mt-[16px] min-h-[44px] px-[16px] py-[10px] border-[1px] border-[#e5ddd3] rounded-[8px] bg-[white] text-[#29241f] cursor-pointer"
+          onClick={props.onRetry}
+        >
+          Spróbuj ponownie
+        </button>
+      </section>
+    );
+  }
   if (props.items.length === 0) {
     return (
       <section className="py-[48px]">
@@ -146,7 +175,7 @@ export function CheckoutPage(props: {
     );
   }
 
-  const totalPrice = getCartTotal(props.items);
+  const totalPrice = getCartTotal(props.items, props.products);
   const deliveryPrice = getDeliveryPrice(totalPrice, selectedDelivery.price);
   const grandTotal = totalPrice + deliveryPrice;
 
@@ -255,7 +284,7 @@ export function CheckoutPage(props: {
         <h2 className="text-[20px] font-[600]">Podsumowanie zamówienia</h2>
         <ul className="mt-[16px] flex flex-col gap-[12px]">
           {props.items.map((cartItem) => {
-            const product = products.find(
+            const product = props.products.find(
               (product) => product.id === cartItem.productId,
             );
             if (product === undefined) return null;

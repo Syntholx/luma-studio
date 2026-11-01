@@ -1,5 +1,4 @@
-import { products } from "./products";
-
+import type { Product } from "./products";
 export type CartItem = {
   productId: number;
   variantId: number;
@@ -20,16 +19,10 @@ export function parseCart(value: unknown): CartItem[] {
       item.quantity <= 0
     )
       continue;
-    const product = products.find((product) => product.id === item.productId);
-    if (product === undefined) continue;
 
-    const variant = product.variants.find(
-      (variant) => variant.id === item.variantId,
-    );
-    if (variant === undefined) continue;
     result.push({
-      productId: product.id,
-      variantId: variant.id,
+      productId: item.productId,
+      variantId: item.variantId,
       quantity: item.quantity,
     });
   }
@@ -46,7 +39,7 @@ export function loadCart(): CartItem[] {
   }
 }
 
-export function getCartTotal(items: CartItem[]): number {
+export function getCartTotal(items: CartItem[], products: Product[]): number {
   const totalPrice = items.reduce((sum, cartItem) => {
     const product = products.find(
       (product) => product.id === cartItem.productId,
@@ -63,7 +56,10 @@ export function getCartTotal(items: CartItem[]): number {
   return totalPrice;
 }
 
-export function hasUnavailableCartItems(items: CartItem[]): boolean {
+export function hasUnavailableCartItems(
+  items: CartItem[],
+  products: Product[],
+): boolean {
   const hasUnavailableItems = items.some((cartItem) => {
     const product = products.find(
       (product) => product.id === cartItem.productId,
