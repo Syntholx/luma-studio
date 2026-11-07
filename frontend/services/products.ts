@@ -46,8 +46,8 @@ function isProduct(value: unknown): value is Product {
   );
 }
 
-export async function getProducts(): Promise<Product[]> {
-  const productResponse = await fetch("/api/products");
+export async function getProducts(signal?: AbortSignal): Promise<Product[]> {
+  const productResponse = await fetch("/api/products", { signal });
   if (!productResponse.ok) {
     throw new Error("Nie udało się pobrać produktów.");
   }

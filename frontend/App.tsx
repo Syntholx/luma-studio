@@ -9,6 +9,7 @@ import { loadCart } from "./cart";
 import { CheckoutPage } from "./components/CheckoutPage";
 import type { Product } from "./products";
 import { getProducts } from "./services/products";
+import { useRef } from "react";
 
 export function App() {
   const [catalogProducts, setCatalogProducts] = useState<Product[]>([]);
@@ -17,6 +18,7 @@ export function App() {
   const [cart, setCart] = useState<CartItem[]>(loadCart);
   const [categoryFilter, setCategoryFilter] = useState("Wszystkie");
   const [searchProducts, setSearchProducts] = useState("");
+  const catalogControllerRef = useRef<AbortController | null>(null);
   const normalizedSearch = searchProducts.trim().toLowerCase();
   const [priceSort, setPriceSort] = useState("default");
   useEffect(() => {
@@ -28,6 +30,9 @@ export function App() {
   }, [cart]);
   useEffect(() => {
     void loadCatalog();
+    return () => {
+      catalogControllerRef.current?.abort();
+    };
   }, []);
   const filteredProducts = catalogProducts.filter(
     (product) =>
@@ -100,14 +105,25 @@ export function App() {
     0,
   );
   async function loadCatalog() {
+    const controller = new AbortController();
+    catalogControllerRef.current?.abort();
+    catalogControllerRef.current = controller;
+    const signal = controller.signal;
     setIsCatalogLoading(true);
     setCatalogError("");
     try {
-      setCatalogProducts(await getProducts());
+      const loadedProducts = await getProducts(signal);
+      if (!signal.aborted) {
+        setCatalogProducts(loadedProducts);
+      }
     } catch {
-      setCatalogError("Nie udało się załadować katalogu. Spróbuj ponownie.");
+      if (!signal.aborted) {
+        setCatalogError("Nie udało się załadować katalogu. Spróbuj ponownie.");
+      }
     } finally {
-      setIsCatalogLoading(false);
+      if (!signal.aborted) {
+        setIsCatalogLoading(false);
+      }
     }
   }
   return (
@@ -191,7 +207,7 @@ export function App() {
                   {!isCatalogLoading && catalogError !== "" && (
                     <button
                       type="button"
-                      onClick={loadCatalog}
+                      onClick={() => void loadCatalog()}
                       className="mt-[12px] min-h-[44px] px-[16px] py-[10px] border-[1px] border-[#e5ddd3] rounded-[8px] bg-[white] text-[#29241f]"
                     >
                       Spróbuj ponownie
