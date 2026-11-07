@@ -215,72 +215,84 @@ export function App() {
                   )}
                   {!isCatalogLoading && catalogError === "" && (
                     <>
-                      <div className="mt-[24px] flex flex-col gap-[8px]">
-                        <label htmlFor="price-sort">Sortowanie</label>
-                        <select
-                          className="w-full max-w-[320px] min-h-[44px] px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px]"
-                          id="price-sort"
-                          name="price-sort"
-                          value={priceSort}
-                          onChange={(event) =>
-                            setPriceSort(event.currentTarget.value)
-                          }
-                        >
-                          <option value="default">Domyślnie</option>
-                          <option value="price-asc">Cena rosnąco</option>
-                          <option value="price-desc">Cena malejąco</option>
-                        </select>
-                      </div>
+                      {catalogProducts.length === 0 && (
+                        <p className="mt-[24px] text-[16px] text-[#6b6259]">
+                          Kolekcja jest chwilowo pusta. Zajrzyj ponownie
+                          później.
+                        </p>
+                      )}
+                      {catalogProducts.length > 0 && (
+                        <>
+                          <div className="mt-[24px] flex flex-col gap-[8px]">
+                            <label htmlFor="price-sort">Sortowanie</label>
+                            <select
+                              className="w-full max-w-[320px] min-h-[44px] px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px]"
+                              id="price-sort"
+                              name="price-sort"
+                              value={priceSort}
+                              onChange={(event) =>
+                                setPriceSort(event.currentTarget.value)
+                              }
+                            >
+                              <option value="default">Domyślnie</option>
+                              <option value="price-asc">Cena rosnąco</option>
+                              <option value="price-desc">Cena malejąco</option>
+                            </select>
+                          </div>
 
-                      <div className="flex mt-[24px] flex-col gap-[8px]">
-                        <label htmlFor="search-product">Szukaj produktu</label>
-                        <input
-                          className="w-full max-w-[320px] min-h-[44px] px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px] "
-                          id="search-product"
-                          name="search-product"
-                          value={searchProducts}
-                          onChange={(event) =>
-                            setSearchProducts(event.currentTarget.value)
-                          }
-                        ></input>
-                      </div>
+                          <div className="flex mt-[24px] flex-col gap-[8px]">
+                            <label htmlFor="search-product">
+                              Szukaj produktu
+                            </label>
+                            <input
+                              className="w-full max-w-[320px] min-h-[44px] px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px] "
+                              id="search-product"
+                              name="search-product"
+                              value={searchProducts}
+                              onChange={(event) =>
+                                setSearchProducts(event.currentTarget.value)
+                              }
+                            ></input>
+                          </div>
 
-                      <div className="mt-[24px] flex flex-col gap-[8px]">
-                        <label htmlFor="category">Kategoria</label>
-                        <select
-                          className="min-h-[44px] max-w-[320px] w-full px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px]"
-                          id="category"
-                          value={categoryFilter}
-                          onChange={(event) =>
-                            setCategoryFilter(event.currentTarget.value)
-                          }
-                        >
-                          <option value="Wszystkie">Wszystkie</option>
-                          <option value="Bransoletki">Bransoletki</option>
-                          <option value="Naszyjniki">Naszyjniki</option>
-                          <option value="Kolczyki">Kolczyki</option>
-                        </select>
-                      </div>
-                      <button
-                        type="button"
-                        className="mt-[12px] min-h-[44px] px-[16px] py-[10px] border-[1px] border-[#e5ddd3] rounded-[8px] bg-[white] text-[#29241f] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-                        disabled={
-                          categoryFilter === "Wszystkie" &&
-                          searchProducts === "" &&
-                          priceSort === "default"
-                        }
-                        onClick={() => {
-                          setCategoryFilter("Wszystkie");
-                          setSearchProducts("");
-                          setPriceSort("default");
-                        }}
-                      >
-                        Resetuj widok
-                      </button>
-                      <p className="mt-[16px] text-[14px] text-[#6b6259]">
-                        Widoczne produkty: {filteredProducts.length}
-                      </p>
-                      <ProductList products={sortedProducts} />
+                          <div className="mt-[24px] flex flex-col gap-[8px]">
+                            <label htmlFor="category">Kategoria</label>
+                            <select
+                              className="min-h-[44px] max-w-[320px] w-full px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px]"
+                              id="category"
+                              value={categoryFilter}
+                              onChange={(event) =>
+                                setCategoryFilter(event.currentTarget.value)
+                              }
+                            >
+                              <option value="Wszystkie">Wszystkie</option>
+                              <option value="Bransoletki">Bransoletki</option>
+                              <option value="Naszyjniki">Naszyjniki</option>
+                              <option value="Kolczyki">Kolczyki</option>
+                            </select>
+                          </div>
+                          <button
+                            type="button"
+                            className="mt-[12px] min-h-[44px] px-[16px] py-[10px] border-[1px] border-[#e5ddd3] rounded-[8px] bg-[white] text-[#29241f] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                            disabled={
+                              categoryFilter === "Wszystkie" &&
+                              searchProducts === "" &&
+                              priceSort === "default"
+                            }
+                            onClick={() => {
+                              setCategoryFilter("Wszystkie");
+                              setSearchProducts("");
+                              setPriceSort("default");
+                            }}
+                          >
+                            Resetuj widok
+                          </button>
+                          <p className="mt-[16px] text-[14px] text-[#6b6259]">
+                            Widoczne produkty: {filteredProducts.length}
+                          </p>
+                          <ProductList products={sortedProducts} />
+                        </>
+                      )}
                     </>
                   )}
                 </section>

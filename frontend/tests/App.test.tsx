@@ -211,3 +211,53 @@ test("ponownienie przyciskiem po błędzie", async () => {
   ).not.toBeInTheDocument();
   expect(fetchMock).toHaveBeenCalledTimes(2);
 });
+
+test("pokazuje komunikat pustego katalogu i ukrywa kontrolki", async () => {
+  const fetchMock = vi
+    .fn<typeof fetch>()
+    .mockResolvedValue(new Response(JSON.stringify([])));
+  vi.stubGlobal("fetch", fetchMock);
+  render(
+    <MemoryRouter>
+      <App />
+    </MemoryRouter>,
+  );
+  expect(
+    await screen.findByText(
+      "Kolekcja jest chwilowo pusta. Zajrzyj ponownie później.",
+    ),
+  ).toBeInTheDocument();
+  expect(screen.queryByLabelText("Szukaj produktu")).not.toBeInTheDocument();
+  expect(screen.queryByLabelText("Kategoria")).not.toBeInTheDocument();
+  expect(screen.queryByLabelText("Sortowanie")).not.toBeInTheDocument();
+  expect(
+    screen.getByRole("heading", { name: "Znajdź swój ulubiony detal" }),
+  ).toBeInTheDocument();
+});
+test("zachowuje kontrolki, gdy wyszukiwanie nie znajduję produktów", async () => {
+  const fetchMock = vi
+    .fn<typeof fetch>()
+    .mockResolvedValue(new Response(JSON.stringify(products)));
+  vi.stubGlobal("fetch", fetchMock);
+  render(
+    <MemoryRouter>
+      <App />
+    </MemoryRouter>,
+  );
+  const searchInput = await screen.findByLabelText("Szukaj produktu");
+  expect(screen.queryByLabelText("Szukaj produktu")).toBeInTheDocument();
+  const user = userEvent.setup();
+  await user.type(searchInput, "nieistniejacyprodukt");
+
+  expect(
+    screen.queryByText("Brak produktów do wyświetlenia."),
+  ).toBeInTheDocument();
+  expect(screen.queryByLabelText("Szukaj produktu")).toBeInTheDocument();
+  expect(screen.queryByLabelText("Kategoria")).toBeInTheDocument();
+  expect(screen.queryByLabelText("Sortowanie")).toBeInTheDocument();
+  expect(
+    screen.queryByText(
+      "Kolekcja jest chwilowo pusta. Zajrzyj ponownie później",
+    ),
+  ).not.toBeInTheDocument();
+});
