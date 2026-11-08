@@ -4,7 +4,11 @@ import { Link } from "react-router-dom";
 import { formatPrice } from "../format-price";
 import { useState } from "react";
 export function ProductDetailsPage(props: {
-  onAddCart: (productId: number, variantId: number) => void;
+  onAddCart: (
+    productId: number,
+    variantId: number,
+    countAddProducts: number,
+  ) => void;
   products: Product[];
   isLoading: boolean;
   catalogError: string;
@@ -13,6 +17,7 @@ export function ProductDetailsPage(props: {
   const { slug } = useParams();
   const [addedVariantId, setAddedVariantId] = useState("");
   const [selectedVariantId, setVariantId] = useState("");
+  const [countAddProducts, setCountAddProducts] = useState(1);
 
   const product = props.products.find((product) => product.slug === slug);
 
@@ -94,6 +99,40 @@ export function ProductDetailsPage(props: {
           </option>
           {sizeOption}
         </select>
+        <p>Ilość</p>
+        <div className="flex flex-row items-center gap-[12px]">
+          <button
+            type="button"
+            disabled={countAddProducts <= 1}
+            className="w-[44px] h-[44px] border-[1px]  border-[#e5ddd3] rounded-[8px]"
+            aria-label={"Zmniejsz ilość"}
+            onClick={() => {
+              setCountAddProducts((previousCount) =>
+                Math.max(1, previousCount - 1),
+              );
+              setAddedVariantId("");
+            }}
+          >
+            -
+          </button>
+
+          {countAddProducts}
+          <button
+            type="button"
+            aria-label={"Zwiększ ilość"}
+            className="w-[44px] h-[44px] border-[1px] border-[#e5ddd3] rounded-[8px]"
+            disabled={countAddProducts >= 10}
+            onClick={() => {
+              setCountAddProducts((previousCount) =>
+                Math.min(10, previousCount + 1),
+              );
+              setAddedVariantId("");
+            }}
+          >
+            +
+          </button>
+        </div>
+
         <button
           type="button"
           className="mt-[8px] self-start min-h-[44px] px-[24px] rounded-[8px] bg-[#765341] text-[white] disabled:opacity-[50%] disabled:cursor-not-allowed "
@@ -103,7 +142,7 @@ export function ProductDetailsPage(props: {
           onClick={() => {
             if (selectedVariant === undefined || !selectedVariant.isAvailable)
               return;
-            props.onAddCart(product.id, selectedVariant.id);
+            props.onAddCart(product.id, selectedVariant.id, countAddProducts);
             setAddedVariantId(selectedVariantId);
           }}
         >
@@ -111,7 +150,7 @@ export function ProductDetailsPage(props: {
         </button>
         <p role="status">
           {addedVariantId !== "" && addedVariantId === selectedVariantId
-            ? "Dodano do koszyka"
+            ? `Dodano do koszyka: ${countAddProducts} szt.`
             : ""}
         </p>
         {selectedVariant !== undefined && (

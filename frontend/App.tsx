@@ -51,7 +51,11 @@ export function App() {
   function clearCart() {
     setCart([]);
   }
-  function addToCart(productId: number, variantId: number) {
+  function addToCart(
+    productId: number,
+    variantId: number,
+    countAddProducts: number,
+  ) {
     setCart((previousCart) => {
       const existingItem = previousCart.find(
         (cartItem) =>
@@ -60,11 +64,14 @@ export function App() {
       if (existingItem !== undefined) {
         return previousCart.map((cartItem) =>
           cartItem.productId === productId && cartItem.variantId === variantId
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            ? { ...cartItem, quantity: cartItem.quantity + countAddProducts }
             : cartItem,
         );
       }
-      return [...previousCart, { productId, variantId, quantity: 1 }];
+      return [
+        ...previousCart,
+        { productId, variantId, quantity: countAddProducts },
+      ];
     });
   }
   function removeFromCart(variantId: number) {
