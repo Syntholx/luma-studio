@@ -12,10 +12,9 @@ lokalnego zapisu bez sprawdzania istnienia ID w statycznych danych. Brak produkt
 lub wariantu jest widoczny w koszyku jako pozycja do usunięcia i blokuje checkout.
 Potwierdzenie zamówienia nadal jest lokalną symulacją, nie żądaniem POST.
 
-Checkpoint integracji: brak jeszcze anulowania/ochrony przed nieaktualnym
-żądaniem w loadCatalog, osobnego komunikatu pustego katalogu (jest komunikat
-ProductList), testów stanów pobierania App i testu usuwania brakującej pozycji.
-Nie traktować aktualnego klienta jako kompletnej integracji produkcyjnej.
+Klient anuluje poprzednie pobieranie i sprząta je przy odmontowaniu; testy App
+obejmują spóźnione odpowiedzi, błędy, loading i retry. Pusty katalog ma osobny
+komunikat, inny niż brak dopasowań filtrów. Nie jest to integracja produkcyjna.
 Folder services zastąpił api: moduły /api/*.ts kolidowały z proxy /api.
 
 ## Uruchomienie
@@ -38,7 +37,14 @@ development, nie gotowego statycznego wdrożenia ani automatycznie preview.
 - Zapis nieobsługiwany:405. Bez paginacji, filtrowania serwerowego i totalCount.
 
 Produkt: id:number, name:string, category:string, price:number,
-description:string, slug:string, variants:tablica.
+description:string, slug:string, imageUrl:string, imageAlt:string, variants:tablica.
+imageUrl to ścieżka od korzenia frontendu, np. /images/products/bransoletka-aura.png.
+Pliki są w frontend/public/images/products, nie na hoście API. imageAlt opisuje
+zdjęcie. Obrazy są wygenerowanymi przez AI ilustracjami fikcyjnych produktów.
+Wspólny obraz awaryjny: /images/products/product-fallback.png (pudełko na biżuterię).
+Frontend ma osobno wdrożyć typy, walidację, render i obsługę błędu obrazu;
+dodanie pól w API samo nie wyświetla zdjęć. Awaryjny alt powinien informować
+o niedostępnym zdjęciu, nie opisywać zastępczego pudełka jako produktu.
 Wariant: id:number, size:string, price:number, isAvailable:boolean.
 JSON camelCase, ceny PLN jako liczby (decimal na serwerze), nie tekst waluty.
 ID i dane odpowiadają frontend/products.ts. Slugi porównywane dokładnie.

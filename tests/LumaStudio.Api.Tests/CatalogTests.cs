@@ -20,8 +20,11 @@ public sealed class CatalogTests : IClassFixture<WebApplicationFactory<Program>>
         Assert.Equal(new[] { 2, 1, 3 }, products.EnumerateArray().Select(p => p.GetProperty("id").GetInt32()));
         foreach (var product in products.EnumerateArray())
         {
-            Assert.Equal(new[] { "category", "description", "id", "name", "price", "slug", "variants" },
+            Assert.Equal(new[] { "category", "description", "id", "imageAlt", "imageUrl", "name", "price", "slug", "variants" },
                 product.EnumerateObject().Select(p => p.Name).Order());
+            Assert.Equal($"/images/products/{product.GetProperty("slug").GetString()}.png",
+                product.GetProperty("imageUrl").GetString());
+            Assert.False(string.IsNullOrWhiteSpace(product.GetProperty("imageAlt").GetString()));
             Assert.Equal(JsonValueKind.Number, product.GetProperty("price").ValueKind);
             foreach (var variant in product.GetProperty("variants").EnumerateArray())
                 Assert.Equal(new[] { "id", "isAvailable", "price", "size" },

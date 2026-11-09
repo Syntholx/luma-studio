@@ -3,6 +3,7 @@ import type { Product } from "../products";
 import { Link } from "react-router-dom";
 import { formatPrice } from "../format-price";
 import { useState } from "react";
+import { ProductImage } from "./ProductImage";
 export function ProductDetailsPage(props: {
   onAddCart: (
     productId: number,
@@ -70,6 +71,12 @@ export function ProductDetailsPage(props: {
 
   return (
     <section className="py-[48px]">
+      <ProductImage
+        imageUrl={product.imageUrl}
+        imageAlt={product.imageAlt}
+        key={product.imageUrl}
+        className="w-full max-w-[480px] aspect-square object-contain mb-[24px] rounded-[12px] "
+      />
       <h1 className="text-[36px] font-[600] leading-[1.2]">{product.name}</h1>
       <p className="text-[12px] mt-[12px] text-[#6b6259] uppercase">
         {product.category}

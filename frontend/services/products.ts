@@ -42,7 +42,11 @@ function isProduct(value: unknown): value is Product {
     value.price >= 0 &&
     Array.isArray(value.variants) &&
     value.variants.length > 0 &&
-    value.variants.every(isProductVariant)
+    value.variants.every(isProductVariant) &&
+    typeof value.imageUrl === "string" &&
+    value.imageUrl.trim().length > 0 &&
+    typeof value.imageAlt === "string" &&
+    value.imageAlt.trim().length > 0
   );
 }
 

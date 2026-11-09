@@ -6,6 +6,8 @@ export type Product = {
   description: string;
   slug: string;
   variants: ProductVariant[];
+  imageUrl: string;
+  imageAlt: string;
 };
 
 export const products: Product[] = [
@@ -16,6 +18,9 @@ export const products: Product[] = [
     price: 122,
     description: "Subtelny naszyjnik inspirowany ciepłem słońca.",
     slug: "naszyjnik-sol",
+    imageUrl: "/images/products/naszyjnik-sol.png",
+    imageAlt:
+      "Naszyjnik Sol z delikatnym złotym łańcuszkiem i zawieszką w kształcie słońca",
     variants: [
       {
         id: 201,
@@ -32,6 +37,8 @@ export const products: Product[] = [
     price: 89.5,
     description: "Delikatna bransoletka z kolorowych koralików.",
     slug: "bransoletka-aura",
+    imageUrl: "/images/products/bransoletka-aura.png",
+    imageAlt: "Bransoletka Aura z kolorowych koralików i złotych przekładek",
     variants: [
       {
         id: 204,
@@ -60,6 +67,9 @@ export const products: Product[] = [
     price: 109,
     description: "Lekkie kolczyki na co dzień i wyjątkowe okazje.",
     slug: "kolczyki-luna",
+    imageUrl: "/images/products/kolczyki-luna.png",
+    imageAlt:
+      "Kolczyki Luna ze złotymi biglami i kremowymi zawieszkami w kształcie półksiężyców",
     variants: [
       {
         id: 205,
