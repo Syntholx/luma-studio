@@ -257,7 +257,40 @@ test("zachowuje kontrolki, gdy wyszukiwanie nie znajduję produktów", async () 
   expect(screen.queryByLabelText("Sortowanie")).toBeInTheDocument();
   expect(
     screen.queryByText(
-      "Kolekcja jest chwilowo pusta. Zajrzyj ponownie później",
+      "Kolekcja jest chwilowo pusta. Zajrzyj ponownie później.",
     ),
   ).not.toBeInTheDocument();
+});
+
+test("łączy kolejne dodania wariantu w jedną pozycję koszyka", async () => {
+  localStorage.clear();
+  const fetchMock = vi
+    .fn<typeof fetch>()
+    .mockResolvedValue(new Response(JSON.stringify(products)));
+
+  vi.stubGlobal("fetch", fetchMock);
+  render(
+    <MemoryRouter initialEntries={["/produkty/bransoletka-aura"]}>
+      <App />
+    </MemoryRouter>,
+  );
+  expect(screen.getByRole("link", { name: "Koszyk (0)" })).toBeInTheDocument();
+  const user = userEvent.setup();
+  const sizeSelect = await screen.findByLabelText("Rozmiar");
+  await user.selectOptions(sizeSelect, "202");
+  await user.click(screen.getByRole("button", { name: "Zwiększ ilość" }));
+  await user.click(screen.getByRole("button", { name: "Zwiększ ilość" }));
+  await user.click(screen.getByRole("button", { name: "Dodaj do koszyka" }));
+  expect(screen.getByText("Dodano do koszyka: 3 szt.")).toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Zmniejsz ilość" }));
+  await user.click(screen.getByRole("button", { name: "Dodaj do koszyka" }));
+  expect(screen.getByText("Dodano do koszyka: 2 szt.")).toBeInTheDocument();
+  await user.click(screen.getByRole("link", { name: "Koszyk (5)" }));
+  expect(screen.getByRole("heading", { name: "Koszyk" })).toBeInTheDocument();
+  expect(screen.getByText("Rozmiar: M · Ilość: 5")).toBeInTheDocument();
+  expect(screen.getByText("Liczba sztuk: 5")).toBeInTheDocument();
+  expect(screen.getByText(/Razem:\s*472,50\s*zł/)).toBeInTheDocument();
+  expect(
+    screen.getAllByRole("link", { name: "Bransoletka Aura" }),
+  ).toHaveLength(1);
 });
