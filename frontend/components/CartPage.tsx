@@ -3,6 +3,7 @@ import type { Product } from "../products";
 import { formatPrice } from "../format-price";
 import { Link } from "react-router-dom";
 import { hasUnavailableCartItems } from "../cart";
+import { ProductImage } from "./ProductImage";
 export function CartPage(props: {
   items: CartItem[];
   onRemoveFromCart: (variantId: number) => void;
@@ -121,55 +122,70 @@ export function CartPage(props: {
           px-[24px] py-[24px] mt-[16px] flex flex-col gap-[8px]
           "
           >
-            <h2 className="text-[20px] font-[600]">
-              <Link
-                to={`/produkty/${product.slug}`}
-                className="hover:underline"
-              >
-                {product.name}
-              </Link>
-            </h2>
-            <p className="text-[#6b6259]">
-              Rozmiar: {variant.size} · Ilość: {cartItem.quantity}
-            </p>
-            {!variant.isAvailable && (
-              <p className="text-[14px] font-[600] text-[#9b2c2c]">
-                Produkt niedostępny
-              </p>
-            )}
-            <p>Cena jednej sztuki: {formatPrice(variant.price)} </p>
-            <p className="font-[600]">
-              Wartość pozycji: {formatPrice(variant.price * cartItem.quantity)}
-            </p>
-            <div className="flex items-center gap-[12px]">
-              <button
-                disabled={cartItem.quantity <= 1}
-                className="w-[44px] h-[44px] border-[1px] border-[#e5ddd3] rounded-[8px] disabled:opacity-[50%] disabled:cursor-not-allowed"
-                type="button"
-                aria-label={`Zmniejsz ilość ${product.name} ${variant.size}`}
-                onClick={() => props.onChangeQuantity(cartItem.variantId, -1)}
-              >
-                −
-              </button>
-              <span>{cartItem.quantity}</span>
-              <button
-                disabled={!variant.isAvailable}
-                aria-label={`Zwiększ ilość ${product.name} ${variant.size}`}
-                type="button"
-                className="h-[44px] w-[44px] border-[#e5ddd3] border-[1px] rounded-[8px] disabled:opacity-[50%] disabled:cursor-not-allowed"
-                onClick={() => props.onChangeQuantity(cartItem.variantId, +1)}
-              >
-                +
-              </button>
+            <div className="flex flex-col md:flex-row gap-4 items-start">
+              <ProductImage
+                className="w-20 h-20 md:w-24 md:h-24 flex-shrink-0 object-contain rounded-lg"
+                key={product.imageUrl}
+                imageUrl={product.imageUrl}
+                imageAlt={product.imageAlt}
+              />
+              <div className="flex flex-col gap-[8px]">
+                <h2 className="text-[20px] font-[600]">
+                  <Link
+                    to={`/produkty/${product.slug}`}
+                    className="hover:underline"
+                  >
+                    {product.name}
+                  </Link>
+                </h2>
+                <p className="text-[#6b6259]">
+                  Rozmiar: {variant.size} · Ilość: {cartItem.quantity}
+                </p>
+                {!variant.isAvailable && (
+                  <p className="text-[14px] font-[600] text-[#9b2c2c]">
+                    Produkt niedostępny
+                  </p>
+                )}
+                <p>Cena jednej sztuki: {formatPrice(variant.price)} </p>
+                <p className="font-[600]">
+                  Wartość pozycji:{" "}
+                  {formatPrice(variant.price * cartItem.quantity)}
+                </p>
+                <div className="flex items-center gap-[12px]">
+                  <button
+                    disabled={cartItem.quantity <= 1}
+                    className="w-[44px] h-[44px] border-[1px] border-[#e5ddd3] rounded-[8px] disabled:opacity-[50%] disabled:cursor-not-allowed"
+                    type="button"
+                    aria-label={`Zmniejsz ilość ${product.name} ${variant.size}`}
+                    onClick={() =>
+                      props.onChangeQuantity(cartItem.variantId, -1)
+                    }
+                  >
+                    −
+                  </button>
+                  <span>{cartItem.quantity}</span>
+                  <button
+                    disabled={!variant.isAvailable}
+                    aria-label={`Zwiększ ilość ${product.name} ${variant.size}`}
+                    type="button"
+                    className="h-[44px] w-[44px] border-[#e5ddd3] border-[1px] rounded-[8px] disabled:opacity-[50%] disabled:cursor-not-allowed"
+                    onClick={() =>
+                      props.onChangeQuantity(cartItem.variantId, +1)
+                    }
+                  >
+                    +
+                  </button>
+                </div>
+                <button
+                  aria-label={`Usuń ${product.name} rozmiar ${variant.size} z koszyka`}
+                  type="button"
+                  className="text-left min-h-[44px] self-start px-[16px] border-[1px] border-[#e5ddd3] rounded-[8px]"
+                  onClick={() => props.onRemoveFromCart(cartItem.variantId)}
+                >
+                  Usuń
+                </button>
+              </div>
             </div>
-            <button
-              aria-label={`Usuń ${product.name} rozmiar ${variant.size} z koszyka`}
-              type="button"
-              className="text-left min-h-[44px] self-start px-[16px] border-[1px] border-[#e5ddd3] rounded-[8px]"
-              onClick={() => props.onRemoveFromCart(cartItem.variantId)}
-            >
-              Usuń
-            </button>
           </div>
         );
       })}
