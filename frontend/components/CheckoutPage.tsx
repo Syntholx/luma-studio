@@ -9,6 +9,7 @@ import { hasUnavailableCartItems } from "../cart";
 import { deliveryMethods } from "../delivery";
 import { freeDeliveryThreshold } from "../delivery";
 import { getDeliveryPrice } from "../delivery";
+import { ProductImage } from "./ProductImage";
 
 type OrderConfirmation = {
   totalQuantity: number;
@@ -296,18 +297,26 @@ export function CheckoutPage(props: {
             return (
               <li
                 key={cartItem.variantId}
-                className="pb-[12px] border-b-[1px] border-[#e5ddd3]"
+                className="pb-[12px] border-b-[1px] border-[#e5ddd3] flex items-center gap-3"
               >
-                <p>{product.name}</p>
-                <p>
-                  Rozmiar: {variant.size} · Ilość: {cartItem.quantity}
-                </p>
-                <p>{formatPrice(variant.price * cartItem.quantity)}</p>
-                {!variant.isAvailable && (
-                  <p className="text-[14px] font-[600] text-[#9b2c2c]">
-                    Produkt niedostępny
+                <ProductImage
+                  key={product.imageUrl}
+                  className=" w-16 h-16 rounded-lg object-contain flex-shrink-0"
+                  imageUrl={product.imageUrl}
+                  imageAlt={product.imageAlt}
+                />
+                <div className="flex flex-col min-w-0 gap-[8px]">
+                  <p>{product.name}</p>
+                  <p>
+                    Rozmiar: {variant.size} · Ilość: {cartItem.quantity}
                   </p>
-                )}
+                  <p>{formatPrice(variant.price * cartItem.quantity)}</p>
+                  {!variant.isAvailable && (
+                    <p className="text-[14px] font-[600] text-[#9b2c2c]">
+                      Produkt niedostępny
+                    </p>
+                  )}
+                </div>
               </li>
             );
           })}
