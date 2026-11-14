@@ -10,6 +10,7 @@ test("pokazuje komunikat i można usunąć produkt z koszyka", async () => {
   render(
     <MemoryRouter>
       <CartPage
+        onClearCart={vi.fn()}
         items={[{ productId: 999, variantId: 999, quantity: 1 }]}
         products={products}
         onRemoveFromCart={onRemoveFromCart}
@@ -35,6 +36,7 @@ test("pokazuje komunikat i można usunąć produkt, gdy wariant nie istnieje", a
   render(
     <MemoryRouter>
       <CartPage
+        onClearCart={vi.fn()}
         items={[{ productId: 1, variantId: 999, quantity: 1 }]}
         products={products}
         onRemoveFromCart={onRemoveFromCart}

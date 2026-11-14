@@ -339,6 +339,7 @@ export function App() {
             element={
               <CartPage
                 isLoading={isCatalogLoading}
+                onClearCart={clearCart}
                 catalogError={catalogError}
                 onRetry={loadCatalog}
                 items={cart}

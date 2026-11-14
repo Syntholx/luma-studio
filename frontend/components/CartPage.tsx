@@ -12,6 +12,7 @@ export function CartPage(props: {
   isLoading: boolean;
   catalogError: string;
   onRetry: () => void;
+  onClearCart: () => void;
 }) {
   if (props.isLoading) {
     return (
@@ -54,6 +55,17 @@ export function CartPage(props: {
     <section className="py-[48px]">
       <h1 className="text-[36px] font-[600]">Koszyk</h1>
       <p>Liczba sztuk: {totalQuantity}</p>
+      {props.items.length > 0 && (
+        <button
+          className="text-left min-h-[44px] self-start px-[16px] border-[1px] border-[#e5ddd3] rounded-[8px] mt-[16px]"
+          type="button"
+          onClick={() => {
+            props.onClearCart();
+          }}
+        >
+          Wyczyść koszyk
+        </button>
+      )}
       {props.items.length === 0 && (
         <>
           <p className="mt-[24px]">Twój koszyk jest pusty </p>
@@ -141,6 +153,7 @@ export function CartPage(props: {
                 <p className="text-[#6b6259]">
                   Rozmiar: {variant.size} · Ilość: {cartItem.quantity}
                 </p>
+
                 {!variant.isAvailable && (
                   <p className="text-[14px] font-[600] text-[#9b2c2c]">
                     Produkt niedostępny
