@@ -21,6 +21,7 @@ export function App() {
   const catalogControllerRef = useRef<AbortController | null>(null);
   const normalizedSearch = searchProducts.trim().toLowerCase();
   const [priceSort, setPriceSort] = useState("default");
+  const [onlyAvailable, setOnlyAvailable] = useState(false);
   useEffect(() => {
     try {
       localStorage.setItem("luma-studio-cart", JSON.stringify(cart));
@@ -37,7 +38,9 @@ export function App() {
   const filteredProducts = catalogProducts.filter(
     (product) =>
       (categoryFilter === "Wszystkie" || product.category === categoryFilter) &&
-      product.name.toLowerCase().includes(normalizedSearch),
+      product.name.toLowerCase().includes(normalizedSearch) &&
+      (!onlyAvailable ||
+        product.variants.some((variant) => variant.isAvailable)),
   );
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     if (priceSort === "price-asc") {
@@ -231,6 +234,22 @@ export function App() {
                       {catalogProducts.length > 0 && (
                         <>
                           <div className="mt-[24px] flex flex-col gap-[8px]">
+                            <label
+                              htmlFor="avialable-product"
+                              className="flex items-center gap-[8px] min-h-[44px] mb-[16px]"
+                            >
+                              <input
+                                className="w-[18px] h-[18px] accent-[#765341]"
+                                type="checkbox"
+                                id="avialable-product"
+                                name="avialable-product"
+                                checked={onlyAvailable}
+                                onChange={(event) =>
+                                  setOnlyAvailable(event.currentTarget.checked)
+                                }
+                              ></input>
+                              Tylko dostępne produkty
+                            </label>
                             <label htmlFor="price-sort">Sortowanie</label>
                             <select
                               className="w-full max-w-[320px] min-h-[44px] px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px]"
@@ -284,12 +303,14 @@ export function App() {
                             disabled={
                               categoryFilter === "Wszystkie" &&
                               searchProducts === "" &&
-                              priceSort === "default"
+                              priceSort === "default" &&
+                              onlyAvailable === false
                             }
                             onClick={() => {
                               setCategoryFilter("Wszystkie");
                               setSearchProducts("");
                               setPriceSort("default");
+                              setOnlyAvailable(false);
                             }}
                           >
                             Resetuj widok
