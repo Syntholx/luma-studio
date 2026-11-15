@@ -294,3 +294,55 @@ test("łączy kolejne dodania wariantu w jedną pozycję koszyka", async () => {
     screen.getAllByRole("link", { name: "Bransoletka Aura" }),
   ).toHaveLength(1);
 });
+
+test("ukrywa niedostępny produkt i przywraca go po zresetowaniu filtrów", async () => {
+  const catalogWithUnavailableAura = products.map((product) => {
+    if (product.id !== 1) {
+      return product;
+    }
+
+    return {
+      ...product,
+      variants: product.variants.map((variant) => ({
+        ...variant,
+        isAvailable: false,
+      })),
+    };
+  });
+  const fetchMock = vi
+    .fn<typeof fetch>()
+    .mockResolvedValue(
+      new Response(JSON.stringify(catalogWithUnavailableAura)),
+    );
+
+  vi.stubGlobal("fetch", fetchMock);
+  render(
+    <MemoryRouter>
+      <App />
+    </MemoryRouter>,
+  );
+  const user = userEvent.setup();
+  expect(
+    await screen.findByRole("heading", { name: "Bransoletka Aura" }),
+  ).toBeInTheDocument();
+  expect(screen.getByLabelText("Tylko dostępne produkty")).not.toBeChecked();
+  await user.click(
+    screen.getByRole("checkbox", { name: "Tylko dostępne produkty" }),
+  );
+  expect(
+    screen.getByRole("checkbox", { name: "Tylko dostępne produkty" }),
+  ).toBeChecked();
+  expect(
+    screen.queryByRole("heading", { name: "Bransoletka Aura" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByRole("heading", { name: "Naszyjnik Sol" }),
+  ).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Resetuj widok" })).toBeEnabled();
+  await user.click(screen.getByRole("button", { name: "Resetuj widok" }));
+  expect(screen.getByLabelText("Tylko dostępne produkty")).not.toBeChecked();
+  expect(
+    screen.getByRole("heading", { name: "Bransoletka Aura" }),
+  ).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Resetuj widok" })).toBeDisabled();
+});
