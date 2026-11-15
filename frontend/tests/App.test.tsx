@@ -326,6 +326,7 @@ test("ukrywa niedostępny produkt i przywraca go po zresetowaniu filtrów", asyn
     await screen.findByRole("heading", { name: "Bransoletka Aura" }),
   ).toBeInTheDocument();
   expect(screen.getByLabelText("Tylko dostępne produkty")).not.toBeChecked();
+  expect(screen.getByText("Produkt niedostępny")).toBeInTheDocument();
   await user.click(
     screen.getByRole("checkbox", { name: "Tylko dostępne produkty" }),
   );
@@ -335,6 +336,7 @@ test("ukrywa niedostępny produkt i przywraca go po zresetowaniu filtrów", asyn
   expect(
     screen.queryByRole("heading", { name: "Bransoletka Aura" }),
   ).not.toBeInTheDocument();
+  expect(screen.queryByText("Produkt niedostępny")).not.toBeInTheDocument();
   expect(
     screen.getByRole("heading", { name: "Naszyjnik Sol" }),
   ).toBeInTheDocument();
@@ -344,5 +346,6 @@ test("ukrywa niedostępny produkt i przywraca go po zresetowaniu filtrów", asyn
   expect(
     screen.getByRole("heading", { name: "Bransoletka Aura" }),
   ).toBeInTheDocument();
+  expect(screen.getByText("Produkt niedostępny")).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Resetuj widok" })).toBeDisabled();
 });

@@ -4,6 +4,9 @@ import { formatPrice } from "../format-price";
 import { ProductImage } from "./ProductImage";
 
 export function ProductCard(props: { product: Product }) {
+  const isAvailable = props.product.variants.some(
+    (variant) => variant.isAvailable,
+  );
   return (
     <article className=" px-[24px] py-[24px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[16px]">
       <ProductImage
@@ -22,6 +25,11 @@ export function ProductCard(props: { product: Product }) {
       <p className="mt-[16px] text-[18px] font-[600]">
         {formatPrice(props.product.price)}
       </p>
+      {!isAvailable && (
+        <p className="text-[#9b2c2c] text-[14px] font-[600] mt-[8px]">
+          Produkt niedostępny
+        </p>
+      )}
       <Link
         to={`/produkty/${props.product.slug}`}
         className="mt-[16px] min-h-[44px] inline-flex items-center w-fit text-[#765341] font-[600] hover:underline"
