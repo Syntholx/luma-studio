@@ -68,7 +68,7 @@ export function ProductDetailsPage(props: {
       {productSize.size} {!productSize.isAvailable && "- niedostępny"}
     </option>
   ));
-
+  const isAvailable = product.variants.some((variant) => variant.isAvailable);
   return (
     <section className="py-[48px]">
       <ProductImage
@@ -89,81 +89,88 @@ export function ProductDetailsPage(props: {
           ? formatPrice(selectedVariant.price)
           : formatPrice(product.price)}
       </p>
-      <div className="mt-[24px] flex flex-col gap-[8px]">
-        <label htmlFor="size">Rozmiar</label>
-        <select
-          id="size"
-          className="w-full max-w-[320px] min-h-[44px] border-[1px] border-[#e5ddd3] rounded-[8px] bg-[white] text-[#29241f] px-[12px] py-[10px]"
-          name="size"
-          value={selectedVariantId}
-          onChange={(event) => {
-            setVariantId(event.currentTarget.value);
-            setAddedVariantId("");
-          }}
-        >
-          <option value="" disabled>
-            Wybierz rozmiar
-          </option>
-          {sizeOption}
-        </select>
-        <p>Ilość</p>
-        <div className="flex flex-row items-center gap-[12px]">
-          <button
-            type="button"
-            disabled={countAddProducts <= 1}
-            className="w-[44px] h-[44px] border-[1px]  border-[#e5ddd3] rounded-[8px]"
-            aria-label={"Zmniejsz ilość"}
-            onClick={() => {
-              setCountAddProducts((previousCount) =>
-                Math.max(1, previousCount - 1),
-              );
-              setAddedVariantId("");
-            }}
-          >
-            -
-          </button>
-
-          {countAddProducts}
-          <button
-            type="button"
-            aria-label={"Zwiększ ilość"}
-            className="w-[44px] h-[44px] border-[1px] border-[#e5ddd3] rounded-[8px]"
-            disabled={countAddProducts >= 10}
-            onClick={() => {
-              setCountAddProducts((previousCount) =>
-                Math.min(10, previousCount + 1),
-              );
-              setAddedVariantId("");
-            }}
-          >
-            +
-          </button>
-        </div>
-
-        <button
-          type="button"
-          className="mt-[8px] self-start min-h-[44px] px-[24px] rounded-[8px] bg-[#765341] text-[white] disabled:opacity-[50%] disabled:cursor-not-allowed "
-          disabled={
-            selectedVariant === undefined || !selectedVariant.isAvailable
-          }
-          onClick={() => {
-            if (selectedVariant === undefined || !selectedVariant.isAvailable)
-              return;
-            props.onAddCart(product.id, selectedVariant.id, countAddProducts);
-            setAddedVariantId(selectedVariantId);
-          }}
-        >
-          Dodaj do koszyka
-        </button>
-        <p role="status">
-          {addedVariantId !== "" && addedVariantId === selectedVariantId
-            ? `Dodano do koszyka: ${countAddProducts} szt.`
-            : ""}
+      {!isAvailable && (
+        <p className="text-[14px] font-[600] text-[#9b2c2c] mt-[8px]">
+          Produkt jest obecnie niedostępny.
         </p>
-        {selectedVariant !== undefined && (
-          <p>Wybrany rozmiar: {selectedVariant.size}</p>
-        )}
-      </div>
+      )}
+      {isAvailable && (
+        <div className="mt-[24px] flex flex-col gap-[8px]">
+          <label htmlFor="size">Rozmiar</label>
+          <select
+            id="size"
+            className="w-full max-w-[320px] min-h-[44px] border-[1px] border-[#e5ddd3] rounded-[8px] bg-[white] text-[#29241f] px-[12px] py-[10px]"
+            name="size"
+            value={selectedVariantId}
+            onChange={(event) => {
+              setVariantId(event.currentTarget.value);
+              setAddedVariantId("");
+            }}
+          >
+            <option value="" disabled>
+              Wybierz rozmiar
+            </option>
+            {sizeOption}
+          </select>
+          <p>Ilość</p>
+          <div className="flex flex-row items-center gap-[12px]">
+            <button
+              type="button"
+              disabled={countAddProducts <= 1}
+              className="w-[44px] h-[44px] border-[1px]  border-[#e5ddd3] rounded-[8px]"
+              aria-label={"Zmniejsz ilość"}
+              onClick={() => {
+                setCountAddProducts((previousCount) =>
+                  Math.max(1, previousCount - 1),
+                );
+                setAddedVariantId("");
+              }}
+            >
+              -
+            </button>
+
+            {countAddProducts}
+            <button
+              type="button"
+              aria-label={"Zwiększ ilość"}
+              className="w-[44px] h-[44px] border-[1px] border-[#e5ddd3] rounded-[8px]"
+              disabled={countAddProducts >= 10}
+              onClick={() => {
+                setCountAddProducts((previousCount) =>
+                  Math.min(10, previousCount + 1),
+                );
+                setAddedVariantId("");
+              }}
+            >
+              +
+            </button>
+          </div>
+
+          <button
+            type="button"
+            className="mt-[8px] self-start min-h-[44px] px-[24px] rounded-[8px] bg-[#765341] text-[white] disabled:opacity-[50%] disabled:cursor-not-allowed "
+            disabled={
+              selectedVariant === undefined || !selectedVariant.isAvailable
+            }
+            onClick={() => {
+              if (selectedVariant === undefined || !selectedVariant.isAvailable)
+                return;
+              props.onAddCart(product.id, selectedVariant.id, countAddProducts);
+              setAddedVariantId(selectedVariantId);
+            }}
+          >
+            Dodaj do koszyka
+          </button>
+          <p role="status">
+            {addedVariantId !== "" && addedVariantId === selectedVariantId
+              ? `Dodano do koszyka: ${countAddProducts} szt.`
+              : ""}
+          </p>
+          {selectedVariant !== undefined && (
+            <p>Wybrany rozmiar: {selectedVariant.size}</p>
+          )}
+        </div>
+      )}
       <Link
         to="/#kolekcja"
         className="mt-[24px] min-h-[44px]  inline-flex items-center text-[#765341] font-[600] hover:underline"

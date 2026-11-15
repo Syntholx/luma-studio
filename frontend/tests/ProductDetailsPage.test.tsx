@@ -212,3 +212,63 @@ test("czyszczenia potwierdzenia po zmianie ilości", async () => {
   ).not.toBeInTheDocument();
   expect(onAddCart).toHaveBeenCalledTimes(1);
 });
+
+test("przy niedostępności ukrywa niektóre funkcje", async () => {
+  const onAddCart = vi.fn();
+  const catalogWithUnavailableAura = products.map((product) => {
+    if (product.id !== 1) {
+      return product;
+    }
+
+    return {
+      ...product,
+      variants: product.variants.map((variant) => ({
+        ...variant,
+        isAvailable: false,
+      })),
+    };
+  });
+
+  render(
+    <MemoryRouter initialEntries={["/produkty/bransoletka-aura"]}>
+      <Routes>
+        <Route
+          path="/produkty/:slug"
+          element={
+            <ProductDetailsPage
+              products={catalogWithUnavailableAura}
+              isLoading={false}
+              catalogError={""}
+              onRetry={vi.fn()}
+              onAddCart={onAddCart}
+            />
+          }
+        />
+      </Routes>
+    </MemoryRouter>,
+  );
+  expect(
+    screen.getByText("Produkt jest obecnie niedostępny."),
+  ).toBeInTheDocument();
+  expect(screen.queryByLabelText("Rozmiar")).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Zwiększ ilość" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Zmniejsz ilość" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByRole("heading", { name: "Bransoletka Aura" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText("Delikatna bransoletka z kolorowych koralików."),
+  ).toBeInTheDocument();
+  expect(screen.getByRole("img")).toBeInTheDocument();
+  expect(
+    screen.getByRole("link", { name: "Wróć do kolekcji" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Dodaj do koszyka" }),
+  ).not.toBeInTheDocument();
+  expect(onAddCart).toHaveBeenCalledTimes(0);
+});
