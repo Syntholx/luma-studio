@@ -1,0 +1,15 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /source
+COPY src/LumaStudio.Api/LumaStudio.Api.csproj src/LumaStudio.Api/
+RUN dotnet restore src/LumaStudio.Api/LumaStudio.Api.csproj
+COPY src/LumaStudio.Api/ src/LumaStudio.Api/
+RUN dotnet publish src/LumaStudio.Api/LumaStudio.Api.csproj -c Release --no-restore -o /out /p:UseAppHost=false
+RUN find /out -type d -exec chmod 755 {} + && find /out -type f -exec chmod 644 {} +
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled
+WORKDIR /app
+COPY --from=build /out/ ./
+ENV ASPNETCORE_ENVIRONMENT=Production ASPNETCORE_HTTP_PORTS=8080
+USER 1654:1654
+EXPOSE 8080
+ENTRYPOINT ["dotnet", "LumaStudio.Api.dll"]

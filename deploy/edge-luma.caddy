@@ -1,0 +1,4 @@
+# Append this site block to the existing gateway configuration, not to Luma's Caddyfile.
+luma.szymon-michalek.dev {
+    reverse_proxy luma-web:8080
+}

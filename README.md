@@ -1,56 +1,75 @@
 # Luma Studio
 
-Demonstracyjna strona marki biżuterii i przyszły sklep internetowy.
-Projekt służy nauce React, TypeScript i Tailwind CSS. Nie prowadzi rzeczywistej sprzedaży.
+Demonstracyjna strona marki biżuterii i sklep zbudowany podczas nauki React,
+TypeScript i Tailwind CSS. Nie prowadzi prawdziwej sprzedaży ani płatności.
 
-## Aktualny zakres
+Demo: https://luma.szymon-michalek.dev
 
-- Strona główna: nagłówek, hero, opis marki, wybrana kolekcja i stopka.
-- Responsywny układ kart: jedna kolumna na telefonie, dwie od breakpointu md.
-- Trzy produkty przykładowe w typowanej tablicy `Product[]`.
-- Komponent `ProductCard` otrzymuje produkt przez props; lista powstaje przez map.
-- Ceny pozostają liczbami i są wyświetlane przez Intl.NumberFormat w PLN.
+## Funkcje
 
-Nie ma jeszcze API, koszyka, zamówień ani rzeczywistych płatności.
-BrowserRouter jest podłączony, ale podstrony sklepu nie zostały jeszcze utworzone.
+- Katalog z API ASP.NET Core, szczegóły i warianty produktów.
+- Wyszukiwanie, kategoria, dostępność, sortowanie i reset widoku.
+- Ilość 1–10 na pojedyncze dodanie, scalanie wariantów i koszyk w localStorage.
+- Zmiana ilości, usuwanie pozycji i czyszczenie całego koszyka.
+- Demonstracyjny checkout: walidacja, dostawa, próg darmowej dostawy i potwierdzenie.
+- Loading/error/retry, anulowanie starych pobrań i osobny stan pustego katalogu.
+- Oznaczenia niedostępności i blokada zakupu niedostępnych wariantów.
+- Obrazy WebP, wspólny fallback i tekst po awarii również fallbacku.
+- Responsywne widoki i miniatury koszyka/podsumowania, obsługa klawiaturą.
 
-## Uruchomienie
+## Uruchomienie lokalne
 
-W folderze `frontend`, z zainstalowanymi Node.js i npm:
+Wymagane Node.js24, npm i SDK.NET10. Z głównego katalogu:
 
-```sh
-npm ci
-npm run dev
+```powershell
+dotnet run --project src/LumaStudio.Api --launch-profile http
 ```
 
-Otwórz adres Local pokazany przez Vite. Kontrole projektu:
+W drugim terminalu:
 
-```sh
-npm run build
-npm run lint
+```powershell
+cd frontend
+npm.cmd ci
+npm.cmd run dev
 ```
 
-Build wykonuje kontrolę TypeScript i tworzy `frontend/dist`.
-Nie skonfigurowano jeszcze automatycznych testów zachowania komponentów.
-Lint zgłasza ostrzeżenie o komponencie App w pliku startowym; nie blokuje buildu.
+API: http://localhost:5180/api/products. Otwórz adres Vite pokazany w terminalu.
+Proxy Vite przekazuje /api do API; nie działa automatycznie w preview.
 
-## Pliki i punkt powrotu
+## Kontrole
 
-Kod frontendu znajduje się w `frontend/`. `main.tsx` montuje React w elemencie
-app z index.html i zawiera obecną stronę. Dane i typ są w `products.ts`,
-a karta w `components/ProductCard.tsx`. Tailwind jest podłączony przez plugin Vite
-i import w `styles.css`.
+Z frontend/:
 
-Następny krok: wydzielić kontener Grid i map do komponentu `ProductList`,
-który przyjmie tablicę produktów przez props. Zachować wygląd i trzy karty.
-Nie implementować tego zadania podczas zapisu przerwy.
+```powershell
+npm.cmd test
+npm.cmd run typecheck:tests
+npm.cmd run build
+```
 
-## Dalszy kierunek
+Z głównego folderu:
 
-Docelowo strona marki, katalog, szczegóły i warianty produktów, koszyk oraz
-demonstracyjne zamówienie przez własne Web API. Bez kont klientów i prawdziwych
-płatności w pierwszej wersji. API będzie przygotowane osobno na potrzeby nauki frontendu.
+```powershell
+dotnet test tests/LumaStudio.Api.Tests
+```
 
-Frontend pisze autor na podstawie wymagań i tekstów mentora AI, ze wskazówkami
-i review. Dokumentację przygotowano z pomocą AI. Projekt nie jest przedstawiany
-jako wykonany w całości bez pomocy.
+Vitest i Testing Library obejmują m.in. koszyk, checkout, klienta API, stany
+pobierania, dostępność i warianty. API testowane przez hosta w pamięci.
+Fallback zdjęć sprawdzony ręcznie; osobny test automatyczny jeszcze odłożony.
+
+## Wdrożenie i ograniczenia
+
+Wdrożenie15.11.2026: osobny projekt Docker Compose na VPS. Istniejący Caddy
+kończy HTTPS; web Lumy obsługuje SPA i proxy API. Luma nie publikuje portów hosta.
+API ma unikalny alias luma-catalog-api, bez kolizji z nazwą api w sieci TSM.
+Konfiguracja i rollback: [deploy/README.md](deploy/README.md).
+Kontrakt katalogu: [docs/API.md](docs/API.md).
+
+Zamówienie to lokalna symulacja: brak POST zamówienia, kont, paneli, bazy zamówień
+i prawdziwych płatności. Używaj wyłącznie fikcyjnych danych. Koszyk zostaje w danej
+przeglądarce; potwierdzenie zamówienia nie jest trwałe.
+Zdjęcia fikcyjnych produktów wygenerowano przez AI. Oryginały PNG są poza public
+w assets/source-images/products; aplikacja używa WebP960px (łącznie około86kB).
+
+Frontend pisze autor z wymaganiami, wskazówkami i review mentora AI.
+Backend, infrastruktura, grafiki i dokumentacja przygotowane z pomocą AI.
+Projekt nie jest przedstawiany jako wykonany w całości bez pomocy.

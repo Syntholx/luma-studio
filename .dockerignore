@@ -1,0 +1,14 @@
+.git
+**/node_modules
+**/dist
+**/bin
+**/obj
+**/.env
+**/.env.*
+**/*.key
+**/*.pfx
+**/*.pem
+assets/source-images
+TestResults
+coverage
+.vs

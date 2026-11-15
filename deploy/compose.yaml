@@ -1,0 +1,45 @@
+name: luma-demo
+
+services:
+  api:
+    image: luma-demo-api:local
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.api
+    environment:
+      AllowedHosts: luma.szymon-michalek.dev;luma-web;localhost
+    networks:
+      backend:
+        aliases: [luma-catalog-api]
+    restart: unless-stopped
+    mem_limit: 256m
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    logging:
+      driver: local
+      options: {max-size: "10m", max-file: "3"}
+
+  web:
+    image: luma-demo-web:local
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.web
+    networks:
+      backend:
+      edge:
+        aliases: [luma-web]
+    depends_on: [api]
+    restart: unless-stopped
+    mem_limit: 128m
+    security_opt: [no-new-privileges:true]
+    logging:
+      driver: local
+      options: {max-size: "10m", max-file: "3"}
+    # No ports: only the existing HTTPS gateway exposes public ports.
+
+networks:
+  backend:
+    internal: true
+  edge:
+    external: true
+    name: tsm-demo_proxy
