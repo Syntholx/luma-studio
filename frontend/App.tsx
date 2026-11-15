@@ -138,7 +138,7 @@ export function App() {
   }
   return (
     <>
-      <header className="flex items-center justify-between p-6 max-w-[1120px] mx-auto px-5 md:px-8 py-5 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+      <header className="w-full max-w-[1120px] mx-auto px-[24px] py-[24px] flex flex-col md:flex-row items-center justify-between gap-4">
         <Link to="/" className="text-xl font-bold">
           Luma Studio
         </Link>
