@@ -73,3 +73,13 @@ w assets/source-images/products; aplikacja używa WebP960px (łącznie około86k
 Frontend pisze autor z wymaganiami, wskazówkami i review mentora AI.
 Backend, infrastruktura, grafiki i dokumentacja przygotowane z pomocą AI.
 Projekt nie jest przedstawiany jako wykonany w całości bez pomocy.
+
+## Dalszy zakres
+
+Najpierw wspólny kontrakt zamówienia API bez rejestracji: serwer waliduje
+warianty/ilości i sam wycenia produkty oraz dostawę. UI czyści koszyk dopiero
+po potwierdzonym sukcesie; ponowienie wymaga ochrony przed duplikatami.
+Trwałość danych, limity i retencja publicznego demo do ustalenia przed implementacją.
+Następnie konta i panel klienta: własne zamówienia, adresy i dokumenty demo PDF,
+później panel administratora. Dokumenty nie są prawdziwymi fakturami.
+Powyższe to plan, nie istniejące funkcje. Nadal bez rzeczywistych płatności.
