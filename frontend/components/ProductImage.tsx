@@ -25,7 +25,7 @@ export function ProductImage(props: {
       src={
         imageStage === "original"
           ? props.imageUrl
-          : "/images/products/product-fallback.png"
+          : "/images/products/product-fallback.webp"
       }
       alt={imageStage === "original" ? props.imageAlt : "Zdjęcie niedostępne"}
       onError={() => {

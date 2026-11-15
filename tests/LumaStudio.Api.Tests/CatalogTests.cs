@@ -22,7 +22,7 @@ public sealed class CatalogTests : IClassFixture<WebApplicationFactory<Program>>
         {
             Assert.Equal(new[] { "category", "description", "id", "imageAlt", "imageUrl", "name", "price", "slug", "variants" },
                 product.EnumerateObject().Select(p => p.Name).Order());
-            Assert.Equal($"/images/products/{product.GetProperty("slug").GetString()}.png",
+            Assert.Equal($"/images/products/{product.GetProperty("slug").GetString()}.webp",
                 product.GetProperty("imageUrl").GetString());
             Assert.False(string.IsNullOrWhiteSpace(product.GetProperty("imageAlt").GetString()));
             Assert.Equal(JsonValueKind.Number, product.GetProperty("price").ValueKind);

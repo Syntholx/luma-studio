@@ -38,10 +38,14 @@ development, nie gotowego statycznego wdrożenia ani automatycznie preview.
 
 Produkt: id:number, name:string, category:string, price:number,
 description:string, slug:string, imageUrl:string, imageAlt:string, variants:tablica.
-imageUrl to ścieżka od korzenia frontendu, np. /images/products/bransoletka-aura.png.
+imageUrl to ścieżka od korzenia frontendu, np. /images/products/bransoletka-aura.webp.
 Pliki są w frontend/public/images/products, nie na hoście API. imageAlt opisuje
 zdjęcie. Obrazy są wygenerowanymi przez AI ilustracjami fikcyjnych produktów.
-Wspólny obraz awaryjny: /images/products/product-fallback.png (pudełko na biżuterię).
+Wspólny obraz awaryjny: /images/products/product-fallback.webp (pudełko na biżuterię).
+Wersje WebP: 960×960, jakość82, przygotowane przez sharp-cli bez nowej zależności
+projektu. Cztery pliki razem86342 bajty zamiast7307038 bajtów PNG (około98,8% mniej).
+Oryginały PNG przechowywane są w assets/source-images/products, poza public.
+Nie są kopiowane do buildu frontendu; pozostają źródłem do przyszłej kompresji.
 Frontend ma osobno wdrożyć typy, walidację, render i obsługę błędu obrazu;
 dodanie pól w API samo nie wyświetla zdjęć. Awaryjny alt powinien informować
 o niedostępnym zdjęciu, nie opisywać zastępczego pudełka jako produktu.
