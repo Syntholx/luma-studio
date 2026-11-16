@@ -1,40 +1,31 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ProductList } from "./components/ProductList";
 import { Routes, Route } from "react-router-dom";
 import { ProductDetailsPage } from "./components/ProductDetailsPage";
 import { Link } from "react-router-dom";
-import { type CartItem } from "./cart";
 import { CartPage } from "./components/CartPage";
-import { loadCart } from "./cart";
 import { CheckoutPage } from "./components/CheckoutPage";
-import type { Product } from "./products";
-import { getProducts } from "./services/products";
-import { useRef } from "react";
-
+import { useCatalog } from "./hooks/useCatalog";
+import { useCart } from "./hooks/useCart";
 export function App() {
-  const [catalogProducts, setCatalogProducts] = useState<Product[]>([]);
-  const [isCatalogLoading, setIsCatalogLoading] = useState(true);
-  const [catalogError, setCatalogError] = useState("");
-  const [cart, setCart] = useState<CartItem[]>(loadCart);
+  const { catalogProducts, isCatalogLoading, catalogError, loadCatalog } =
+    useCatalog();
+  const {
+    clearCart,
+    addToCart,
+    removeFromCart,
+    changeQuantity,
+    cartQuantity,
+    cart,
+  } = useCart({ catalogProducts });
+
   const [categoryFilter, setCategoryFilter] = useState("Wszystkie");
   const [searchProducts, setSearchProducts] = useState("");
-  const catalogControllerRef = useRef<AbortController | null>(null);
+
   const normalizedSearch = searchProducts.trim().toLowerCase();
   const [priceSort, setPriceSort] = useState("default");
   const [onlyAvailable, setOnlyAvailable] = useState(false);
-  useEffect(() => {
-    try {
-      localStorage.setItem("luma-studio-cart", JSON.stringify(cart));
-    } catch (error) {
-      console.warn("Nie udało się zapisać koszyka");
-    }
-  }, [cart]);
-  useEffect(() => {
-    void loadCatalog();
-    return () => {
-      catalogControllerRef.current?.abort();
-    };
-  }, []);
+
   const filteredProducts = catalogProducts.filter(
     (product) =>
       (categoryFilter === "Wszystkie" || product.category === categoryFilter) &&
@@ -51,91 +42,7 @@ export function App() {
     }
     return 0;
   });
-  function clearCart() {
-    setCart([]);
-  }
-  function addToCart(
-    productId: number,
-    variantId: number,
-    countAddProducts: number,
-  ) {
-    setCart((previousCart) => {
-      const existingItem = previousCart.find(
-        (cartItem) =>
-          cartItem.productId === productId && cartItem.variantId === variantId,
-      );
-      if (existingItem !== undefined) {
-        return previousCart.map((cartItem) =>
-          cartItem.productId === productId && cartItem.variantId === variantId
-            ? { ...cartItem, quantity: cartItem.quantity + countAddProducts }
-            : cartItem,
-        );
-      }
-      return [
-        ...previousCart,
-        { productId, variantId, quantity: countAddProducts },
-      ];
-    });
-  }
-  function removeFromCart(variantId: number) {
-    setCart((previousCart) => {
-      const removeCart = previousCart.filter(
-        (cartItem) => cartItem.variantId !== variantId,
-      );
-      return removeCart;
-    });
-  }
-  function changeQuantity(variantId: number, change: number) {
-    setCart((previousCart) => {
-      const existingItem = previousCart.find(
-        (cartItem) => cartItem.variantId === variantId,
-      );
-      if (existingItem === undefined) return previousCart;
-      const product = catalogProducts.find(
-        (product) => product.id === existingItem.productId,
-      );
-      if (product === undefined) return previousCart;
 
-      const variant = product.variants.find(
-        (variant) => variant.id === variantId,
-      );
-      if (variant === undefined) return previousCart;
-      if (!variant.isAvailable && change > 0) return previousCart;
-
-      const updatedCart = previousCart.map((cartItem) =>
-        cartItem.variantId === variantId
-          ? { ...cartItem, quantity: Math.max(1, cartItem.quantity + change) }
-          : cartItem,
-      );
-      return updatedCart;
-    });
-  }
-  const cartQuantity = cart.reduce(
-    (sum, cartItem) => sum + cartItem.quantity,
-    0,
-  );
-  async function loadCatalog() {
-    const controller = new AbortController();
-    catalogControllerRef.current?.abort();
-    catalogControllerRef.current = controller;
-    const signal = controller.signal;
-    setIsCatalogLoading(true);
-    setCatalogError("");
-    try {
-      const loadedProducts = await getProducts(signal);
-      if (!signal.aborted) {
-        setCatalogProducts(loadedProducts);
-      }
-    } catch {
-      if (!signal.aborted) {
-        setCatalogError("Nie udało się załadować katalogu. Spróbuj ponownie.");
-      }
-    } finally {
-      if (!signal.aborted) {
-        setIsCatalogLoading(false);
-      }
-    }
-  }
   return (
     <>
       <header className="w-full max-w-[1120px] mx-auto px-[24px] py-[24px] flex flex-col md:flex-row items-center justify-between gap-4">
