@@ -19,7 +19,8 @@ Luma ma osobny projekt compose, kontener web z dist oraz API z katalogiem.
 API jest tylko w sieci backend Lumy; żaden kontener Lumy nie publikuje portów.
 Proxy używa unikalnego aliasu luma-catalog-api, nie ogólnego api: web widzi też
 sieć TSM, w której api wskazuje inny serwis. Ogólne nazwy mogą kolidować.
-Nie podłączać API Lumy do sieci SQL TSM. Brak bazy, sekretów i volume danych Lumy.
+Nie podłączać API Lumy do sieci SQL TSM. Wersja15.11 nie miała bazy Lumy;
+aktualizacja16.11 dodaje osobne SQLite i wolumen, opisana na końcu tego pliku.
 Lokalny proxy Vite nie jest używany: /api obsługuje produkcyjny Caddy Lumy.
 Brakujące /assets i /images zwracają404, nie HTML strony. Trasy SPA dostają index.
 
@@ -64,3 +65,12 @@ koszyk, checkout z fikcyjnymi danymi, błędy API, konsolę oraz regresję domen
 Publiczny koszyk nadal jest wyłącznie lokalnym zapisem przeglądarki.
 Następne wdrożenia: tylko projekt Lumy, docker compose build i up -d --no-deps
 dla zmienionej usługi. Nie przejmować ani nie zamykać portów bramki.
+# Aktualizacja zamówień przygotowana16.11.2026 — jeszcze niewdrożona
+
+Nowa konfiguracja wymaga trwałego wolumenu order-data (UID1654) oraz podsieci
+backend172.30.22.0/24. Przed wdrożeniem sprawdź dostępność podsieci na VPS;
+istniejącą sieć backend Lumy trzeba kontrolowanie odtworzyć. Nie wystarczy
+odtworzenie samego API. Nie usuwać wolumenów ani kontenerów/sieci TSM.
+Web ufa tylko bramce172.30.20.2; API tylko web172.30.22.2 przy ustalaniu IP
+do limitu POST. Szczegóły i kontrakt: [ORDERS_API](../docs/ORDERS_API.md).
+Nie wystawiać portu API ani SQLite publicznie. Frontend nie wysyła jeszcze POST.

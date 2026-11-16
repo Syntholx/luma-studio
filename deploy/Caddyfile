@@ -1,6 +1,10 @@
 {
     auto_https off
     admin off
+    servers {
+        trusted_proxies static 172.30.20.2/32
+        trusted_proxies_strict
+    }
 }
 
 :8080 {
@@ -15,7 +19,9 @@
     @api path /api /api/*
     handle @api {
         header Cache-Control "no-store"
-        reverse_proxy luma-catalog-api:8080
+        reverse_proxy luma-catalog-api:8080 {
+            header_up X-Forwarded-For {client_ip}
+        }
     }
     @static path /assets/* /images/*
     handle @static {

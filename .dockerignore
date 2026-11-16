@@ -12,3 +12,8 @@ assets/source-images
 TestResults
 coverage
 .vs
+**/data
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/*.db-journal

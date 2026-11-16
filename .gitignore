@@ -21,3 +21,8 @@ deploy/private/
 *.key
 *.bak
 package-lock.before-vite.json
+src/LumaStudio.Api/data/
+*.db
+*.db-shm
+*.db-wal
+*.db-journal

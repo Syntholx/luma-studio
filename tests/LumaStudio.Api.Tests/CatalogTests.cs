@@ -4,10 +4,10 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
-public sealed class CatalogTests : IClassFixture<WebApplicationFactory<Program>>
+public sealed class CatalogTests : IClassFixture<DemoApiFactory>
 {
     private readonly HttpClient client;
-    public CatalogTests(WebApplicationFactory<Program> factory) => client = factory.CreateClient();
+    public CatalogTests(DemoApiFactory factory) => client = factory.CreateClient();
 
     [Fact]
     public async Task List_preserves_contract()

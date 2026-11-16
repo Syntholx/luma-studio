@@ -1,7 +1,10 @@
 # Lokalne API katalogu
 
 API asystenta wspierające naukę frontendu: ASP.NET Core10, trzy fikcyjne produkty
-w pamięci, bez bazy, kont, edycji i zamówień. Nie jest wdrożeniem produkcyjnym.
+w pamięci. Bez kont i edycji katalogu. Nie jest pełnym sklepem produkcyjnym.
+Backend zamówień demo dodano16.11.2026: [kontrakt POST /api/orders](ORDERS_API.md).
+SQLite/retencja/idempotencja są po stronie backendu; frontend pozostaje lokalną
+symulacją do następnej sesji. Nowy backend nie został jeszcze wdrożony na VPS.
 Klient frontend/services/products.ts waliduje odpowiedź. App pobiera wspólny
 katalog i przekazuje go do szczegółów, koszyka i checkoutu. Ceny i dostępność
 helperów koszyka pochodzą z przekazanego katalogu; products.ts pozostaje źródłem
@@ -34,7 +37,7 @@ development, nie gotowego statycznego wdrożenia ani automatycznie preview.
 
 - GET /api/products:200 application/json, tablica Sol/Aura/Luna.
 - GET /api/products/{slug}:200 z produktem, brak:404 application/problem+json.
-- Zapis nieobsługiwany:405. Bez paginacji, filtrowania serwerowego i totalCount.
+- Zapis katalogu nieobsługiwany:405. Bez paginacji, filtrowania serwerowego i totalCount.
 
 Produkt: id:number, name:string, category:string, price:number,
 description:string, slug:string, imageUrl:string, imageAlt:string, variants:tablica.

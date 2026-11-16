@@ -53,7 +53,8 @@ dotnet test tests/LumaStudio.Api.Tests
 ```
 
 Vitest i Testing Library obejmują m.in. koszyk, checkout, klienta API, stany
-pobierania, dostępność i warianty. API testowane przez hosta w pamięci.
+pobierania, dostępność i warianty. API testowane przez hosta w pamięci
+z osobnymi tymczasowymi bazami SQLite, bez danych użytkownika.
 Fallback zdjęć sprawdzony ręcznie; osobny test automatyczny jeszcze odłożony.
 
 ## Wdrożenie i ograniczenia
@@ -64,8 +65,10 @@ API ma unikalny alias luma-catalog-api, bez kolizji z nazwą api w sieci TSM.
 Konfiguracja i rollback: [deploy/README.md](deploy/README.md).
 Kontrakt katalogu: [docs/API.md](docs/API.md).
 
-Zamówienie to lokalna symulacja: brak POST zamówienia, kont, paneli, bazy zamówień
-i prawdziwych płatności. Używaj wyłącznie fikcyjnych danych. Koszyk zostaje w danej
+Frontend zamówienia nadal działa lokalnie. Backend POST /api/orders z SQLite,
+wyceną serwera, idempotencją, limitem prób i retencją24h przygotowano16.11.2026,
+ale nie jest jeszcze podłączony do UI ani wdrożony. Kontrakt: [zamówienia demo](docs/ORDERS_API.md).
+Brak kont, paneli i prawdziwych płatności. Używaj wyłącznie fikcyjnych danych. Koszyk zostaje w danej
 przeglądarce; potwierdzenie zamówienia nie jest trwałe.
 Zdjęcia fikcyjnych produktów wygenerowano przez AI. Oryginały PNG są poza public
 w assets/source-images/products; aplikacja używa WebP960px (łącznie około86kB).
@@ -76,10 +79,9 @@ Projekt nie jest przedstawiany jako wykonany w całości bez pomocy.
 
 ## Dalszy zakres
 
-Najpierw wspólny kontrakt zamówienia API bez rejestracji: serwer waliduje
-warianty/ilości i sam wycenia produkty oraz dostawę. UI czyści koszyk dopiero
-po potwierdzonym sukcesie; ponowienie wymaga ochrony przed duplikatami.
-Trwałość danych, limity i retencja publicznego demo do ustalenia przed implementacją.
+Następnie integracja frontendu z przygotowanym kontraktem zamówienia API bez
+rejestracji: serwer waliduje i wycenia. UI czyści koszyk dopiero po sukcesie;
+ponowienie używa tego samego klucza. Zasady danych, limitów i retencji są w kontrakcie.
 Następnie konta i panel klienta: własne zamówienia, adresy i dokumenty demo PDF,
 później panel administratora. Dokumenty nie są prawdziwymi fakturami.
 Powyższe to plan, nie istniejące funkcje. Nadal bez rzeczywistych płatności.

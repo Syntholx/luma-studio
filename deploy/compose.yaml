@@ -8,8 +8,13 @@ services:
       dockerfile: deploy/Dockerfile.api
     environment:
       AllowedHosts: luma.szymon-michalek.dev;luma-web;localhost
+      Orders__DatabasePath: /var/lib/luma-orders/orders.db
+      Orders__KnownProxy: 172.30.22.2
+    volumes:
+      - order-data:/var/lib/luma-orders
     networks:
       backend:
+        ipv4_address: 172.30.22.3
         aliases: [luma-catalog-api]
     restart: unless-stopped
     mem_limit: 256m
@@ -26,6 +31,7 @@ services:
       dockerfile: deploy/Dockerfile.web
     networks:
       backend:
+        ipv4_address: 172.30.22.2
       edge:
         aliases: [luma-web]
     depends_on: [api]
@@ -40,6 +46,11 @@ services:
 networks:
   backend:
     internal: true
+    ipam:
+      config: [{subnet: 172.30.22.0/24}]
   edge:
     external: true
     name: tsm-demo_proxy
+
+volumes:
+  order-data:

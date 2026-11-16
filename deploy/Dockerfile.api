@@ -5,10 +5,12 @@ RUN dotnet restore src/LumaStudio.Api/LumaStudio.Api.csproj
 COPY src/LumaStudio.Api/ src/LumaStudio.Api/
 RUN dotnet publish src/LumaStudio.Api/LumaStudio.Api.csproj -c Release --no-restore -o /out /p:UseAppHost=false
 RUN find /out -type d -exec chmod 755 {} + && find /out -type f -exec chmod 644 {} +
+RUN mkdir /order-data && chown 1654:1654 /order-data && chmod 700 /order-data
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled
 WORKDIR /app
 COPY --from=build /out/ ./
+COPY --from=build --chown=1654:1654 /order-data/ /var/lib/luma-orders/
 ENV ASPNETCORE_ENVIRONMENT=Production ASPNETCORE_HTTP_PORTS=8080
 USER 1654:1654
 EXPOSE 8080
