@@ -1,4 +1,4 @@
-import type { OrderLine } from "../orders";
+import type { OrderLine, OrderRequest } from "../orders";
 import type { OrderConfirmation } from "../orders";
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -67,4 +67,26 @@ export function isOrderConfirmation(
     value.items.length <= 20 &&
     value.items.every(isOrderLine)
   );
+}
+
+export async function createOrder(
+  order: OrderRequest,
+  idempotencyKey: string,
+): Promise<OrderConfirmation> {
+  const orderResponse = await fetch("/api/orders", {
+    method: "POST",
+    body: JSON.stringify(order),
+    headers: {
+      "Content-Type": "application/json",
+      "Idempotency-Key": idempotencyKey,
+    },
+  });
+  if (orderResponse.status === 201 || orderResponse.status === 200) {
+    const data: unknown = await orderResponse.json();
+    if (!isOrderConfirmation(data)) {
+      throw new Error("Nieprawidłowe potwierdzenie zamówienia.");
+    }
+    return data;
+  }
+  throw new Error("Nie udało się złożyć zamówienia");
 }
