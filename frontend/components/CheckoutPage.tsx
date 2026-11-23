@@ -10,6 +10,8 @@ import { deliveryMethods } from "../delivery";
 import { freeDeliveryThreshold } from "../delivery";
 import { getDeliveryPrice } from "../delivery";
 import { ProductImage } from "./ProductImage";
+import type { OrderRequest } from "../orders";
+import { createOrder } from "../services/orders";
 
 type OrderConfirmation = {
   totalQuantity: number;
@@ -40,49 +42,74 @@ export function CheckoutPage(props: {
     useState<OrderConfirmation | null>(null);
   const confirmationHeadingRef = useRef<HTMLHeadingElement>(null);
   const [formError, setFormError] = useState("");
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [pendingAttempt, setPendingAttempt] = useState<{
+    order: OrderRequest;
+    key: string;
+  } | null>(null);
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (isSubmitting) return;
     setFormError("");
     let normalizedPickupPoint: string | null = null;
-    if (hasUnavailableItems) {
-      setFormError("Usuń niedostępne produkty, by kontynuować.");
-      return;
-    }
-    if (selectedDelivery === undefined) {
-      setFormError("Wybierz sposób dostawy");
-      return;
-    }
-    const formData = new FormData(event.currentTarget);
-    const email = formData.get("email");
-    const firstName = formData.get("firstName");
-    const pickupPoint = formData.get("pickupPoint");
-    if (typeof email !== "string" || typeof firstName !== "string") return;
-    const normalizedEmail = email.trim();
-    const normalizedFirstName = firstName.trim();
-    if (normalizedEmail === "" || normalizedFirstName === "") {
-      setFormError("Uzupelnij imię i adres e-mail");
-      return;
-    }
-    if (selectedDelivery.id === "pickup") {
-      if (typeof pickupPoint !== "string") {
-        setFormError("Podaj kod punktu odbioru");
+
+    let attempt = pendingAttempt;
+    if (attempt === null) {
+      if (hasUnavailableItems) {
+        setFormError("Usuń niedostępne produkty, by kontynuować.");
         return;
       }
-      normalizedPickupPoint = pickupPoint.trim();
-      if (normalizedPickupPoint === "") {
-        setFormError("Podaj kod punktu odbioru.");
+      if (selectedDelivery === undefined) {
+        setFormError("Wybierz sposób dostawy");
         return;
       }
+      const formData = new FormData(event.currentTarget);
+      const email = formData.get("email");
+      const firstName = formData.get("firstName");
+      const pickupPoint = formData.get("pickupPoint");
+      if (typeof email !== "string" || typeof firstName !== "string") return;
+      const normalizedEmail = email.trim();
+      const normalizedFirstName = firstName.trim();
+      if (normalizedEmail === "" || normalizedFirstName === "") {
+        setFormError("Uzupelnij imię i adres e-mail");
+        return;
+      }
+      if (selectedDelivery.id === "pickup") {
+        if (typeof pickupPoint !== "string") {
+          setFormError("Podaj kod punktu odbioru");
+          return;
+        }
+        normalizedPickupPoint = pickupPoint.trim();
+        if (normalizedPickupPoint === "") {
+          setFormError("Podaj kod punktu odbioru.");
+          return;
+        }
+      }
+      const order: OrderRequest = {
+        customerName: normalizedFirstName,
+        email: normalizedEmail,
+        deliveryMethodId: selectedDelivery.id,
+        pickupPoint: normalizedPickupPoint,
+        items: props.items.map((item) => ({
+          variantId: item.variantId,
+          quantity: item.quantity,
+        })),
+      };
+      const key = crypto.randomUUID();
+      attempt = { order, key };
+      setPendingAttempt(attempt);
     }
-    setOrderConfirmation({
-      totalPrice,
-      totalQuantity,
-      deliveryName: selectedDelivery.name,
-      deliveryPrice: deliveryPrice,
-      grandTotal,
-      pickupPoint: normalizedPickupPoint,
-    });
-    props.onClearCart();
+    try {
+      setIsSubmitting(true);
+      const confirmation = await createOrder(attempt.order, attempt.key);
+      setOrderConfirmation(confirmation);
+      setPendingAttempt(null);
+      props.onClearCart();
+    } catch (error) {
+      setFormError("Nie udało się wysłać zamówienia, spróbuj ponownie.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
   useEffect(() => {
     if (orderConfirmation !== null) {
@@ -204,6 +231,7 @@ export function CheckoutPage(props: {
             type="text"
             required
             autoComplete="given-name"
+            disabled={pendingAttempt !== null}
           ></input>
         </div>
         <div className="flex flex-col gap-[8px]">
@@ -215,10 +243,11 @@ export function CheckoutPage(props: {
             type="email"
             required
             autoComplete="email"
+            disabled={pendingAttempt !== null}
           ></input>
         </div>
 
-        <fieldset>
+        <fieldset disabled={pendingAttempt !== null}>
           <legend>Sposób dostawy</legend>
           <div className="flex flex-col gap-[12px]">
             {deliveryMethods.map((delivery) => {
@@ -260,6 +289,7 @@ export function CheckoutPage(props: {
               id="pickupPoint"
               name="pickupPoint"
               required
+              disabled={pendingAttempt !== null}
             ></input>
             <p className="text-[14px] text-[#6b6259]">
               Wpisz fikcyjny kod, np. DEMO01.
@@ -274,10 +304,16 @@ export function CheckoutPage(props: {
         )}
         <button
           type="submit"
-          disabled={hasUnavailableItems}
+          disabled={
+            isSubmitting || (pendingAttempt === null && hasUnavailableItems)
+          }
           className="px-[24px] rounded-[8px]  inline-flex self-start items-center justify-center min-h-[44px] text-[white] bg-[#765341] font-[600] disabled:opacity-[50%] disabled:cursor-not-allowed"
         >
-          Zatwierdź zamówienie demonstracyjne
+          {isSubmitting
+            ? "Wysyłanie zamówienia.."
+            : pendingAttempt !== null
+              ? "Ponów wysyłkę"
+              : "Zatwierdź zamówienie demonstracyjne"}
         </button>
         <p role="alert">{formError}</p>
       </form>

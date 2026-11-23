@@ -1,5 +1,5 @@
 export type DeliveryMethod = {
-  id: string;
+  id: "pickup" | "courier";
   name: string;
   price: number;
 };

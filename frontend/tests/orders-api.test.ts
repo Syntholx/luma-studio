@@ -7,29 +7,29 @@ afterEach(() => {
 });
 
 const confirmation: OrderConfirmation = {
-    isDemo: true,
-    currency: "PLN",
-    deliveryMethodId: "pickup",
-    pickupPoint: "Demo001",
-    createdAt: "2026-11-17T19:00:00Z",
-    expiresAt: "2026-11-18T19:00:00Z",
-    orderId: "DEMO-test",
-    deliveryName: "pickup",
-    totalQuantity: 3,
-    totalPrice: 283.5,
-    deliveryPrice: 0,
-    grandTotal: 283.5,
-    items: [
-      {
-        productId: 1,
-        variantId: 202,
-        quantity: 3,
-        name: "Bransoletka Aura",
-        size: "M",
-        unitPrice: 94.5,
-        lineTotal: 283.5,
-      },
-    ],
+  isDemo: true,
+  currency: "PLN",
+  deliveryMethodId: "pickup",
+  pickupPoint: "Demo001",
+  createdAt: "2026-11-17T19:00:00Z",
+  expiresAt: "2026-11-18T19:00:00Z",
+  orderId: "DEMO-test",
+  deliveryName: "pickup",
+  totalQuantity: 3,
+  totalPrice: 283.5,
+  deliveryPrice: 0,
+  grandTotal: 283.5,
+  items: [
+    {
+      productId: 1,
+      variantId: 202,
+      quantity: 3,
+      name: "Bransoletka Aura",
+      size: "M",
+      unitPrice: 94.5,
+      lineTotal: 283.5,
+    },
+  ],
 };
 
 test("akceptuje poprawne potwierdzenie z darmową dostawą", () => {
@@ -122,4 +122,23 @@ test("wysyła zamówienie z przekazanym kluczem i zwraca potwierdzenie po 201", 
       "Idempotency-Key": idempotencyKey,
     },
   });
+});
+
+test("wysyłamy zamówienie z przekazanym kluczem, ale zwraca 409", async () => {
+  const order: OrderRequest = {
+    customerName: "Demo",
+    email: "demo@example.test",
+    deliveryMethodId: "pickup",
+    pickupPoint: "Demo001",
+    items: [{ variantId: 201, quantity: 1 }],
+  };
+  const idempotencyKey = "123e4567-e89b-42d3-a456-426614174000";
+  const fetchMock = vi
+    .fn()
+    .mockResolvedValue(
+      new Response(JSON.stringify(confirmation), { status: 409 }),
+    );
+  vi.stubGlobal("fetch", fetchMock);
+  await expect(createOrder(order, idempotencyKey)).rejects.toThrow();
+  expect(fetchMock).toHaveBeenCalledTimes(1);
 });
