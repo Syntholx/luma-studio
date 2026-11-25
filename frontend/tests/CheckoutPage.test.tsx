@@ -24,7 +24,7 @@ const pickupOrder: OrderConfirmation = {
     {
       productId: 1,
       variantId: 204,
-      name: "Bransoletka Aura",
+      name: "Aura Bracelet",
       size: "S",
       unitPrice: 89.5,
       quantity: 1,
@@ -34,7 +34,7 @@ const pickupOrder: OrderConfirmation = {
   totalQuantity: 1,
   totalPrice: 89.5,
   deliveryMethodId: "pickup",
-  deliveryName: "Punkt odbioru",
+  deliveryName: "Pickup point",
   deliveryPrice: 9.99,
   pickupPoint: "DEMO01",
   grandTotal: 99.49,
@@ -54,7 +54,7 @@ test("pokazuje pole kodu dla domyślnego punktu odbioru", () => {
     </MemoryRouter>,
   );
 
-  expect(screen.getByLabelText("Kod punktu odbioru")).toBeInTheDocument();
+  expect(screen.getByLabelText("Pickup point code")).toBeInTheDocument();
 });
 
 test("ukrywa pole kodu po wybraniu kuriera", async () => {
@@ -71,10 +71,10 @@ test("ukrywa pole kodu po wybraniu kuriera", async () => {
     </MemoryRouter>,
   );
   const user = userEvent.setup();
-  expect(screen.getByLabelText("Kod punktu odbioru")).toBeInTheDocument();
-  await user.click(screen.getByRole("radio", { name: /Kurier/ }));
-  expect(screen.queryByLabelText("Kod punktu odbioru")).not.toBeInTheDocument();
-  expect(screen.getByRole("radio", { name: /Kurier/ })).toBeChecked();
+  expect(screen.getByLabelText("Pickup point code")).toBeInTheDocument();
+  await user.click(screen.getByRole("radio", { name: /Courier/ }));
+  expect(screen.queryByLabelText("Pickup point code")).not.toBeInTheDocument();
+  expect(screen.getByRole("radio", { name: /Courier/ })).toBeChecked();
 });
 
 test("ponownie pokazuje pole po powrocie do punktu odbioru", async () => {
@@ -91,11 +91,11 @@ test("ponownie pokazuje pole po powrocie do punktu odbioru", async () => {
     </MemoryRouter>,
   );
   const user = userEvent.setup();
-  await user.click(screen.getByRole("radio", { name: /Kurier/ }));
-  expect(screen.queryByLabelText("Kod punktu odbioru")).not.toBeInTheDocument();
-  await user.click(screen.getByRole("radio", { name: /Punkt odbioru/ }));
-  expect(screen.queryByLabelText("Kod punktu odbioru")).toBeInTheDocument();
-  expect(screen.getByRole("radio", { name: /Punkt odbioru/ })).toBeChecked();
+  await user.click(screen.getByRole("radio", { name: /Courier/ }));
+  expect(screen.queryByLabelText("Pickup point code")).not.toBeInTheDocument();
+  await user.click(screen.getByRole("radio", { name: /Pickup point/ }));
+  expect(screen.queryByLabelText("Pickup point code")).toBeInTheDocument();
+  expect(screen.getByRole("radio", { name: /Pickup point/ })).toBeChecked();
 });
 
 test("zatwierdza odbiór i pokazuje kod bez skrajnych spacji", async () => {
@@ -121,19 +121,19 @@ test("zatwierdza odbiór i pokazuje kod bez skrajnych spacji", async () => {
   );
   const user = userEvent.setup();
 
-  await user.type(screen.getByLabelText("Imię"), "Tester");
+  await user.type(screen.getByLabelText("First name"), "Tester");
   await user.type(
-    screen.getByLabelText("Podaj swój e-mail"),
+    screen.getByLabelText("Enter your email address"),
     "demo@example.test",
   );
-  await user.type(screen.getByLabelText("Kod punktu odbioru"), " DEMO01 ");
+  await user.type(screen.getByLabelText("Pickup point code"), " DEMO01 ");
   await user.click(
     screen.getByRole("button", {
-      name: "Zatwierdź zamówienie demonstracyjne",
+      name: "Place demo order",
     }),
   );
-  const pickupConfirmation = await screen.findByText(/Kod punktu odbioru:/);
-  expect(pickupConfirmation.textContent).toBe("Kod punktu odbioru: DEMO01");
+  const pickupConfirmation = await screen.findByText(/Pickup point code:/);
+  expect(pickupConfirmation.textContent).toBe("Pickup point code: DEMO01");
   expect(createOrderMock).toHaveBeenCalledWith(
     expect.objectContaining({
       deliveryMethodId: "pickup",
@@ -144,7 +144,7 @@ test("zatwierdza odbiór i pokazuje kod bez skrajnych spacji", async () => {
 
   expect(
     screen.getByRole("heading", {
-      name: "Zamówienie demonstracyjne zatwierdzone",
+      name: "Demo order confirmed",
       level: 1,
     }),
   ).toBeInTheDocument();
@@ -154,7 +154,7 @@ test("zatwierdza dostawę kurierem bez kodu punktu odbioru", async () => {
   createOrderMock.mockResolvedValueOnce({
     ...pickupOrder,
     deliveryMethodId: "courier",
-    deliveryName: "Kurier",
+    deliveryName: "Courier",
     deliveryPrice: 14.99,
     pickupPoint: null,
     grandTotal: 104.49,
@@ -179,26 +179,26 @@ test("zatwierdza dostawę kurierem bez kodu punktu odbioru", async () => {
     </MemoryRouter>,
   );
   const user = userEvent.setup();
-  await user.click(screen.getByRole("radio", { name: /Kurier/ }));
-  expect(screen.queryByLabelText("Kod punktu odbioru")).not.toBeInTheDocument();
-  await user.type(screen.getByLabelText("Imię"), "Tester");
+  await user.click(screen.getByRole("radio", { name: /Courier/ }));
+  expect(screen.queryByLabelText("Pickup point code")).not.toBeInTheDocument();
+  await user.type(screen.getByLabelText("First name"), "Tester");
   await user.type(
-    screen.getByLabelText("Podaj swój e-mail"),
+    screen.getByLabelText("Enter your email address"),
     "demo@example.test",
   );
   await user.click(
     screen.getByRole("button", {
-      name: "Zatwierdź zamówienie demonstracyjne",
+      name: "Place demo order",
     }),
   );
   expect(
     await screen.findByRole("heading", {
-      name: "Zamówienie demonstracyjne zatwierdzone",
+      name: "Demo order confirmed",
       level: 1,
     }),
   ).toBeInTheDocument();
   expect(onClearCart).toHaveBeenCalledTimes(1);
-  expect(screen.queryByText(/Kod punktu odbioru:/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/Pickup point code:/)).not.toBeInTheDocument();
   expect(createOrderMock).toHaveBeenCalledWith(
     expect.objectContaining({ deliveryMethodId: "courier", pickupPoint: null }),
     expect.any(String),

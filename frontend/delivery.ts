@@ -7,12 +7,12 @@ export type DeliveryMethod = {
 export const deliveryMethods: DeliveryMethod[] = [
   {
     id: "pickup",
-    name: "Punkt odbioru",
+    name: "Pickup point",
     price: 9.99,
   },
   {
     id: "courier",
-    name: "Kurier",
+    name: "Courier",
     price: 14.99,
   },
 ];

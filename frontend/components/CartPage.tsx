@@ -18,7 +18,7 @@ export function CartPage(props: {
     return (
       <section className="py-[48px]">
         <p role="status" className="mt-[16px]">
-          Ładowanie koszyka...
+          Loading your cart…
         </p>
       </section>
     );
@@ -34,7 +34,7 @@ export function CartPage(props: {
           className="mt-[16px] min-h-[44px] px-[16px] py-[10px] border-[1px] border-[#e5ddd3] rounded-[8px] bg-[white] text-[#29241f] cursor-pointer"
           onClick={props.onRetry}
         >
-          Spróbuj ponownie
+          Try again
         </button>
       </section>
     );
@@ -53,8 +53,8 @@ export function CartPage(props: {
   const totalPrice = getCartTotal(props.items, props.products);
   return (
     <section className="py-[48px]">
-      <h1 className="text-[36px] font-[600]">Koszyk</h1>
-      <p>Liczba sztuk: {totalQuantity}</p>
+      <h1 className="text-[36px] font-[600]">Cart</h1>
+      <p>Total quantity: {totalQuantity}</p>
       {props.items.length > 0 && (
         <button
           className="text-left min-h-[44px] self-start px-[16px] border-[1px] border-[#e5ddd3] rounded-[8px] mt-[16px]"
@@ -63,17 +63,17 @@ export function CartPage(props: {
             props.onClearCart();
           }}
         >
-          Wyczyść koszyk
+          Clear cart
         </button>
       )}
       {props.items.length === 0 && (
         <>
-          <p className="mt-[24px]">Twój koszyk jest pusty </p>
+          <p className="mt-[24px]">Your cart is empty </p>
           <Link
             to="/#kolekcja"
             className="mt-[16px] min-h-[44px] inline-flex items-center text-[#765341] font-[600] hover:underline"
           >
-            Przejdź do kolekcji
+            Browse the collection
           </Link>
         </>
       )}
@@ -90,14 +90,14 @@ export function CartPage(props: {
           "
             >
               <p role="status" className="text-[#9b2c2c]">
-                Ta pozycja nie jest już dostępna w katalogu.
+                This item is no longer available in the catalogue.
               </p>
               <button
                 type="button"
                 className="text-left min-h-[44px] self-start px-[16px] border-[1px] border-[#e5ddd3] rounded-[8px]"
                 onClick={() => props.onRemoveFromCart(cartItem.variantId)}
               >
-                Usuń
+                Remove
               </button>
             </div>
           );
@@ -114,14 +114,14 @@ export function CartPage(props: {
           "
             >
               <p role="status" className="text-[#9b2c2c]">
-                Ta pozycja nie jest już dostępna w katalogu.
+                This item is no longer available in the catalogue.
               </p>
               <button
                 type="button"
                 className="text-left min-h-[44px] self-start px-[16px] border-[1px] border-[#e5ddd3] rounded-[8px]"
                 onClick={() => props.onRemoveFromCart(cartItem.variantId)}
               >
-                Usuń
+                Remove
               </button>
             </div>
           );
@@ -151,17 +151,17 @@ export function CartPage(props: {
                   </Link>
                 </h2>
                 <p className="text-[#6b6259]">
-                  Rozmiar: {variant.size} · Ilość: {cartItem.quantity}
+                  Size: {variant.size} · Quantity: {cartItem.quantity}
                 </p>
 
                 {!variant.isAvailable && (
                   <p className="text-[14px] font-[600] text-[#9b2c2c]">
-                    Produkt niedostępny
+                    Product unavailable
                   </p>
                 )}
-                <p>Cena jednej sztuki: {formatPrice(variant.price)} </p>
+                <p>Unit price: {formatPrice(variant.price)} </p>
                 <p className="font-[600]">
-                  Wartość pozycji:{" "}
+                  Line total:{" "}
                   {formatPrice(variant.price * cartItem.quantity)}
                 </p>
                 <div className="flex items-center gap-[12px]">
@@ -169,7 +169,7 @@ export function CartPage(props: {
                     disabled={cartItem.quantity <= 1}
                     className="w-[44px] h-[44px] border-[1px] border-[#e5ddd3] rounded-[8px] disabled:opacity-[50%] disabled:cursor-not-allowed"
                     type="button"
-                    aria-label={`Zmniejsz ilość ${product.name} ${variant.size}`}
+                    aria-label={`Decrease quantity for ${product.name} ${variant.size}`}
                     onClick={() =>
                       props.onChangeQuantity(cartItem.variantId, -1)
                     }
@@ -179,7 +179,7 @@ export function CartPage(props: {
                   <span>{cartItem.quantity}</span>
                   <button
                     disabled={!variant.isAvailable}
-                    aria-label={`Zwiększ ilość ${product.name} ${variant.size}`}
+                    aria-label={`Increase quantity for ${product.name} ${variant.size}`}
                     type="button"
                     className="h-[44px] w-[44px] border-[#e5ddd3] border-[1px] rounded-[8px] disabled:opacity-[50%] disabled:cursor-not-allowed"
                     onClick={() =>
@@ -190,12 +190,12 @@ export function CartPage(props: {
                   </button>
                 </div>
                 <button
-                  aria-label={`Usuń ${product.name} rozmiar ${variant.size} z koszyka`}
+                  aria-label={`Remove ${product.name}, size ${variant.size}, from cart`}
                   type="button"
                   className="text-left min-h-[44px] self-start px-[16px] border-[1px] border-[#e5ddd3] rounded-[8px]"
                   onClick={() => props.onRemoveFromCart(cartItem.variantId)}
                 >
-                  Usuń
+                  Remove
                 </button>
               </div>
             </div>
@@ -204,21 +204,21 @@ export function CartPage(props: {
       })}
       {props.items.length > 0 && (
         <div className="mt-[24px] px-[24px] py-[24px] bg-[#f0e9e1] rounded-[12px]">
-          <h2 className="text-[20px] font-[600]">Podsumowanie</h2>
+          <h2 className="text-[20px] font-[600]">Summary</h2>
           <p className="mt-[12px] text-[24px] font-[600]">
-            Razem: {formatPrice(totalPrice)}
+            Total: {formatPrice(totalPrice)}
           </p>
           {hasUnavailableCart && (
             <p className="text-[14px] text-[#9b2c2c] mt-[16px]">
-              Koszyk zawiera niedostępne produkty. Usuń je przed zatwierdzeniem
-              zamówienia.
+              Your cart contains unavailable items. Remove them before placing
+              your order.
             </p>
           )}
           <Link
             to={"/zamowienie"}
             className="mt-[24px] min-h-[44px] px-[24px] bg-[#765341] text-[white] rounded-[8px] w-auto inline-flex items-center "
           >
-            Przejdź do zamówienia
+            Proceed to checkout
           </Link>
         </div>
       )}

@@ -24,21 +24,21 @@ export function App() {
         <Link to="/" className="text-xl font-bold">
           Luma Studio
         </Link>
-        <nav aria-label="Nawigacja główna" className="flex gap-6">
+        <nav aria-label="Main navigation" className="flex gap-6">
           <Link
             to="/#o-marce"
             className="min-h-[44px] inline-flex items-center"
           >
-            O marce
+            About us
           </Link>
           <Link
             to="/#kolekcja"
             className="min-h-[44px] inline-flex items-center"
           >
-            Kolekcja
+            Collection
           </Link>
           <Link to="/koszyk" className="min-h-[44px] inline-flex items-center">
-            Koszyk ({cartQuantity})
+            Cart ({cartQuantity})
           </Link>
         </nav>
       </header>
@@ -72,13 +72,13 @@ export function App() {
             element={
               <section className="py-[48px]">
                 <h1 className="text-[30px] font-[600]">
-                  Nie znaleziono strony
+                  Page not found
                 </h1>
                 <Link
                   to="/"
                   className="mt-[24px] min-h-[44px]  inline-flex items-center text-[#765341] font-[600] hover:underline"
                 >
-                  Wróć na stronę główną
+                  Back to home
                 </Link>
               </section>
             }
@@ -116,7 +116,7 @@ export function App() {
       <footer className="max-w-[1120px] mx-auto py-[32px] px-[24px]">
         <p>© 2026 Luma Studio</p>
         <p>
-          Projekt demonstracyjny — sklep nie prowadzi rzeczywistej sprzedaży.
+          Demo store. No real purchases are made.
         </p>
       </footer>
     </>

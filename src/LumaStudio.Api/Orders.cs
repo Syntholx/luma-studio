@@ -31,33 +31,33 @@ public static class Orders
         var email = request.Email?.Trim();
         var pickup = request.PickupPoint?.Trim();
         if (string.IsNullOrEmpty(name) || name.Length > 80 || name.Any(char.IsControl))
-            errors["customerName"] = ["Podaj fikcyjne imię (1–80 znaków)."];
+            errors["customerName"] = ["Enter a fictional name (1–80 characters)."];
         if (string.IsNullOrEmpty(email) || email.Length > 254 ||
             !new EmailAddressAttribute().IsValid(email) || email.Any(char.IsControl) ||
             !(email.EndsWith(".test", StringComparison.OrdinalIgnoreCase) ||
               email.EndsWith(".invalid", StringComparison.OrdinalIgnoreCase) ||
               email.EndsWith(".example", StringComparison.OrdinalIgnoreCase)))
-            errors["email"] = ["Użyj fikcyjnego e-maila, np. demo@example.test."];
+            errors["email"] = ["Use a fictional email address, e.g. demo@example.test."];
         if (request.DeliveryMethodId is not ("pickup" or "courier"))
-            errors["deliveryMethodId"] = ["Wybierz obsługiwany sposób dostawy."];
+            errors["deliveryMethodId"] = ["Choose a supported delivery method."];
         if (request.DeliveryMethodId == "pickup" &&
             (string.IsNullOrEmpty(pickup) || pickup.Length > 30 ||
              pickup.Any(c => !char.IsAsciiLetterOrDigit(c) && c != '-')))
-            errors["pickupPoint"] = ["Podaj fikcyjny kod punktu: 1–30 liter, cyfr lub myślników."];
+            errors["pickupPoint"] = ["Enter a fictional pickup code: 1–30 letters, numbers or hyphens."];
         if (request.DeliveryMethodId == "courier" && !string.IsNullOrEmpty(pickup))
-            errors["pickupPoint"] = ["Dla kuriera kod punktu musi być pusty lub null."];
+            errors["pickupPoint"] = ["Leave the pickup code empty for courier delivery."];
         if (request.Items is not { Length: >= 1 and <= 20 })
-            errors["items"] = ["Zamówienie musi zawierać od 1 do 20 różnych wariantów."];
+            errors["items"] = ["An order must contain 1 to 20 different variants."];
         else
         {
             for (var i = 0; i < request.Items.Length; i++)
             {
                 var item = request.Items[i];
                 if (item is null || item.VariantId <= 0 || item.Quantity is < 1 or > 10)
-                    errors[$"items[{i}]"] = ["Podaj dodatni identyfikator wariantu i ilość od 1 do 10."];
+                    errors[$"items[{i}]"] = ["Provide a positive variant ID and a quantity from 1 to 10."];
             }
             if (request.Items.Where(i => i is not null).GroupBy(i => i!.VariantId).Any(g => g.Count() > 1))
-                errors["items"] = ["Każdy wariant może wystąpić tylko raz; zsumuj ilości."];
+                errors["items"] = ["List each variant once and combine its quantities."];
         }
         if (errors.Count > 0) throw new OrderValidationException(errors);
         return request with { CustomerName = name, Email = email,
@@ -78,7 +78,7 @@ public static class Orders
             var variant = product?.Variants.FirstOrDefault(v => v.Id == item!.VariantId);
             if (product is null || variant is null || !variant.IsAvailable)
             {
-                errors[$"variants.{item!.VariantId}"] = ["Wariant nie istnieje lub jest niedostępny. Odśwież katalog."];
+                errors[$"variants.{item!.VariantId}"] = ["This variant does not exist or is unavailable. Refresh the catalogue."];
                 continue;
             }
             lines.Add(new(product.Id, variant.Id, product.Name, variant.Size,
@@ -89,7 +89,7 @@ public static class Orders
         var delivery = GetDeliveryPrice(total, request.DeliveryMethodId!);
         return new($"DEMO-{Guid.NewGuid():N}", now, now.AddHours(24), true, "PLN", lines,
             lines.Sum(l => l.Quantity), total, request.DeliveryMethodId!,
-            request.DeliveryMethodId == "pickup" ? "Punkt odbioru" : "Kurier",
+            request.DeliveryMethodId == "pickup" ? "Pickup point" : "Courier",
             delivery, request.PickupPoint, total + delivery);
     }
 

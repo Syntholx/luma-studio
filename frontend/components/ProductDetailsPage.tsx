@@ -25,7 +25,7 @@ export function ProductDetailsPage(props: {
   if (props.isLoading)
     return (
       <section className="py-[48px]">
-        <p role="status">Ładowanie produktu...</p>
+        <p role="status">Loading product…</p>
       </section>
     );
   if (props.catalogError !== "")
@@ -37,7 +37,7 @@ export function ProductDetailsPage(props: {
           className="mt-[12px] min-h-[44px] px-[16px] py-[10px] border-[1px] border-[#e5ddd3] rounded-[8px] bg-[white] text-[#29241f]"
           onClick={props.onRetry}
         >
-          Spróbuj ponownie
+          Try again
         </button>
       </section>
     );
@@ -45,12 +45,12 @@ export function ProductDetailsPage(props: {
   if (product === undefined) {
     return (
       <section className="py-[48px]">
-        <h1 className="text-[30px] font-[600]">Nie znaleziono produktu</h1>
+        <h1 className="text-[30px] font-[600]">Product not found</h1>
         <Link
           to="/#kolekcja"
           className="mt-[24px] min-h-[44px]  inline-flex items-center text-[#765341] font-[600] hover:underline"
         >
-          Wróć do kolekcji
+          Back to the collection
         </Link>
       </section>
     );
@@ -65,7 +65,7 @@ export function ProductDetailsPage(props: {
       value={productSize.id}
       disabled={!productSize.isAvailable}
     >
-      {productSize.size} {!productSize.isAvailable && "- niedostępny"}
+      {productSize.size} {!productSize.isAvailable && "- unavailable"}
     </option>
   ));
   const isAvailable = product.variants.some((variant) => variant.isAvailable);
@@ -91,12 +91,12 @@ export function ProductDetailsPage(props: {
       </p>
       {!isAvailable && (
         <p className="text-[14px] font-[600] text-[#9b2c2c] mt-[8px]">
-          Produkt jest obecnie niedostępny.
+          This product is currently unavailable.
         </p>
       )}
       {isAvailable && (
         <div className="mt-[24px] flex flex-col gap-[8px]">
-          <label htmlFor="size">Rozmiar</label>
+          <label htmlFor="size">Size</label>
           <select
             id="size"
             className="w-full max-w-[320px] min-h-[44px] border-[1px] border-[#e5ddd3] rounded-[8px] bg-[white] text-[#29241f] px-[12px] py-[10px]"
@@ -108,17 +108,17 @@ export function ProductDetailsPage(props: {
             }}
           >
             <option value="" disabled>
-              Wybierz rozmiar
+              Choose a size
             </option>
             {sizeOption}
           </select>
-          <p>Ilość</p>
+          <p>Quantity</p>
           <div className="flex flex-row items-center gap-[12px]">
             <button
               type="button"
               disabled={countAddProducts <= 1}
               className="w-[44px] h-[44px] border-[1px]  border-[#e5ddd3] rounded-[8px]"
-              aria-label={"Zmniejsz ilość"}
+              aria-label={"Decrease quantity"}
               onClick={() => {
                 setCountAddProducts((previousCount) =>
                   Math.max(1, previousCount - 1),
@@ -132,7 +132,7 @@ export function ProductDetailsPage(props: {
             {countAddProducts}
             <button
               type="button"
-              aria-label={"Zwiększ ilość"}
+              aria-label={"Increase quantity"}
               className="w-[44px] h-[44px] border-[1px] border-[#e5ddd3] rounded-[8px]"
               disabled={countAddProducts >= 10}
               onClick={() => {
@@ -159,15 +159,15 @@ export function ProductDetailsPage(props: {
               setAddedVariantId(selectedVariantId);
             }}
           >
-            Dodaj do koszyka
+            Add to cart
           </button>
           <p role="status">
             {addedVariantId !== "" && addedVariantId === selectedVariantId
-              ? `Dodano do koszyka: ${countAddProducts} szt.`
+              ? `Added to cart: ${countAddProducts}`
               : ""}
           </p>
           {selectedVariant !== undefined && (
-            <p>Wybrany rozmiar: {selectedVariant.size}</p>
+            <p>Selected size: {selectedVariant.size}</p>
           )}
         </div>
       )}
@@ -175,7 +175,7 @@ export function ProductDetailsPage(props: {
         to="/#kolekcja"
         className="mt-[24px] min-h-[44px]  inline-flex items-center text-[#765341] font-[600] hover:underline"
       >
-        Wróć do kolekcji
+        Back to the collection
       </Link>
     </section>
   );

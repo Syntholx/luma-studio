@@ -4,7 +4,7 @@ export function ProductList(props: { products: Product[] }) {
   if (props.products.length === 0) {
     return (
       <p className="mt-[32px] px-[24px] py-[24px] text-[#6b6259] border-[1px] rounded-[16px] border-[#e5ddd3]">
-        Brak produktów do wyświetlenia.
+        No matching products.
       </p>
     );
   }

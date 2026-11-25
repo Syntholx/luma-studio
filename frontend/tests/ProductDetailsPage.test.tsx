@@ -25,17 +25,17 @@ test("wybór wariantu i dodanie go do koszyka", async () => {
     </MemoryRouter>,
   );
   expect(
-    screen.getByRole("button", { name: "Dodaj do koszyka" }),
+    screen.getByRole("button", { name: "Add to cart" }),
   ).toBeDisabled();
   const user = userEvent.setup();
-  await user.selectOptions(screen.getByLabelText("Rozmiar"), "202");
+  await user.selectOptions(screen.getByLabelText("Size"), "202");
   expect(
-    screen.getByRole("button", { name: "Dodaj do koszyka" }),
+    screen.getByRole("button", { name: "Add to cart" }),
   ).toBeEnabled();
-  await user.click(screen.getByRole("button", { name: "Dodaj do koszyka" }));
+  await user.click(screen.getByRole("button", { name: "Add to cart" }));
   expect(onAddCart).toHaveBeenCalledTimes(1);
   expect(onAddCart).toHaveBeenCalledWith(1, 202, 1);
-  expect(screen.getByText("Dodano do koszyka: 1 szt.")).toBeInTheDocument();
+  expect(screen.getByText("Added to cart: 1")).toBeInTheDocument();
 });
 
 test("po zmianie rozmiaru znika komunikat poprzedniego dodania", async () => {
@@ -59,21 +59,21 @@ test("po zmianie rozmiaru znika komunikat poprzedniego dodania", async () => {
     </MemoryRouter>,
   );
   const user = userEvent.setup();
-  await user.selectOptions(screen.getByLabelText("Rozmiar"), "202");
+  await user.selectOptions(screen.getByLabelText("Size"), "202");
   expect(
-    screen.getByRole("button", { name: "Dodaj do koszyka" }),
+    screen.getByRole("button", { name: "Add to cart" }),
   ).toBeEnabled();
-  await user.click(screen.getByRole("button", { name: "Dodaj do koszyka" }));
-  expect(screen.getByText("Dodano do koszyka: 1 szt.")).toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Add to cart" }));
+  expect(screen.getByText("Added to cart: 1")).toBeInTheDocument();
   expect(onAddCart).toHaveBeenCalledWith(1, 202, 1);
-  await user.selectOptions(screen.getByLabelText("Rozmiar"), "204");
+  await user.selectOptions(screen.getByLabelText("Size"), "204");
   expect(onAddCart).toHaveBeenCalledTimes(1);
   expect(
-    screen.queryByText("Dodano do koszyka: 1 szt."),
+    screen.queryByText("Added to cart: 1"),
   ).not.toBeInTheDocument();
-  await user.selectOptions(screen.getByLabelText("Rozmiar"), "202");
+  await user.selectOptions(screen.getByLabelText("Size"), "202");
   expect(
-    screen.queryByText("Dodano do koszyka: 1 szt."),
+    screen.queryByText("Added to cart: 1"),
   ).not.toBeInTheDocument();
   expect(onAddCart).toHaveBeenCalledTimes(1);
 });
@@ -100,13 +100,13 @@ test("niedostępny rozmiar L jest zablokowany, nie da się go kupić", async () 
   );
   const user = userEvent.setup();
   expect(
-    screen.getByRole("option", { name: "L - niedostępny" }),
+    screen.getByRole("option", { name: "L - unavailable" }),
   ).toBeDisabled();
-  await user.selectOptions(screen.getByLabelText("Rozmiar"), "203");
+  await user.selectOptions(screen.getByLabelText("Size"), "203");
   expect(
-    screen.getByRole("button", { name: "Dodaj do koszyka" }),
+    screen.getByRole("button", { name: "Add to cart" }),
   ).toBeDisabled();
-  await user.click(screen.getByRole("button", { name: "Dodaj do koszyka" }));
+  await user.click(screen.getByRole("button", { name: "Add to cart" }));
   expect(onAddCart).toHaveBeenCalledTimes(0);
 });
 
@@ -130,15 +130,15 @@ test("wybór 3 sztuk, potwierdzenie wywołania", async () => {
       </Routes>
     </MemoryRouter>,
   );
-  const increaseButton = screen.getByRole("button", { name: "Zwiększ ilość" });
+  const increaseButton = screen.getByRole("button", { name: "Increase quantity" });
   const user = userEvent.setup();
   await user.click(increaseButton);
   await user.click(increaseButton);
-  await user.selectOptions(screen.getByLabelText("Rozmiar"), "202");
-  await user.click(screen.getByRole("button", { name: "Dodaj do koszyka" }));
+  await user.selectOptions(screen.getByLabelText("Size"), "202");
+  await user.click(screen.getByRole("button", { name: "Add to cart" }));
   expect(onAddCart).toHaveBeenCalledTimes(1);
   expect(onAddCart).toHaveBeenCalledWith(1, 202, 3);
-  expect(screen.getByText("Dodano do koszyka: 3 szt.")).toBeInTheDocument();
+  expect(screen.getByText("Added to cart: 3")).toBeInTheDocument();
 });
 
 test("graniicy ilości 1-10", async () => {
@@ -161,19 +161,19 @@ test("graniicy ilości 1-10", async () => {
       </Routes>
     </MemoryRouter>,
   );
-  const increaseButton = screen.getByRole("button", { name: "Zwiększ ilość" });
-  expect(screen.getByRole("button", { name: "Zmniejsz ilość" })).toBeDisabled();
+  const increaseButton = screen.getByRole("button", { name: "Increase quantity" });
+  expect(screen.getByRole("button", { name: "Decrease quantity" })).toBeDisabled();
   expect(increaseButton).toBeEnabled();
   const user = userEvent.setup();
-  await user.selectOptions(screen.getByLabelText("Rozmiar"), "202");
+  await user.selectOptions(screen.getByLabelText("Size"), "202");
   for (let i = 0; i < 9; i++) {
     await user.click(increaseButton);
   }
-  expect(screen.getByRole("button", { name: "Zwiększ ilość" })).toBeDisabled();
-  expect(screen.getByRole("button", { name: "Zmniejsz ilość" })).toBeEnabled();
-  await user.click(screen.getByRole("button", { name: "Zwiększ ilość" }));
-  expect(screen.getByRole("button", { name: "Zwiększ ilość" })).toBeDisabled();
-  await user.click(screen.getByRole("button", { name: "Dodaj do koszyka" }));
+  expect(screen.getByRole("button", { name: "Increase quantity" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Decrease quantity" })).toBeEnabled();
+  await user.click(screen.getByRole("button", { name: "Increase quantity" }));
+  expect(screen.getByRole("button", { name: "Increase quantity" })).toBeDisabled();
+  await user.click(screen.getByRole("button", { name: "Add to cart" }));
   expect(onAddCart).toHaveBeenCalledTimes(1);
   expect(onAddCart).toHaveBeenCalledWith(1, 202, 10);
 });
@@ -199,16 +199,16 @@ test("czyszczenia potwierdzenia po zmianie ilości", async () => {
     </MemoryRouter>,
   );
   const user = userEvent.setup();
-  await user.selectOptions(screen.getByLabelText("Rozmiar"), "202");
-  await user.click(screen.getByRole("button", { name: "Dodaj do koszyka" }));
-  expect(screen.getByText("Dodano do koszyka: 1 szt.")).toBeInTheDocument();
-  await user.click(screen.getByRole("button", { name: "Zwiększ ilość" }));
+  await user.selectOptions(screen.getByLabelText("Size"), "202");
+  await user.click(screen.getByRole("button", { name: "Add to cart" }));
+  expect(screen.getByText("Added to cart: 1")).toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Increase quantity" }));
   expect(
-    screen.queryByText("Dodano do koszyka: 2 szt."),
+    screen.queryByText("Added to cart: 2"),
   ).not.toBeInTheDocument();
-  await user.click(screen.getByRole("button", { name: "Zmniejsz ilość" }));
+  await user.click(screen.getByRole("button", { name: "Decrease quantity" }));
   expect(
-    screen.queryByText("Dodano do koszyka: 1 szt."),
+    screen.queryByText("Added to cart: 1"),
   ).not.toBeInTheDocument();
   expect(onAddCart).toHaveBeenCalledTimes(1);
 });
@@ -248,27 +248,27 @@ test("przy niedostępności ukrywa niektóre funkcje", async () => {
     </MemoryRouter>,
   );
   expect(
-    screen.getByText("Produkt jest obecnie niedostępny."),
+    screen.getByText("This product is currently unavailable."),
   ).toBeInTheDocument();
-  expect(screen.queryByLabelText("Rozmiar")).not.toBeInTheDocument();
+  expect(screen.queryByLabelText("Size")).not.toBeInTheDocument();
   expect(
-    screen.queryByRole("button", { name: "Zwiększ ilość" }),
+    screen.queryByRole("button", { name: "Increase quantity" }),
   ).not.toBeInTheDocument();
   expect(
-    screen.queryByRole("button", { name: "Zmniejsz ilość" }),
+    screen.queryByRole("button", { name: "Decrease quantity" }),
   ).not.toBeInTheDocument();
   expect(
-    screen.getByRole("heading", { name: "Bransoletka Aura" }),
+    screen.getByRole("heading", { name: "Aura Bracelet" }),
   ).toBeInTheDocument();
   expect(
-    screen.getByText("Delikatna bransoletka z kolorowych koralików."),
+    screen.getByText("A delicate bracelet made with colourful beads."),
   ).toBeInTheDocument();
   expect(screen.getByRole("img")).toBeInTheDocument();
   expect(
-    screen.getByRole("link", { name: "Wróć do kolekcji" }),
+    screen.getByRole("link", { name: "Back to the collection" }),
   ).toBeInTheDocument();
   expect(
-    screen.queryByRole("button", { name: "Dodaj do koszyka" }),
+    screen.queryByRole("button", { name: "Add to cart" }),
   ).not.toBeInTheDocument();
   expect(onAddCart).toHaveBeenCalledTimes(0);
 });

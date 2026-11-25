@@ -5,7 +5,7 @@ import { App } from "./App";
 
 const app = document.getElementById("app");
 if (!(app instanceof HTMLElement)) {
-  throw new Error("Nie znaleziono elementu");
+  throw new Error("Element not found");
 }
 
 createRoot(app).render(

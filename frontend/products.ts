@@ -13,18 +13,18 @@ export type Product = {
 export const products: Product[] = [
   {
     id: 2,
-    name: "Naszyjnik Sol",
-    category: "Naszyjniki",
+    name: "Sol Necklace",
+    category: "Necklaces",
     price: 122,
-    description: "Subtelny naszyjnik inspirowany ciepłem słońca.",
+    description: "A delicate necklace inspired by the warmth of the sun.",
     slug: "naszyjnik-sol",
     imageUrl: "/images/products/naszyjnik-sol.webp",
     imageAlt:
-      "Naszyjnik Sol z delikatnym złotym łańcuszkiem i zawieszką w kształcie słońca",
+      "Sol necklace with a fine gold chain and sun pendant",
     variants: [
       {
         id: 201,
-        size: "Uniwersalny",
+        size: "One size",
         price: 122,
         isAvailable: true,
       },
@@ -32,13 +32,13 @@ export const products: Product[] = [
   },
   {
     id: 1,
-    name: "Bransoletka Aura",
-    category: "Bransoletki",
+    name: "Aura Bracelet",
+    category: "Bracelets",
     price: 89.5,
-    description: "Delikatna bransoletka z kolorowych koralików.",
+    description: "A delicate bracelet made with colourful beads.",
     slug: "bransoletka-aura",
     imageUrl: "/images/products/bransoletka-aura.webp",
-    imageAlt: "Bransoletka Aura z kolorowych koralików i złotych przekładek",
+    imageAlt: "Aura bracelet with colourful beads and gold spacers",
     variants: [
       {
         id: 204,
@@ -62,18 +62,18 @@ export const products: Product[] = [
   },
   {
     id: 3,
-    name: "Kolczyki Luna",
-    category: "Kolczyki",
+    name: "Luna Earrings",
+    category: "Earrings",
     price: 109,
-    description: "Lekkie kolczyki na co dzień i wyjątkowe okazje.",
+    description: "Lightweight earrings for everyday wear and special occasions.",
     slug: "kolczyki-luna",
     imageUrl: "/images/products/kolczyki-luna.webp",
     imageAlt:
-      "Kolczyki Luna ze złotymi biglami i kremowymi zawieszkami w kształcie półksiężyców",
+      "Luna earrings with gold hooks and cream crescent moon pendants",
     variants: [
       {
         id: 205,
-        size: "Uniwersalny",
+        size: "One size",
         price: 109,
         isAvailable: true,
       },

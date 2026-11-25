@@ -32,7 +32,7 @@ builder.Services.AddRateLimiter(options =>
         var seconds = context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retry)
             ? Math.Max(1, (int)Math.Ceiling(retry.TotalSeconds)) : 60;
         context.HttpContext.Response.Headers.RetryAfter = seconds.ToString(System.Globalization.CultureInfo.InvariantCulture);
-        await Results.Problem(statusCode: 429, title: "Zbyt wiele prób. Spróbuj później.",
+        await Results.Problem(statusCode: 429, title: "Too many attempts. Try again later.",
             extensions: new Dictionary<string, object?> { ["code"] = "rate_limited" })
             .ExecuteAsync(context.HttpContext);
     };
@@ -43,7 +43,7 @@ app.UseExceptionHandler(errorApp => errorApp.Run(async context =>
     var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
     var status = exception is BadHttpRequestException badRequest ? badRequest.StatusCode : 500;
     await Results.Problem(statusCode: status,
-        title: status == 500 ? "Błąd serwera. Spróbuj ponownie z tym samym kluczem." : "Nieprawidłowe żądanie.",
+        title: status == 500 ? "Server error. Try again with the same key." : "Invalid request.",
         extensions: new Dictionary<string, object?> { ["code"] = status == 500 ? "server_error" : "invalid_request" })
         .ExecuteAsync(context);
 }));
@@ -69,14 +69,14 @@ app.MapPost("/api/orders", (OrderRequest request, HttpContext context, OrderStor
 {
     var header = context.Request.Headers["Idempotency-Key"];
     if (header.Count != 1 || !Guid.TryParseExact(header[0], "D", out var key))
-        return Results.Problem(statusCode: 400, title: "Wymagany nagłówek Idempotency-Key w formacie UUID.",
+        return Results.Problem(statusCode: 400, title: "A UUID Idempotency-Key header is required.",
             extensions: new Dictionary<string, object?> { ["code"] = "invalid_idempotency_key" });
     try
     {
         var normalized = Orders.Normalize(request);
         var result = store.Create(key.ToString("D"), normalized);
         if (result.Conflict)
-            return Results.Problem(statusCode: 409, title: "Ten klucz został użyty dla innych danych zamówienia.",
+            return Results.Problem(statusCode: 409, title: "This key has already been used for different order details.",
                 extensions: new Dictionary<string, object?> { ["code"] = "idempotency_conflict" });
         context.Response.Headers["Idempotency-Replayed"] = result.Replayed ? "true" : "false";
         return Results.Json(result.Confirmation, statusCode: result.Replayed ? 200 : 201);
@@ -84,7 +84,7 @@ app.MapPost("/api/orders", (OrderRequest request, HttpContext context, OrderStor
     catch (OrderValidationException exception)
     {
         return Results.ValidationProblem(exception.Errors, statusCode: exception.Code == "items_unavailable" ? 409 : 400,
-            title: "Nie można zatwierdzić zamówienia demonstracyjnego.",
+            title: "Could not confirm the demo order.",
             extensions: new Dictionary<string, object?> { ["code"] = exception.Code });
     }
 }).RequireRateLimiting("orders");

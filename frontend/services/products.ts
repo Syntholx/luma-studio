@@ -53,14 +53,14 @@ function isProduct(value: unknown): value is Product {
 export async function getProducts(signal?: AbortSignal): Promise<Product[]> {
   const productResponse = await fetch("/api/products", { signal });
   if (!productResponse.ok) {
-    throw new Error("Nie udało się pobrać produktów.");
+    throw new Error("Could not load products.");
   }
   const productsData: unknown = await productResponse.json();
   if (!Array.isArray(productsData)) {
-    throw new Error("Nieprawidłowe dane produktów.");
+    throw new Error("Invalid product data.");
   }
   if (!productsData.every(isProduct)) {
-    throw new Error("Nieprawidłowe dane produktów.");
+    throw new Error("Invalid product data.");
   }
   return productsData;
 }

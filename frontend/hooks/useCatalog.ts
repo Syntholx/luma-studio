@@ -27,7 +27,7 @@ export function useCatalog() {
       }
     } catch {
       if (!signal.aborted) {
-        setCatalogError("Nie udało się załadować katalogu. Spróbuj ponownie.");
+        setCatalogError("Could not load the catalogue. Please try again.");
       }
     } finally {
       if (!signal.aborted) {

@@ -74,7 +74,7 @@ test("starsza odpowiedź nie nadpisuje nowszego katalogu", async () => {
     screen.queryByRole("heading", { name: "Starszy produkt" }),
   ).not.toBeInTheDocument();
 });
-test("spóźniony błąd, nie zasłania nowszego katalogu", async () => {
+test("spóźniony error, nie zasłania nowszego katalogu", async () => {
   let firstFinish!: (response: Response) => void;
   let secondFinish!: (response: Response) => void;
   const firstResponse = new Promise<Response>((resolve) => {
@@ -115,7 +115,7 @@ test("spóźniony błąd, nie zasłania nowszego katalogu", async () => {
     screen.getByRole("heading", { name: "Nowszy produkt" }),
   ).toBeInTheDocument();
   expect(
-    screen.queryByText("Nie udało się załadować katalogu. Spróbuj ponownie."),
+    screen.queryByText("Could not load the catalogue. Please try again."),
   ).not.toBeInTheDocument();
 });
 
@@ -149,7 +149,7 @@ test("stare żądanie nie wyłącza ładowania nowego", async () => {
       ),
     );
   });
-  expect(screen.getByText("Ładowanie katalogu...")).toBeInTheDocument();
+  expect(screen.getByText("Loading the catalogue…")).toBeInTheDocument();
   await act(async () => {
     secondFinish(
       new Response(
@@ -160,7 +160,7 @@ test("stare żądanie nie wyłącza ładowania nowego", async () => {
   expect(
     screen.getByRole("heading", { name: "Nowsza odpowiedź" }),
   ).toBeInTheDocument();
-  expect(screen.queryByText("Ładowanie katalogu...")).not.toBeInTheDocument();
+  expect(screen.queryByText("Loading the catalogue…")).not.toBeInTheDocument();
 });
 
 test("ponownienie przyciskiem po błędzie", async () => {
@@ -188,13 +188,13 @@ test("ponownienie przyciskiem po błędzie", async () => {
     firstFinish(new Response(null, { status: 500 }));
   });
   const retryButton = await screen.findByRole("button", {
-    name: "Spróbuj ponownie",
+    name: "Try again",
   });
   const user = userEvent.setup();
   await user.click(retryButton);
-  expect(screen.getByText("Ładowanie katalogu...")).toBeInTheDocument();
+  expect(screen.getByText("Loading the catalogue…")).toBeInTheDocument();
   expect(
-    screen.queryByText("Nie udało się załadować katalogu. Spróbuj ponownie."),
+    screen.queryByText("Could not load the catalogue. Please try again."),
   ).not.toBeInTheDocument();
   await act(async () => {
     secondFinish(
@@ -207,7 +207,7 @@ test("ponownienie przyciskiem po błędzie", async () => {
     screen.getByRole("heading", { name: "Nowsza odpowiedź" }),
   ).toBeInTheDocument();
   expect(
-    screen.queryByText("Nie udało się załadować katalogu. Spróbuj ponownie."),
+    screen.queryByText("Could not load the catalogue. Please try again."),
   ).not.toBeInTheDocument();
   expect(fetchMock).toHaveBeenCalledTimes(2);
 });
@@ -224,14 +224,14 @@ test("pokazuje komunikat pustego katalogu i ukrywa kontrolki", async () => {
   );
   expect(
     await screen.findByText(
-      "Kolekcja jest chwilowo pusta. Zajrzyj ponownie później.",
+      "The collection is empty. Please check back later.",
     ),
   ).toBeInTheDocument();
-  expect(screen.queryByLabelText("Szukaj produktu")).not.toBeInTheDocument();
-  expect(screen.queryByLabelText("Kategoria")).not.toBeInTheDocument();
-  expect(screen.queryByLabelText("Sortowanie")).not.toBeInTheDocument();
+  expect(screen.queryByLabelText("Search products")).not.toBeInTheDocument();
+  expect(screen.queryByLabelText("Category")).not.toBeInTheDocument();
+  expect(screen.queryByLabelText("Sort by")).not.toBeInTheDocument();
   expect(
-    screen.getByRole("heading", { name: "Znajdź swój ulubiony detal" }),
+    screen.getByRole("heading", { name: "Find your favourite piece" }),
   ).toBeInTheDocument();
 });
 test("zachowuje kontrolki, gdy wyszukiwanie nie znajduję produktów", async () => {
@@ -244,20 +244,20 @@ test("zachowuje kontrolki, gdy wyszukiwanie nie znajduję produktów", async () 
       <App />
     </MemoryRouter>,
   );
-  const searchInput = await screen.findByLabelText("Szukaj produktu");
-  expect(screen.queryByLabelText("Szukaj produktu")).toBeInTheDocument();
+  const searchInput = await screen.findByLabelText("Search products");
+  expect(screen.queryByLabelText("Search products")).toBeInTheDocument();
   const user = userEvent.setup();
   await user.type(searchInput, "nieistniejacyprodukt");
 
   expect(
-    screen.queryByText("Brak produktów do wyświetlenia."),
+    screen.queryByText("No matching products."),
   ).toBeInTheDocument();
-  expect(screen.queryByLabelText("Szukaj produktu")).toBeInTheDocument();
-  expect(screen.queryByLabelText("Kategoria")).toBeInTheDocument();
-  expect(screen.queryByLabelText("Sortowanie")).toBeInTheDocument();
+  expect(screen.queryByLabelText("Search products")).toBeInTheDocument();
+  expect(screen.queryByLabelText("Category")).toBeInTheDocument();
+  expect(screen.queryByLabelText("Sort by")).toBeInTheDocument();
   expect(
     screen.queryByText(
-      "Kolekcja jest chwilowo pusta. Zajrzyj ponownie później.",
+      "The collection is empty. Please check back later.",
     ),
   ).not.toBeInTheDocument();
 });
@@ -274,24 +274,24 @@ test("łączy kolejne dodania wariantu w jedną pozycję koszyka", async () => {
       <App />
     </MemoryRouter>,
   );
-  expect(screen.getByRole("link", { name: "Koszyk (0)" })).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Cart (0)" })).toBeInTheDocument();
   const user = userEvent.setup();
-  const sizeSelect = await screen.findByLabelText("Rozmiar");
+  const sizeSelect = await screen.findByLabelText("Size");
   await user.selectOptions(sizeSelect, "202");
-  await user.click(screen.getByRole("button", { name: "Zwiększ ilość" }));
-  await user.click(screen.getByRole("button", { name: "Zwiększ ilość" }));
-  await user.click(screen.getByRole("button", { name: "Dodaj do koszyka" }));
-  expect(screen.getByText("Dodano do koszyka: 3 szt.")).toBeInTheDocument();
-  await user.click(screen.getByRole("button", { name: "Zmniejsz ilość" }));
-  await user.click(screen.getByRole("button", { name: "Dodaj do koszyka" }));
-  expect(screen.getByText("Dodano do koszyka: 2 szt.")).toBeInTheDocument();
-  await user.click(screen.getByRole("link", { name: "Koszyk (5)" }));
-  expect(screen.getByRole("heading", { name: "Koszyk" })).toBeInTheDocument();
-  expect(screen.getByText("Rozmiar: M · Ilość: 5")).toBeInTheDocument();
-  expect(screen.getByText("Liczba sztuk: 5")).toBeInTheDocument();
-  expect(screen.getByText(/Razem:\s*472,50\s*zł/)).toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Increase quantity" }));
+  await user.click(screen.getByRole("button", { name: "Increase quantity" }));
+  await user.click(screen.getByRole("button", { name: "Add to cart" }));
+  expect(screen.getByText("Added to cart: 3")).toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Decrease quantity" }));
+  await user.click(screen.getByRole("button", { name: "Add to cart" }));
+  expect(screen.getByText("Added to cart: 2")).toBeInTheDocument();
+  await user.click(screen.getByRole("link", { name: "Cart (5)" }));
+  expect(screen.getByRole("heading", { name: "Cart" })).toBeInTheDocument();
+  expect(screen.getByText("Size: M · Quantity: 5")).toBeInTheDocument();
+  expect(screen.getByText("Total quantity: 5")).toBeInTheDocument();
+  expect(screen.getByText(/Total:\s*PLN\s*472\.50/)).toBeInTheDocument();
   expect(
-    screen.getAllByRole("link", { name: "Bransoletka Aura" }),
+    screen.getAllByRole("link", { name: "Aura Bracelet" }),
   ).toHaveLength(1);
 });
 
@@ -323,29 +323,29 @@ test("ukrywa niedostępny produkt i przywraca go po zresetowaniu filtrów", asyn
   );
   const user = userEvent.setup();
   expect(
-    await screen.findByRole("heading", { name: "Bransoletka Aura" }),
+    await screen.findByRole("heading", { name: "Aura Bracelet" }),
   ).toBeInTheDocument();
-  expect(screen.getByLabelText("Tylko dostępne produkty")).not.toBeChecked();
-  expect(screen.getByText("Produkt niedostępny")).toBeInTheDocument();
+  expect(screen.getByLabelText("Available products only")).not.toBeChecked();
+  expect(screen.getByText("Product unavailable")).toBeInTheDocument();
   await user.click(
-    screen.getByRole("checkbox", { name: "Tylko dostępne produkty" }),
+    screen.getByRole("checkbox", { name: "Available products only" }),
   );
   expect(
-    screen.getByRole("checkbox", { name: "Tylko dostępne produkty" }),
+    screen.getByRole("checkbox", { name: "Available products only" }),
   ).toBeChecked();
   expect(
-    screen.queryByRole("heading", { name: "Bransoletka Aura" }),
+    screen.queryByRole("heading", { name: "Aura Bracelet" }),
   ).not.toBeInTheDocument();
-  expect(screen.queryByText("Produkt niedostępny")).not.toBeInTheDocument();
+  expect(screen.queryByText("Product unavailable")).not.toBeInTheDocument();
   expect(
-    screen.getByRole("heading", { name: "Naszyjnik Sol" }),
+    screen.getByRole("heading", { name: "Sol Necklace" }),
   ).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Resetuj widok" })).toBeEnabled();
-  await user.click(screen.getByRole("button", { name: "Resetuj widok" }));
-  expect(screen.getByLabelText("Tylko dostępne produkty")).not.toBeChecked();
+  expect(screen.getByRole("button", { name: "Reset filters" })).toBeEnabled();
+  await user.click(screen.getByRole("button", { name: "Reset filters" }));
+  expect(screen.getByLabelText("Available products only")).not.toBeChecked();
   expect(
-    screen.getByRole("heading", { name: "Bransoletka Aura" }),
+    screen.getByRole("heading", { name: "Aura Bracelet" }),
   ).toBeInTheDocument();
-  expect(screen.getByText("Produkt niedostępny")).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Resetuj widok" })).toBeDisabled();
+  expect(screen.getByText("Product unavailable")).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Reset filters" })).toBeDisabled();
 });

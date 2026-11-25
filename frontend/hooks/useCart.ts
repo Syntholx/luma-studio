@@ -10,7 +10,7 @@ export function useCart(props: { catalogProducts: Product[] }) {
     try {
       localStorage.setItem("luma-studio-cart", JSON.stringify(cart));
     } catch (error) {
-      console.warn("Nie udało się zapisać koszyka");
+      console.warn("Could not save your cart");
     }
   }, [cart]);
   function clearCart() {

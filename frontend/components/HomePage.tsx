@@ -7,7 +7,7 @@ export function HomePage(props: {
   catalogError: string;
   onRetry: () => Promise<void>;
 }) {
-  const [categoryFilter, setCategoryFilter] = useState("Wszystkie");
+  const [categoryFilter, setCategoryFilter] = useState("All");
   const [searchProducts, setSearchProducts] = useState("");
 
   const normalizedSearch = searchProducts.trim().toLowerCase();
@@ -16,7 +16,7 @@ export function HomePage(props: {
 
   const filteredProducts = props.catalogProducts.filter(
     (product) =>
-      (categoryFilter === "Wszystkie" || product.category === categoryFilter) &&
+      (categoryFilter === "All" || product.category === categoryFilter) &&
       product.name.toLowerCase().includes(normalizedSearch) &&
       (!onlyAvailable ||
         product.variants.some((variant) => variant.isAvailable)),
@@ -34,42 +34,42 @@ export function HomePage(props: {
     <>
       <section className="py-[64px]">
         <h1 className="text-[48px] font-[600] leading-[1.15] max-w-[720px]">
-          Małe detale. Twój własny blask
+          Small details. Your own sparkle
         </h1>
         <p className="mt-[24px] text-[18px] leading-[1.7] max-w-[560px] text-[#6b6259]">
-          Odkryj ręcznie tworzoną biżuterie inspirowaną prostotą i codziennymi
-          chwilami.
+          Discover handmade jewellery inspired by simplicity and everyday
+          moments.
         </p>
         <a
           href="#kolekcja"
           className="mt-[32px] min-h-[44px] rounded-[8px] py-[12px] px-[24px] bg-[#765341] text-[white] text-center items-center inline-flex"
         >
-          Poznaj kolekcję
+          Explore the collection
         </a>
       </section>
       <section
         id="o-marce"
         className="py-[48px] border-t-[1px] border-[#e5ddd3]"
       >
-        <h2 className="text-[30px] font-[600]">Tworzone z uważnością</h2>
+        <h2 className="text-[30px] font-[600]">Made with care</h2>
         <p className="mt-[16px] max-w-[680px] text-[#6b6259] leading-[1.7]">
-          Luma Studio to demonstracyjna marka biżuterii, w której delikatne
-          formy spotykają się z kolorem. Poznaj kolekcję bransoletek,
-          naszyjników i kolczyków.
+          Luma Studio is a demo jewellery brand that pairs delicate
+          designs with colour. Explore our bracelets,
+          necklaces and earrings.
         </p>
       </section>
       <section
         id="kolekcja"
         className="py-[48px] border-t-[1px] border-[#e5ddd3]"
       >
-        <h2 className="text-[30px] font-[600]">Znajdź swój ulubiony detal</h2>
+        <h2 className="text-[30px] font-[600]">Find your favourite piece</h2>
         <p className="mt-[16px] max-w-[680px] text-[#6b6259] leading-[1.7]">
-          Subtelny akcent na co dzień czy dodatek na wyjątkową okazję? Sprawdź,
-          co przygotowaliśmy.
+          Looking for an everyday accent or something for a special occasion? Explore
+          our collection.
         </p>
 
         <p role="status" className="mt-[16px]">
-          {props.isCatalogLoading ? "Ładowanie katalogu..." : ""}
+          {props.isCatalogLoading ? "Loading the catalogue…" : ""}
         </p>
 
         <p role="alert" className="mt-[16px]">
@@ -82,14 +82,14 @@ export function HomePage(props: {
             onClick={props.onRetry}
             className="mt-[12px] min-h-[44px] px-[16px] py-[10px] border-[1px] border-[#e5ddd3] rounded-[8px] bg-[white] text-[#29241f]"
           >
-            Spróbuj ponownie
+            Try again
           </button>
         )}
         {!props.isCatalogLoading && props.catalogError === "" && (
           <>
             {props.catalogProducts.length === 0 && (
               <p className="mt-[24px] text-[16px] text-[#6b6259]">
-                Kolekcja jest chwilowo pusta. Zajrzyj ponownie później.
+                The collection is empty. Please check back later.
               </p>
             )}
             {props.catalogProducts.length > 0 && (
@@ -109,9 +109,9 @@ export function HomePage(props: {
                         setOnlyAvailable(event.currentTarget.checked)
                       }
                     ></input>
-                    Tylko dostępne produkty
+                    Available products only
                   </label>
-                  <label htmlFor="price-sort">Sortowanie</label>
+                  <label htmlFor="price-sort">Sort by</label>
                   <select
                     className="w-full max-w-[320px] min-h-[44px] px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px]"
                     id="price-sort"
@@ -121,14 +121,14 @@ export function HomePage(props: {
                       setPriceSort(event.currentTarget.value)
                     }
                   >
-                    <option value="default">Domyślnie</option>
-                    <option value="price-asc">Cena rosnąco</option>
-                    <option value="price-desc">Cena malejąco</option>
+                    <option value="default">Default</option>
+                    <option value="price-asc">Price: low to high</option>
+                    <option value="price-desc">Price: high to low</option>
                   </select>
                 </div>
 
                 <div className="flex mt-[24px] flex-col gap-[8px]">
-                  <label htmlFor="search-product">Szukaj produktu</label>
+                  <label htmlFor="search-product">Search products</label>
                   <input
                     className="w-full max-w-[320px] min-h-[44px] px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px] "
                     id="search-product"
@@ -141,7 +141,7 @@ export function HomePage(props: {
                 </div>
 
                 <div className="mt-[24px] flex flex-col gap-[8px]">
-                  <label htmlFor="category">Kategoria</label>
+                  <label htmlFor="category">Category</label>
                   <select
                     className="min-h-[44px] max-w-[320px] w-full px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px]"
                     id="category"
@@ -150,32 +150,32 @@ export function HomePage(props: {
                       setCategoryFilter(event.currentTarget.value)
                     }
                   >
-                    <option value="Wszystkie">Wszystkie</option>
-                    <option value="Bransoletki">Bransoletki</option>
-                    <option value="Naszyjniki">Naszyjniki</option>
-                    <option value="Kolczyki">Kolczyki</option>
+                    <option value="All">All</option>
+                    <option value="Bracelets">Bracelets</option>
+                    <option value="Necklaces">Necklaces</option>
+                    <option value="Earrings">Earrings</option>
                   </select>
                 </div>
                 <button
                   type="button"
                   className="mt-[12px] min-h-[44px] px-[16px] py-[10px] border-[1px] border-[#e5ddd3] rounded-[8px] bg-[white] text-[#29241f] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                   disabled={
-                    categoryFilter === "Wszystkie" &&
+                    categoryFilter === "All" &&
                     searchProducts === "" &&
                     priceSort === "default" &&
                     onlyAvailable === false
                   }
                   onClick={() => {
-                    setCategoryFilter("Wszystkie");
+                    setCategoryFilter("All");
                     setSearchProducts("");
                     setPriceSort("default");
                     setOnlyAvailable(false);
                   }}
                 >
-                  Resetuj widok
+                  Reset filters
                 </button>
                 <p className="mt-[16px] text-[14px] text-[#6b6259]">
-                  Widoczne produkty: {filteredProducts.length}
+                  Products shown: {filteredProducts.length}
                 </p>
                 <ProductList products={sortedProducts} />
               </>

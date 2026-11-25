@@ -27,14 +27,14 @@ export function ProductCard(props: { product: Product }) {
       </p>
       {!isAvailable && (
         <p className="text-[#9b2c2c] text-[14px] font-[600] mt-[8px]">
-          Produkt niedostępny
+          Product unavailable
         </p>
       )}
       <Link
         to={`/produkty/${props.product.slug}`}
         className="mt-[16px] min-h-[44px] inline-flex items-center w-fit text-[#765341] font-[600] hover:underline"
       >
-        Zobacz produkt
+        View product
       </Link>
     </article>
   );

@@ -56,11 +56,11 @@ export function CheckoutPage(props: {
     let attempt = pendingAttempt;
     if (attempt === null) {
       if (hasUnavailableItems) {
-        setFormError("Usuń niedostępne produkty, by kontynuować.");
+        setFormError("Remove unavailable products to continue.");
         return;
       }
       if (selectedDelivery === undefined) {
-        setFormError("Wybierz sposób dostawy");
+        setFormError("Choose a delivery method");
         return;
       }
       const formData = new FormData(event.currentTarget);
@@ -71,17 +71,17 @@ export function CheckoutPage(props: {
       const normalizedEmail = email.trim();
       const normalizedFirstName = firstName.trim();
       if (normalizedEmail === "" || normalizedFirstName === "") {
-        setFormError("Uzupelnij imię i adres e-mail");
+        setFormError("Enter your name and email address");
         return;
       }
       if (selectedDelivery.id === "pickup") {
         if (typeof pickupPoint !== "string") {
-          setFormError("Podaj kod punktu odbioru");
+          setFormError("Enter the pickup point code");
           return;
         }
         normalizedPickupPoint = pickupPoint.trim();
         if (normalizedPickupPoint === "") {
-          setFormError("Podaj kod punktu odbioru.");
+          setFormError("Enter the pickup point code.");
           return;
         }
       }
@@ -106,7 +106,7 @@ export function CheckoutPage(props: {
       setPendingAttempt(null);
       props.onClearCart();
     } catch (error) {
-      setFormError("Nie udało się wysłać zamówienia, spróbuj ponownie.");
+      setFormError("Could not submit your order. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -124,33 +124,33 @@ export function CheckoutPage(props: {
           ref={confirmationHeadingRef}
           tabIndex={-1}
         >
-          Zamówienie demonstracyjne zatwierdzone
+          Demo order confirmed
         </h1>
         <p className="mt-[16px] text-[#6b6259]">
-          To tylko symulacja. Nie utworzono prawdziwego zamówienia ani
-          płatności.
+          This is a simulation. No real order was placed or payment
+          taken.
         </p>
         <p className="text-[16px] font-[400]">
-          Ilość sztuk: {orderConfirmation.totalQuantity}
+          Total quantity: {orderConfirmation.totalQuantity}
         </p>
         <p className="text-[16px] font-[400]">
-          Produkty {formatPrice(orderConfirmation.totalPrice)}
+          Items {formatPrice(orderConfirmation.totalPrice)}
         </p>
         <p className="text-[16px] font-[400]">
-          Dostawa {orderConfirmation.deliveryName}{" "}
+          Delivery {orderConfirmation.deliveryName}{" "}
           {formatPrice(orderConfirmation.deliveryPrice)}
         </p>
         {orderConfirmation.pickupPoint !== null && (
-          <p>Kod punktu odbioru: {orderConfirmation.pickupPoint}</p>
+          <p>Pickup point code: {orderConfirmation.pickupPoint}</p>
         )}
         <p className="text-[24px] font-[600]">
-          Razem {formatPrice(orderConfirmation.grandTotal)}
+          Total {formatPrice(orderConfirmation.grandTotal)}
         </p>
         <Link
           to={"/#kolekcja"}
           className="mt-[24px] min-h-[44px] text-[#765341] font-[600] hover:underline inline-flex items-center"
         >
-          Wróć do kolekcji
+          Back to the collection
         </Link>
       </section>
     );
@@ -158,7 +158,7 @@ export function CheckoutPage(props: {
   if (props.isLoading) {
     return (
       <section className="py-[48px]">
-        <p role="status">Ładowanie zamówienia...</p>
+        <p role="status">Loading your order…</p>
       </section>
     );
   }
@@ -173,7 +173,7 @@ export function CheckoutPage(props: {
           className="mt-[16px] min-h-[44px] px-[16px] py-[10px] border-[1px] border-[#e5ddd3] rounded-[8px] bg-[white] text-[#29241f] cursor-pointer"
           onClick={props.onRetry}
         >
-          Spróbuj ponownie
+          Try again
         </button>
       </section>
     );
@@ -181,12 +181,12 @@ export function CheckoutPage(props: {
   if (props.items.length === 0) {
     return (
       <section className="py-[48px]">
-        <h1 className="text-[36px] font-[600]">Twój koszyk jest pusty</h1>
+        <h1 className="text-[36px] font-[600]">Your cart is empty</h1>
         <Link
           to={"/#kolekcja"}
           className="mt-[24px] inline-flex items-center min-h-[44px] text-[#765341] font-[600] hover:underline"
         >
-          Wróć do kolekcji
+          Back to the collection
         </Link>
       </section>
     );
@@ -196,9 +196,9 @@ export function CheckoutPage(props: {
     return (
       <section className="py-[48px]">
         <h1 className="text-[36px] font-[600]">
-          Nie znaleziono sposobu dostawy
+          Delivery method not found
         </h1>
-        <p>Wróć do koszyka i spróbuj ponownie.</p>
+        <p>Return to your cart and try again.</p>
       </section>
     );
   }
@@ -214,16 +214,16 @@ export function CheckoutPage(props: {
 
   return (
     <section className="py-[48px]">
-      <h1 className="text-[36px] font-[600]">Zamówienie demonstracyjne</h1>
+      <h1 className="text-[36px] font-[600]">Demo order</h1>
       <p className="mt-[16px] text-[#6b6259]">
-        To wersja demonstracyjna. Nie podawaj prawdziwych danych.
+        This is a demo. Please use fictional details.
       </p>
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-[480px] flex flex-col gap-[24px] mt-[32px]"
       >
         <div className="flex flex-col gap-[8px]">
-          <label htmlFor="firstName">Imię</label>
+          <label htmlFor="firstName">First name</label>
           <input
             className="bg-[white] border-[#e5ddd3] rounded-[8px] min-h-[44px] px-[12px] py-[10px] border-[1px]"
             id="firstName"
@@ -235,7 +235,7 @@ export function CheckoutPage(props: {
           ></input>
         </div>
         <div className="flex flex-col gap-[8px]">
-          <label htmlFor="email">Podaj swój e-mail</label>
+          <label htmlFor="email">Enter your email address</label>
           <input
             className="bg-[white] border-[#e5ddd3] rounded-[8px] min-h-[44px] px-[12px] py-[10px] border-[1px]"
             id="email"
@@ -248,7 +248,7 @@ export function CheckoutPage(props: {
         </div>
 
         <fieldset disabled={pendingAttempt !== null}>
-          <legend>Sposób dostawy</legend>
+          <legend>Delivery method</legend>
           <div className="flex flex-col gap-[12px]">
             {deliveryMethods.map((delivery) => {
               return (
@@ -274,15 +274,15 @@ export function CheckoutPage(props: {
           </div>
           <p className="mt-[12px] text-[14px] text-[#6b6259]">
             {totalPrice >= freeDeliveryThreshold
-              ? "Darmowa dostawa"
-              : "Do darmowej dostawy brakuje " +
+              ? "Free delivery"
+              : "Amount remaining for free delivery " +
                 formatPrice(freeDeliveryThreshold - totalPrice)}
           </p>
         </fieldset>
 
         {selectedDelivery.id === "pickup" && (
           <div className="flex flex-col gap-[8px]">
-            <label htmlFor="pickupPoint">Kod punktu odbioru</label>
+            <label htmlFor="pickupPoint">Pickup point code</label>
             <input
               className="bg-[white] border-[#e5ddd3] rounded-[8px] min-h-[44px] px-[12px] py-[10px] border-[1px]"
               type="text"
@@ -292,14 +292,14 @@ export function CheckoutPage(props: {
               disabled={pendingAttempt !== null}
             ></input>
             <p className="text-[14px] text-[#6b6259]">
-              Wpisz fikcyjny kod, np. DEMO01.
+              Enter a fictional code, e.g. DEMO01.
             </p>
           </div>
         )}
 
         {hasUnavailableItems && (
           <p className="text-[14px] text-[#9b2c2c]">
-            Usuń niedostępne produkty z koszyka, aby zatwierdzić zamówienie.
+            Remove unavailable items before placing your order.
           </p>
         )}
         <button
@@ -310,15 +310,15 @@ export function CheckoutPage(props: {
           className="px-[24px] rounded-[8px]  inline-flex self-start items-center justify-center min-h-[44px] text-[white] bg-[#765341] font-[600] disabled:opacity-[50%] disabled:cursor-not-allowed"
         >
           {isSubmitting
-            ? "Wysyłanie zamówienia.."
+            ? "Submitting order…"
             : pendingAttempt !== null
-              ? "Ponów wysyłkę"
-              : "Zatwierdź zamówienie demonstracyjne"}
+              ? "Try submitting again"
+              : "Place demo order"}
         </button>
         <p role="alert">{formError}</p>
       </form>
       <section className="mt-[24px] px-[24px] py-[24px] bg-[#f0e9e1] rounded-[12px]">
-        <h2 className="text-[20px] font-[600]">Podsumowanie zamówienia</h2>
+        <h2 className="text-[20px] font-[600]">Order summary</h2>
         <ul className="mt-[16px] flex flex-col gap-[12px]">
           {props.items.map((cartItem) => {
             const product = props.products.find(
@@ -344,12 +344,12 @@ export function CheckoutPage(props: {
                 <div className="flex flex-col min-w-0 gap-[8px]">
                   <p>{product.name}</p>
                   <p>
-                    Rozmiar: {variant.size} · Ilość: {cartItem.quantity}
+                    Size: {variant.size} · Quantity: {cartItem.quantity}
                   </p>
                   <p>{formatPrice(variant.price * cartItem.quantity)}</p>
                   {!variant.isAvailable && (
                     <p className="text-[14px] font-[600] text-[#9b2c2c]">
-                      Produkt niedostępny
+                      Product unavailable
                     </p>
                   )}
                 </div>
@@ -358,23 +358,23 @@ export function CheckoutPage(props: {
           })}
         </ul>
 
-        <p className="text-[16px] font-[400]"> Ilość: {totalQuantity}</p>
+        <p className="text-[16px] font-[400]"> Quantity: {totalQuantity}</p>
         <p className="text-[16px] font-[400]">
-          Produkty: {formatPrice(totalPrice)}
+          Items: {formatPrice(totalPrice)}
         </p>
         <p>
-          Dostawa: {selectedDelivery.name} {formatPrice(deliveryPrice)}
+          Delivery: {selectedDelivery.name} {formatPrice(deliveryPrice)}
         </p>
 
         <p className="text-[24px] font-[600]">
-          Razem {formatPrice(grandTotal)}
+          Total {formatPrice(grandTotal)}
         </p>
       </section>
       <Link
         to={"/koszyk"}
         className="mt-[24px] min-h-[44px] text-[#765341] font-[600] hover:underline inline-flex items-center"
       >
-        Wróć do koszyka
+        Back to cart
       </Link>
     </section>
   );

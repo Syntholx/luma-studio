@@ -14,7 +14,7 @@ export function ProductImage(props: {
       <div
         className={`${props.className ?? ""} bg-[#eee8e1] text-center flex flex-col items-center justify-center`}
       >
-        <p>Zdjęcie niedostępne</p>
+        <p>Image unavailable</p>
       </div>
     );
   }
@@ -27,7 +27,7 @@ export function ProductImage(props: {
           ? props.imageUrl
           : "/images/products/product-fallback.webp"
       }
-      alt={imageStage === "original" ? props.imageAlt : "Zdjęcie niedostępne"}
+      alt={imageStage === "original" ? props.imageAlt : "Image unavailable"}
       onError={() => {
         if (imageStage === "original") setImageStage("fallback");
         else {

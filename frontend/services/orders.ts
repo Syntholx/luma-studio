@@ -84,9 +84,9 @@ export async function createOrder(
   if (orderResponse.status === 201 || orderResponse.status === 200) {
     const data: unknown = await orderResponse.json();
     if (!isOrderConfirmation(data)) {
-      throw new Error("Nieprawidłowe potwierdzenie zamówienia.");
+      throw new Error("Invalid order confirmation.");
     }
     return data;
   }
-  throw new Error("Nie udało się złożyć zamówienia");
+  throw new Error("Could not place your order");
 }

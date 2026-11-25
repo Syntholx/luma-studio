@@ -25,7 +25,7 @@ test("odrzuca odpowiedź HTTP 500", async () => {
     .fn()
     .mockResolvedValue(new Response(null, { status: 500 }));
   vi.stubGlobal("fetch", fetchMock);
-  await expect(getProducts()).rejects.toThrow("Nie udało się pobrać produktów");
+  await expect(getProducts()).rejects.toThrow("Could not load products");
   expect(fetchMock).toHaveBeenCalledWith("/api/products", {
     signal: undefined,
   });
@@ -36,7 +36,7 @@ test("odrzuca obiekt zamiast tablicy produktów", async () => {
     .fn()
     .mockResolvedValue(new Response(JSON.stringify(products[0])));
   vi.stubGlobal("fetch", fetchMock);
-  await expect(getProducts()).rejects.toThrow("Nieprawidłowe dane produktów");
+  await expect(getProducts()).rejects.toThrow("Invalid product data");
   expect(fetchMock).toHaveBeenCalledWith("/api/products", {
     signal: undefined,
   });
@@ -53,7 +53,7 @@ test("odrzuca produkt z nieprawidłową ceną wariantu", async () => {
     .fn()
     .mockResolvedValue(new Response(JSON.stringify(invalidProducts)));
   vi.stubGlobal("fetch", fetchMock);
-  await expect(getProducts()).rejects.toThrow("Nieprawidłowe dane produktów");
+  await expect(getProducts()).rejects.toThrow("Invalid product data");
   expect(fetchMock).toHaveBeenCalledWith("/api/products", {
     signal: undefined,
   });

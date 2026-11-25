@@ -24,10 +24,10 @@ test("pokazuje komunikat i można usunąć produkt z koszyka", async () => {
 
   const user = userEvent.setup();
   expect(
-    screen.getByText("Ta pozycja nie jest już dostępna w katalogu."),
+    screen.getByText("This item is no longer available in the catalogue."),
   ).toBeInTheDocument();
-  await user.click(screen.getByRole("button", { name: "Usuń" }));
-  expect(screen.getByRole("button", { name: "Usuń" })).toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Remove" }));
+  expect(screen.getByRole("button", { name: "Remove" })).toBeInTheDocument();
   expect(onRemoveFromCart).toHaveBeenCalledWith(999);
 });
 
@@ -49,10 +49,10 @@ test("pokazuje komunikat i można usunąć produkt, gdy wariant nie istnieje", a
   );
 
   expect(
-    screen.getByText("Ta pozycja nie jest już dostępna w katalogu."),
+    screen.getByText("This item is no longer available in the catalogue."),
   ).toBeInTheDocument();
   const user = userEvent.setup();
-  await user.click(screen.getByRole("button", { name: "Usuń" }));
-  expect(screen.getByRole("button", { name: "Usuń" })).toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Remove" }));
+  expect(screen.getByRole("button", { name: "Remove" })).toBeInTheDocument();
   expect(onRemoveFromCart).toHaveBeenCalledWith(999);
 });
