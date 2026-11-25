@@ -53,7 +53,7 @@ Frontend ma osobno wdrożyć typy, walidację, render i obsługę błędu obrazu
 dodanie pól w API samo nie wyświetla zdjęć. Awaryjny alt powinien informować
 o niedostępnym zdjęciu, nie opisywać zastępczego pudełka jako produktu.
 Wariant: id:number, size:string, price:number, isAvailable:boolean.
-JSON camelCase, ceny PLN jako liczby (decimal na serwerze), nie tekst waluty.
+JSON camelCase, ceny EUR jako liczby (decimal na serwerze), nie tekst waluty.
 ID i dane odpowiadają frontend/products.ts. Slugi porównywane dokładnie.
 Price produktu to bazowa cena katalogowa; cena wariantu dotyczy pozycji koszyka.
 Przyszłe zamówienie wymaga niezależnej walidacji i wyceny na serwerze.

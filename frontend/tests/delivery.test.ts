@@ -5,7 +5,7 @@ test("Obliczenie kosztu dostawy, zachowuje koszt dostawy poniżej 200 ", () => {
   expect(getDeliveryPrice(199.99, 14.99)).toBe(14.99);
 });
 
-test("Koszt produktu 200, zapewnia darmową dostawę od dokładnie 200 zł", () => {
+test("qualifies for free shipping at exactly €200", () => {
   expect(getDeliveryPrice(200, 14.99)).toBe(0);
 });
 

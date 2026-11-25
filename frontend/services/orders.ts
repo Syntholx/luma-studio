@@ -38,7 +38,7 @@ export function isOrderConfirmation(
   }
   return (
     value.isDemo === true &&
-    value.currency === "PLN" &&
+    value.currency === "EUR" &&
     (value.deliveryMethodId === "pickup" ||
       value.deliveryMethodId === "courier") &&
     (typeof value.pickupPoint === "string" || value.pickupPoint === null) &&

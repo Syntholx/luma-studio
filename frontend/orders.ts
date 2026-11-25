@@ -24,7 +24,7 @@ export type OrderLine = {
 export type OrderConfirmation = {
   items: OrderLine[];
   isDemo: true;
-  currency: "PLN";
+  currency: "EUR";
   deliveryMethodId: "pickup" | "courier";
   pickupPoint: string | null;
   createdAt: string;

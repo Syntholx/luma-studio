@@ -8,7 +8,7 @@ afterEach(() => {
 
 const confirmation: OrderConfirmation = {
   isDemo: true,
-  currency: "PLN",
+  currency: "EUR",
   deliveryMethodId: "pickup",
   pickupPoint: "Demo001",
   createdAt: "2026-11-17T19:00:00Z",
@@ -39,7 +39,7 @@ test("akceptuje poprawne potwierdzenie z darmową dostawą", () => {
 test("odrzucenie negatywnej odpowiedzi przy quantity 0", () => {
   const confirmation: OrderConfirmation = {
     isDemo: true,
-    currency: "PLN",
+  currency: "EUR",
     deliveryMethodId: "pickup",
     pickupPoint: "Demo001",
     createdAt: "2026-11-17T19:00:00Z",
@@ -68,7 +68,7 @@ test("odrzucenie negatywnej odpowiedzi przy quantity 0", () => {
 test("niepoprawna data odrzuca walidator", () => {
   const confirmation: OrderConfirmation = {
     isDemo: true,
-    currency: "PLN",
+  currency: "EUR",
     deliveryMethodId: "pickup",
     pickupPoint: "Demo001",
     createdAt: "niepoprawna-data",

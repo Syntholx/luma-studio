@@ -19,7 +19,7 @@ const pickupOrder: OrderConfirmation = {
   createdAt: "2026-11-23T19:00:00Z",
   expiresAt: "2026-11-24T19:00:00Z",
   isDemo: true,
-  currency: "PLN",
+  currency: "EUR",
   items: [
     {
       productId: 1,

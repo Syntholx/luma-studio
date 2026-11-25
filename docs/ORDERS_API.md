@@ -48,7 +48,7 @@ np. wynik `crypto.randomUUID()` w przeglądarce.
   nigdy nie wpływają na wycenę. API znajduje produkt na podstawie wariantu.
 - Kolejność pozycji jest normalizowana po variantId; teksty są trimowane.
 
-Pickup kosztuje 9,99 PLN, kurier 14,99 PLN. Od sumy produktów **>= 200 PLN**
+Pickup kosztuje 9,99 EUR, kurier 14,99 EUR. Od sumy produktów **>= 200 EUR**
 obie metody są bezpłatne. Cena pozycji pochodzi z wariantu, nie ceny bazowej produktu.
 Serwer używa decimal; JSON zawiera liczby, frontend formatuje je jako walutę.
 
@@ -65,7 +65,7 @@ Nie ma Location ani endpointu GET służącego pobraniu zamówienia.
   "createdAt": "2026-11-16T20:00:00+00:00",
   "expiresAt": "2026-11-17T20:00:00+00:00",
   "isDemo": true,
-  "currency": "PLN",
+  "currency": "EUR",
   "items": [{
     "productId": 1,
     "variantId": 202,

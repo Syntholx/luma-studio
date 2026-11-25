@@ -87,7 +87,7 @@ public static class Orders
         if (errors.Count > 0) throw new OrderValidationException(errors, "items_unavailable");
         var total = lines.Sum(l => l.LineTotal);
         var delivery = GetDeliveryPrice(total, request.DeliveryMethodId!);
-        return new($"DEMO-{Guid.NewGuid():N}", now, now.AddHours(24), true, "PLN", lines,
+        return new($"DEMO-{Guid.NewGuid():N}", now, now.AddHours(24), true, "EUR", lines,
             lines.Sum(l => l.Quantity), total, request.DeliveryMethodId!,
             request.DeliveryMethodId == "pickup" ? "Pickup point" : "Courier",
             delivery, request.PickupPoint, total + delivery);

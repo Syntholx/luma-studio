@@ -289,7 +289,7 @@ test("łączy kolejne dodania wariantu w jedną pozycję koszyka", async () => {
   expect(screen.getByRole("heading", { name: "Cart" })).toBeInTheDocument();
   expect(screen.getByText("Size: M · Quantity: 5")).toBeInTheDocument();
   expect(screen.getByText("Total quantity: 5")).toBeInTheDocument();
-  expect(screen.getByText(/Total:\s*PLN\s*472\.50/)).toBeInTheDocument();
+  expect(screen.getByText(/Total:\s*€\s*472\.50/)).toBeInTheDocument();
   expect(
     screen.getAllByRole("link", { name: "Aura Bracelet" }),
   ).toHaveLength(1);

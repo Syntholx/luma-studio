@@ -81,7 +81,7 @@ public sealed class OrderTests
         var order = (await response.Content.ReadFromJsonAsync<OrderConfirmation>())!;
         Assert.True(order.IsDemo);
         Assert.StartsWith("DEMO-", order.OrderId);
-        Assert.Equal("PLN", order.Currency);
+        Assert.Equal("EUR", order.Currency);
         Assert.Equal(total, order.TotalPrice);
         Assert.Equal(fee, order.DeliveryPrice);
         Assert.Equal(grand, order.GrandTotal);
