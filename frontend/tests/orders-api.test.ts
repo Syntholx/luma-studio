@@ -32,11 +32,11 @@ const confirmation: OrderConfirmation = {
   ],
 };
 
-test("akceptuje poprawne potwierdzenie z darmową dostawą", () => {
+test("accepts a valid confirmation with free shipping", () => {
   expect(isOrderConfirmation(confirmation)).toBe(true);
 });
 
-test("odrzucenie negatywnej odpowiedzi przy quantity 0", () => {
+test("rejects a line quantity of zero", () => {
   const confirmation: OrderConfirmation = {
     isDemo: true,
   currency: "EUR",
@@ -65,7 +65,7 @@ test("odrzucenie negatywnej odpowiedzi przy quantity 0", () => {
   expect(isOrderConfirmation(confirmation)).toBe(false);
 });
 
-test("niepoprawna data odrzuca walidator", () => {
+test("rejects an invalid confirmation date", () => {
   const confirmation: OrderConfirmation = {
     isDemo: true,
   currency: "EUR",
@@ -94,7 +94,7 @@ test("niepoprawna data odrzuca walidator", () => {
   expect(isOrderConfirmation(confirmation)).toBe(false);
 });
 
-test("wysyła zamówienie z przekazanym kluczem i zwraca potwierdzenie po 201", async () => {
+test("sends the supplied key and returns the HTTP 201 confirmation", async () => {
   const order: OrderRequest = {
     customerName: "Demo",
     email: "demo@example.test",
@@ -124,7 +124,7 @@ test("wysyła zamówienie z przekazanym kluczem i zwraca potwierdzenie po 201", 
   });
 });
 
-test("wysyłamy zamówienie z przekazanym kluczem, ale zwraca 409", async () => {
+test("rejects HTTP 409 when placing an order", async () => {
   const order: OrderRequest = {
     customerName: "Demo",
     email: "demo@example.test",

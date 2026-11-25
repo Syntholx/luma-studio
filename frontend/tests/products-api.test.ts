@@ -6,7 +6,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-test("zwraca poprawny katalog z API", async () => {
+test("returns a valid catalogue", async () => {
   const fetchMock = vi
     .fn()
     .mockResolvedValue(new Response(JSON.stringify(products), { status: 200 }));
@@ -20,7 +20,7 @@ test("zwraca poprawny katalog z API", async () => {
   });
 });
 
-test("odrzuca odpowiedź HTTP 500", async () => {
+test("rejects HTTP 500", async () => {
   const fetchMock = vi
     .fn()
     .mockResolvedValue(new Response(null, { status: 500 }));
@@ -31,7 +31,7 @@ test("odrzuca odpowiedź HTTP 500", async () => {
   });
 });
 
-test("odrzuca obiekt zamiast tablicy produktów", async () => {
+test("rejects an object instead of an array", async () => {
   const fetchMock = vi
     .fn()
     .mockResolvedValue(new Response(JSON.stringify(products[0])));
@@ -42,7 +42,7 @@ test("odrzuca obiekt zamiast tablicy produktów", async () => {
   });
 });
 
-test("odrzuca produkt z nieprawidłową ceną wariantu", async () => {
+test("rejects an invalid variant price", async () => {
   const invalidProducts = [
     {
       ...products[0],
@@ -59,7 +59,7 @@ test("odrzuca produkt z nieprawidłową ceną wariantu", async () => {
   });
 });
 
-test("przekazanie sygnały abbortowania do fetch", async () => {
+test("passes the abort signal to fetch", async () => {
   const abortController = new AbortController();
   const fetchMock = vi
     .fn()

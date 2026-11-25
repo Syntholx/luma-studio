@@ -3,17 +3,17 @@ import { getCartTotal, parseCart } from "../cart";
 import { hasUnavailableCartItems } from "../cart";
 import { products } from "../products";
 
-test("zwraca pusty koszyk dla null", () => {
+test("returns an empty cart for null", () => {
   expect(parseCart(null)).toEqual([]);
 });
 
-test("zachowuje poprawną pozycje koszyka", () => {
+test("keeps a valid cart item", () => {
   expect(parseCart([{ productId: 1, variantId: 204, quantity: 2 }])).toEqual([
     { productId: 1, variantId: 204, quantity: 2 },
   ]);
 });
 
-test("odrzuca pozycje z ujemną ilością", () => {
+test("rejects negative quantities", () => {
   expect(
     parseCart([
       {
@@ -25,7 +25,7 @@ test("odrzuca pozycje z ujemną ilością", () => {
   ).toEqual([]);
 });
 
-test("zachowuje poprawny struktualnie wpis bez sprawdzania katalogu", () => {
+test("keeps structurally valid entries without checking the catalogue", () => {
   expect(
     parseCart([
       {
@@ -37,7 +37,7 @@ test("zachowuje poprawny struktualnie wpis bez sprawdzania katalogu", () => {
   ).toEqual([{ productId: 1, variantId: 205, quantity: 1 }]);
 });
 
-test("zachowuje poprawne wpisy i pomija błędne", () => {
+test("keeps valid entries and skips invalid ones", () => {
   expect(
     parseCart([
       {
@@ -54,7 +54,7 @@ test("zachowuje poprawne wpisy i pomija błędne", () => {
   ).toEqual([{ productId: 1, variantId: 204, quantity: 2 }]);
 });
 
-test("sumuje ceny wariantów z uwzględnieniem ilości", () => {
+test("totals variant prices using quantities", () => {
   expect(
     getCartTotal(
       [
@@ -74,7 +74,7 @@ test("sumuje ceny wariantów z uwzględnieniem ilości", () => {
   ).toBeCloseTo(273.5, 2);
 });
 
-test("wykrywa niedostępny wariant w koszyku", () => {
+test("detects an unavailable variant", () => {
   expect(
     hasUnavailableCartItems(
       [
@@ -88,7 +88,7 @@ test("wykrywa niedostępny wariant w koszyku", () => {
     ),
   ).toBe(true);
 });
-test("Nie blokuje dostępnych wariantów", () => {
+test("allows available variants", () => {
   expect(
     hasUnavailableCartItems(
       [
@@ -108,7 +108,7 @@ test("Nie blokuje dostępnych wariantów", () => {
   ).toBe(false);
 });
 
-test("blokuje wariant niepasujący do produktu", () => {
+test("blocks a variant belonging to another product", () => {
   expect(
     hasUnavailableCartItems(
       [
@@ -123,7 +123,7 @@ test("blokuje wariant niepasujący do produktu", () => {
   ).toBe(true);
 });
 
-test("wykrywa niedostępny wariant w mieszanym koszyku", () => {
+test("detects an unavailable variant in a mixed cart", () => {
   expect(
     hasUnavailableCartItems(
       [

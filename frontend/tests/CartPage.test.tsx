@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { CartPage } from "../components/CartPage";
 import { products } from "../products";
 
-test("pokazuje komunikat i można usunąć produkt z koszyka", async () => {
+test("shows an error and allows product removal", async () => {
   const onRemoveFromCart = vi.fn();
   render(
     <MemoryRouter>
@@ -31,7 +31,7 @@ test("pokazuje komunikat i można usunąć produkt z koszyka", async () => {
   expect(onRemoveFromCart).toHaveBeenCalledWith(999);
 });
 
-test("pokazuje komunikat i można usunąć produkt, gdy wariant nie istnieje", async () => {
+test("allows removal when the variant is missing", async () => {
   const onRemoveFromCart = vi.fn();
   render(
     <MemoryRouter>

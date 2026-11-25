@@ -4,7 +4,7 @@ import { MemoryRouter, Routes, Route } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { products } from "../products";
 import { ProductDetailsPage } from "../components/ProductDetailsPage";
-test("wybór wariantu i dodanie go do koszyka", async () => {
+test("selects a variant and adds it to the cart", async () => {
   const onAddCart = vi.fn();
   render(
     <MemoryRouter initialEntries={["/produkty/bransoletka-aura"]}>
@@ -38,7 +38,7 @@ test("wybór wariantu i dodanie go do koszyka", async () => {
   expect(screen.getByText("Added to cart: 1")).toBeInTheDocument();
 });
 
-test("po zmianie rozmiaru znika komunikat poprzedniego dodania", async () => {
+test("clears confirmation when the size changes", async () => {
   const onAddCart = vi.fn();
   render(
     <MemoryRouter initialEntries={["/produkty/bransoletka-aura"]}>
@@ -78,7 +78,7 @@ test("po zmianie rozmiaru znika komunikat poprzedniego dodania", async () => {
   expect(onAddCart).toHaveBeenCalledTimes(1);
 });
 
-test("niedostępny rozmiar L jest zablokowany, nie da się go kupić", async () => {
+test("prevents adding unavailable size L", async () => {
   const onAddCart = vi.fn();
   render(
     <MemoryRouter initialEntries={["/produkty/bransoletka-aura"]}>
@@ -110,7 +110,7 @@ test("niedostępny rozmiar L jest zablokowany, nie da się go kupić", async () 
   expect(onAddCart).toHaveBeenCalledTimes(0);
 });
 
-test("wybór 3 sztuk, potwierdzenie wywołania", async () => {
+test("adds three units of the selected variant", async () => {
   const onAddCart = vi.fn();
   render(
     <MemoryRouter initialEntries={["/produkty/bransoletka-aura"]}>
@@ -141,7 +141,7 @@ test("wybór 3 sztuk, potwierdzenie wywołania", async () => {
   expect(screen.getByText("Added to cart: 3")).toBeInTheDocument();
 });
 
-test("graniicy ilości 1-10", async () => {
+test("enforces quantity limits from 1 to 10", async () => {
   const onAddCart = vi.fn();
   render(
     <MemoryRouter initialEntries={["/produkty/bransoletka-aura"]}>
@@ -178,7 +178,7 @@ test("graniicy ilości 1-10", async () => {
   expect(onAddCart).toHaveBeenCalledWith(1, 202, 10);
 });
 
-test("czyszczenia potwierdzenia po zmianie ilości", async () => {
+test("clears confirmation when the quantity changes", async () => {
   const onAddCart = vi.fn();
   render(
     <MemoryRouter initialEntries={["/produkty/bransoletka-aura"]}>
@@ -213,7 +213,7 @@ test("czyszczenia potwierdzenia po zmianie ilości", async () => {
   expect(onAddCart).toHaveBeenCalledTimes(1);
 });
 
-test("przy niedostępności ukrywa niektóre funkcje", async () => {
+test("hides purchase controls for unavailable products", async () => {
   const onAddCart = vi.fn();
   const catalogWithUnavailableAura = products.map((product) => {
     if (product.id !== 1) {

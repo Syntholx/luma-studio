@@ -43,7 +43,7 @@ const pickupOrder: OrderConfirmation = {
   grandTotal: 99.49,
 };
 
-test("pokazuje pole kodu dla domyślnego punktu odbioru", () => {
+test("shows the code field for default pickup", () => {
   render(
     <MemoryRouter>
       <CheckoutPage
@@ -60,7 +60,7 @@ test("pokazuje pole kodu dla domyślnego punktu odbioru", () => {
   expect(screen.getByLabelText("Pickup point code")).toBeInTheDocument();
 });
 
-test("ukrywa pole kodu po wybraniu kuriera", async () => {
+test("hides the code field for courier delivery", async () => {
   render(
     <MemoryRouter>
       <CheckoutPage
@@ -80,7 +80,7 @@ test("ukrywa pole kodu po wybraniu kuriera", async () => {
   expect(screen.getByRole("radio", { name: /Courier/ })).toBeChecked();
 });
 
-test("ponownie pokazuje pole po powrocie do punktu odbioru", async () => {
+test("shows the code field again when returning to pickup", async () => {
   render(
     <MemoryRouter>
       <CheckoutPage
@@ -101,7 +101,7 @@ test("ponownie pokazuje pole po powrocie do punktu odbioru", async () => {
   expect(screen.getByRole("radio", { name: /Pickup point/ })).toBeChecked();
 });
 
-test("zatwierdza odbiór i pokazuje kod bez skrajnych spacji", async () => {
+test("submits and displays the trimmed pickup code", async () => {
   createOrderMock.mockResolvedValueOnce(pickupOrder);
   const onClearCart = vi.fn();
   render(
@@ -153,7 +153,7 @@ test("zatwierdza odbiór i pokazuje kod bez skrajnych spacji", async () => {
   ).toBeInTheDocument();
   expect(onClearCart).toHaveBeenCalledTimes(1);
 });
-test("zatwierdza dostawę kurierem bez kodu punktu odbioru", async () => {
+test("confirms courier delivery without a pickup code", async () => {
   createOrderMock.mockResolvedValueOnce({
     ...pickupOrder,
     deliveryMethodId: "courier",

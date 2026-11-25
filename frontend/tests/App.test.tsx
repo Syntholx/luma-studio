@@ -11,7 +11,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-test("odmotowanie App podczas trwającego pobierania, które anuluje", () => {
+test("aborts the request when App unmounts", () => {
   const pendingResponse = new Promise<Response>(() => {});
   const fetchMock = vi.fn<typeof fetch>().mockReturnValue(pendingResponse);
   vi.stubGlobal("fetch", fetchMock);
@@ -27,7 +27,7 @@ test("odmotowanie App podczas trwającego pobierania, które anuluje", () => {
   expect(signal?.aborted).toBe(true);
 });
 
-test("starsza odpowiedź nie nadpisuje nowszego katalogu", async () => {
+test("ignores an older catalogue response", async () => {
   let finishFirst!: (response: Response) => void;
   let finishSecond!: (response: Response) => void;
   const firstResponse = new Promise<Response>((resolve) => {
@@ -74,7 +74,7 @@ test("starsza odpowiedź nie nadpisuje nowszego katalogu", async () => {
     screen.queryByRole("heading", { name: "Starszy produkt" }),
   ).not.toBeInTheDocument();
 });
-test("spóźniony error, nie zasłania nowszego katalogu", async () => {
+test("ignores a stale catalogue error", async () => {
   let firstFinish!: (response: Response) => void;
   let secondFinish!: (response: Response) => void;
   const firstResponse = new Promise<Response>((resolve) => {
@@ -119,7 +119,7 @@ test("spóźniony error, nie zasłania nowszego katalogu", async () => {
   ).not.toBeInTheDocument();
 });
 
-test("stare żądanie nie wyłącza ładowania nowego", async () => {
+test("keeps the newer loading state", async () => {
   let firstFinish!: (response: Response) => void;
   let secondFinish!: (response: Response) => void;
   const firstResponse = new Promise<Response>((resolve) => {
@@ -163,7 +163,7 @@ test("stare żądanie nie wyłącza ładowania nowego", async () => {
   expect(screen.queryByText("Loading the catalogue…")).not.toBeInTheDocument();
 });
 
-test("ponownienie przyciskiem po błędzie", async () => {
+test("retries loading after an error", async () => {
   let firstFinish!: (response: Response) => void;
   let secondFinish!: (response: Response) => void;
   const firstResponse = new Promise<Response>((resolve) => {
@@ -212,7 +212,7 @@ test("ponownienie przyciskiem po błędzie", async () => {
   expect(fetchMock).toHaveBeenCalledTimes(2);
 });
 
-test("pokazuje komunikat pustego katalogu i ukrywa kontrolki", async () => {
+test("shows an empty catalogue message and hides controls", async () => {
   const fetchMock = vi
     .fn<typeof fetch>()
     .mockResolvedValue(new Response(JSON.stringify([])));
@@ -236,7 +236,7 @@ test("pokazuje komunikat pustego katalogu i ukrywa kontrolki", async () => {
     screen.getByRole("heading", { name: "The collection" }),
   ).toBeInTheDocument();
 });
-test("zachowuje kontrolki, gdy wyszukiwanie nie znajduję produktów", async () => {
+test("keeps controls available when search finds no products", async () => {
   const fetchMock = vi
     .fn<typeof fetch>()
     .mockResolvedValue(new Response(JSON.stringify(products)));
@@ -270,7 +270,7 @@ test("zachowuje kontrolki, gdy wyszukiwanie nie znajduję produktów", async () 
   expect(screen.getByRole("heading", { name: "Aura Bracelet" })).toBeInTheDocument();
 });
 
-test("łączy kolejne dodania wariantu w jedną pozycję koszyka", async () => {
+test("merges repeated additions of the same variant", async () => {
   localStorage.clear();
   const fetchMock = vi
     .fn<typeof fetch>()
@@ -303,7 +303,7 @@ test("łączy kolejne dodania wariantu w jedną pozycję koszyka", async () => {
   ).toHaveLength(1);
 });
 
-test("ukrywa niedostępny produkt i przywraca go po zresetowaniu filtrów", async () => {
+test("hides an unavailable product and restores it after reset", async () => {
   const catalogWithUnavailableAura = products.map((product) => {
     if (product.id !== 1) {
       return product;
