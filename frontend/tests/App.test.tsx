@@ -230,8 +230,10 @@ test("pokazuje komunikat pustego katalogu i ukrywa kontrolki", async () => {
   expect(screen.queryByLabelText("Search products")).not.toBeInTheDocument();
   expect(screen.queryByLabelText("Category")).not.toBeInTheDocument();
   expect(screen.queryByLabelText("Sort by")).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "Filters & sort" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "Reset filters" })).not.toBeInTheDocument();
   expect(
-    screen.getByRole("heading", { name: "Find your favourite piece" }),
+    screen.getByRole("heading", { name: "The collection" }),
   ).toBeInTheDocument();
 });
 test("zachowuje kontrolki, gdy wyszukiwanie nie znajduję produktów", async () => {
@@ -244,22 +246,28 @@ test("zachowuje kontrolki, gdy wyszukiwanie nie znajduję produktów", async () 
       <App />
     </MemoryRouter>,
   );
-  const searchInput = await screen.findByLabelText("Search products");
-  expect(screen.queryByLabelText("Search products")).toBeInTheDocument();
   const user = userEvent.setup();
+  await screen.findByRole("heading", { name: "Aura Bracelet" });
+  expect(screen.queryByRole("searchbox", { name: "Search products" })).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: /Search/ }));
+  const searchInput = screen.getByRole("searchbox", { name: "Search products" });
   await user.type(searchInput, "nieistniejacyprodukt");
 
   expect(
     screen.queryByText("No matching products."),
   ).toBeInTheDocument();
   expect(screen.queryByLabelText("Search products")).toBeInTheDocument();
-  expect(screen.queryByLabelText("Category")).toBeInTheDocument();
-  expect(screen.queryByLabelText("Sort by")).toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Filters & sort" }));
+  expect(screen.getByLabelText("Category")).toBeInTheDocument();
+  expect(screen.getByLabelText("Sort by")).toBeInTheDocument();
   expect(
     screen.queryByText(
       "The collection is empty. Please check back later.",
     ),
   ).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Reset filters" }));
+  expect(searchInput).toHaveValue("");
+  expect(screen.getByRole("heading", { name: "Aura Bracelet" })).toBeInTheDocument();
 });
 
 test("łączy kolejne dodania wariantu w jedną pozycję koszyka", async () => {
@@ -325,6 +333,9 @@ test("ukrywa niedostępny produkt i przywraca go po zresetowaniu filtrów", asyn
   expect(
     await screen.findByRole("heading", { name: "Aura Bracelet" }),
   ).toBeInTheDocument();
+  const filtersButton = screen.getByRole("button", { name: "Filters & sort" });
+  expect(screen.queryByLabelText("Available products only")).not.toBeInTheDocument();
+  await user.click(filtersButton);
   expect(screen.getByLabelText("Available products only")).not.toBeChecked();
   expect(screen.getByText("Product unavailable")).toBeInTheDocument();
   await user.click(
@@ -337,6 +348,11 @@ test("ukrywa niedostępny produkt i przywraca go po zresetowaniu filtrów", asyn
     screen.queryByRole("heading", { name: "Aura Bracelet" }),
   ).not.toBeInTheDocument();
   expect(screen.queryByText("Product unavailable")).not.toBeInTheDocument();
+  await user.click(filtersButton);
+  expect(screen.queryByLabelText("Available products only")).not.toBeInTheDocument();
+  expect(screen.queryByRole("heading", { name: "Aura Bracelet" })).not.toBeInTheDocument();
+  await user.click(filtersButton);
+  expect(screen.getByLabelText("Available products only")).toBeChecked();
   expect(
     screen.getByRole("heading", { name: "Sol Necklace" }),
   ).toBeInTheDocument();
@@ -347,5 +363,5 @@ test("ukrywa niedostępny produkt i przywraca go po zresetowaniu filtrów", asyn
     screen.getByRole("heading", { name: "Aura Bracelet" }),
   ).toBeInTheDocument();
   expect(screen.getByText("Product unavailable")).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Reset filters" })).toBeDisabled();
+  expect(screen.queryByRole("button", { name: "Reset filters" })).not.toBeInTheDocument();
 });

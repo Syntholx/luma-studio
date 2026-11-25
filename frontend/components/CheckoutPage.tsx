@@ -12,6 +12,7 @@ import { getDeliveryPrice } from "../delivery";
 import { ProductImage } from "./ProductImage";
 import type { OrderRequest } from "../orders";
 import { createOrder } from "../services/orders";
+import { OrderEmailValidationError } from "../services/orders";
 
 type OrderConfirmation = {
   totalQuantity: number;
@@ -43,6 +44,7 @@ export function CheckoutPage(props: {
   const confirmationHeadingRef = useRef<HTMLHeadingElement>(null);
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [emailError, setEmailError] = useState("");
   const [pendingAttempt, setPendingAttempt] = useState<{
     order: OrderRequest;
     key: string;
@@ -50,6 +52,7 @@ export function CheckoutPage(props: {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (isSubmitting) return;
+    setEmailError("");
     setFormError("");
     let normalizedPickupPoint: string | null = null;
 
@@ -106,6 +109,11 @@ export function CheckoutPage(props: {
       setPendingAttempt(null);
       props.onClearCart();
     } catch (error) {
+      if (error instanceof OrderEmailValidationError) {
+        setPendingAttempt(null);
+        setEmailError(error.message);
+        return;
+      }
       setFormError("Could not submit your order. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -127,8 +135,7 @@ export function CheckoutPage(props: {
           Demo order confirmed
         </h1>
         <p className="mt-[16px] text-[#6b6259]">
-          This is a simulation. No real order was placed or payment
-          taken.
+          This is a simulation. No real order was placed or payment taken.
         </p>
         <p className="text-[16px] font-[400]">
           Total quantity: {orderConfirmation.totalQuantity}
@@ -195,9 +202,7 @@ export function CheckoutPage(props: {
   if (selectedDelivery === undefined) {
     return (
       <section className="py-[48px]">
-        <h1 className="text-[36px] font-[600]">
-          Delivery method not found
-        </h1>
+        <h1 className="text-[36px] font-[600]">Delivery method not found</h1>
         <p>Return to your cart and try again.</p>
       </section>
     );
@@ -243,8 +248,15 @@ export function CheckoutPage(props: {
             type="email"
             required
             autoComplete="email"
+            aria-invalid={Boolean(emailError)}
+            aria-describedby={emailError ? "email-error" : undefined}
             disabled={pendingAttempt !== null}
           ></input>
+          {emailError && (
+            <p id="email-error" role="alert">
+              {emailError}
+            </p>
+          )}
         </div>
 
         <fieldset disabled={pendingAttempt !== null}>

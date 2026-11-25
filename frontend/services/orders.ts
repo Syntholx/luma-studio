@@ -88,5 +88,23 @@ export async function createOrder(
     }
     return data;
   }
+  if (orderResponse.status === 400) {
+    const data: unknown = await orderResponse.json();
+    if (isRecord(data) && data.code === "validation_failed") {
+      if (isRecord(data.errors)) {
+        const emailErrors = data.errors.email;
+
+        if (Array.isArray(emailErrors)) {
+          const message = emailErrors[0];
+
+          if (typeof message === "string") {
+            throw new OrderEmailValidationError(message);
+          }
+        }
+      }
+    }
+  }
   throw new Error("Could not place your order");
 }
+
+export class OrderEmailValidationError extends Error {}

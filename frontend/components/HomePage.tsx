@@ -6,13 +6,19 @@ export function HomePage(props: {
   isCatalogLoading: boolean;
   catalogError: string;
   onRetry: () => Promise<void>;
+  searchProducts: string;
+  onClearSearch: () => void;
 }) {
   const [categoryFilter, setCategoryFilter] = useState("All");
-  const [searchProducts, setSearchProducts] = useState("");
-
-  const normalizedSearch = searchProducts.trim().toLowerCase();
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const normalizedSearch = props.searchProducts.trim().toLowerCase();
   const [priceSort, setPriceSort] = useState("default");
   const [onlyAvailable, setOnlyAvailable] = useState(false);
+  const hasActiveFilters =
+    categoryFilter !== "All" ||
+    normalizedSearch !== "" ||
+    priceSort !== "default" ||
+    onlyAvailable;
 
   const filteredProducts = props.catalogProducts.filter(
     (product) =>
@@ -48,25 +54,10 @@ export function HomePage(props: {
         </a>
       </section>
       <section
-        id="o-marce"
-        className="py-[48px] border-t-[1px] border-[#e5ddd3]"
-      >
-        <h2 className="text-[30px] font-[600]">Made with care</h2>
-        <p className="mt-[16px] max-w-[680px] text-[#6b6259] leading-[1.7]">
-          Luma Studio is a demo jewellery brand that pairs delicate
-          designs with colour. Explore our bracelets,
-          necklaces and earrings.
-        </p>
-      </section>
-      <section
         id="kolekcja"
         className="py-[48px] border-t-[1px] border-[#e5ddd3]"
       >
-        <h2 className="text-[30px] font-[600]">Find your favourite piece</h2>
-        <p className="mt-[16px] max-w-[680px] text-[#6b6259] leading-[1.7]">
-          Looking for an everyday accent or something for a special occasion? Explore
-          our collection.
-        </p>
+        <h2 className="text-[30px] font-[600]">The collection</h2>
 
         <p role="status" className="mt-[16px]">
           {props.isCatalogLoading ? "Loading the catalogue…" : ""}
@@ -92,94 +83,94 @@ export function HomePage(props: {
                 The collection is empty. Please check back later.
               </p>
             )}
-            {props.catalogProducts.length > 0 && (
-              <>
-                <div className="mt-[24px] flex flex-col gap-[8px]">
-                  <label
-                    htmlFor="avialable-product"
-                    className="flex items-center gap-[8px] min-h-[44px] mb-[16px]"
-                  >
-                    <input
-                      className="w-[18px] h-[18px] accent-[#765341]"
-                      type="checkbox"
-                      id="avialable-product"
-                      name="avialable-product"
-                      checked={onlyAvailable}
-                      onChange={(event) =>
-                        setOnlyAvailable(event.currentTarget.checked)
-                      }
-                    ></input>
-                    Available products only
-                  </label>
-                  <label htmlFor="price-sort">Sort by</label>
-                  <select
-                    className="w-full max-w-[320px] min-h-[44px] px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px]"
-                    id="price-sort"
-                    name="price-sort"
-                    value={priceSort}
-                    onChange={(event) =>
-                      setPriceSort(event.currentTarget.value)
-                    }
-                  >
-                    <option value="default">Default</option>
-                    <option value="price-asc">Price: low to high</option>
-                    <option value="price-desc">Price: high to low</option>
-                  </select>
-                </div>
 
-                <div className="flex mt-[24px] flex-col gap-[8px]">
-                  <label htmlFor="search-product">Search products</label>
-                  <input
-                    className="w-full max-w-[320px] min-h-[44px] px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px] "
-                    id="search-product"
-                    name="search-product"
-                    value={searchProducts}
-                    onChange={(event) =>
-                      setSearchProducts(event.currentTarget.value)
-                    }
-                  ></input>
+            <>
+              {props.catalogProducts.length > 0 && (
+                <div>
+                  <div className="mt-4 mb-4 flex w-full flex-wrap items-center justify-between gap-3">
+                    <p className="text-sm font-normal text-[#6b6259]">
+                      {filteredProducts.length}{" "}
+                      {filteredProducts.length === 1 ? "product" : "products"}
+                    </p>
+                    <div className="flex flex-wrap items-center gap-3">
+                      {hasActiveFilters && (
+                        <button
+                          type="button"
+                          className="min-h-[44px] rounded-lg px-3 text-sm text-[#6b6259] underline hover:text-[#29241f] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#765341]"
+                          onClick={() => {
+                            setCategoryFilter("All");
+                            props.onClearSearch();
+                            setPriceSort("default");
+                            setOnlyAvailable(false);
+                          }}
+                        >
+                          Reset filters
+                        </button>
+                      )}
+                    <button
+                      type="button"
+                      aria-expanded={filtersOpen}
+                      onClick={() => setFiltersOpen((open) => !open)}
+                      className="min-h-[44px] rounded-lg border border-[#e5ddd3] bg-white px-3 text-sm font-medium text-[#29241f] hover:bg-[#f0e9e1] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#765341]"
+                    >
+                      Filters & sort
+                    </button>
+                    </div>
+                  </div>
+                  <div>
+                    {filtersOpen && (
+                      <>
+                        <label
+                          htmlFor="avialable-product"
+                          className="flex items-center gap-[8px] min-h-[44px] mb-[16px]"
+                        >
+                          <input
+                            className="w-[18px] h-[18px] accent-[#765341]"
+                            type="checkbox"
+                            id="avialable-product"
+                            name="avialable-product"
+                            checked={onlyAvailable}
+                            onChange={(event) =>
+                              setOnlyAvailable(event.currentTarget.checked)
+                            }
+                          ></input>
+                          Available products only
+                        </label>
+                        <label htmlFor="price-sort">Sort by</label>
+                        <select
+                          className="w-full max-w-[320px] min-h-[44px] px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px]"
+                          id="price-sort"
+                          name="price-sort"
+                          value={priceSort}
+                          onChange={(event) =>
+                            setPriceSort(event.currentTarget.value)
+                          }
+                        >
+                          <option value="default">Default</option>
+                          <option value="price-asc">Price: low to high</option>
+                          <option value="price-desc">Price: high to low</option>
+                        </select>
+                        <label htmlFor="category">Category</label>
+                        <select
+                          className="min-h-[44px] max-w-[320px] w-full px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px]"
+                          id="category"
+                          value={categoryFilter}
+                          onChange={(event) =>
+                            setCategoryFilter(event.currentTarget.value)
+                          }
+                        >
+                          <option value="All">All</option>
+                          <option value="Bracelets">Bracelets</option>
+                          <option value="Necklaces">Necklaces</option>
+                          <option value="Earrings">Earrings</option>
+                        </select>
+                      </>
+                    )}
+                  </div>
+                  <ProductList products={sortedProducts} />
                 </div>
-
-                <div className="mt-[24px] flex flex-col gap-[8px]">
-                  <label htmlFor="category">Category</label>
-                  <select
-                    className="min-h-[44px] max-w-[320px] w-full px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px]"
-                    id="category"
-                    value={categoryFilter}
-                    onChange={(event) =>
-                      setCategoryFilter(event.currentTarget.value)
-                    }
-                  >
-                    <option value="All">All</option>
-                    <option value="Bracelets">Bracelets</option>
-                    <option value="Necklaces">Necklaces</option>
-                    <option value="Earrings">Earrings</option>
-                  </select>
-                </div>
-                <button
-                  type="button"
-                  className="mt-[12px] min-h-[44px] px-[16px] py-[10px] border-[1px] border-[#e5ddd3] rounded-[8px] bg-[white] text-[#29241f] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-                  disabled={
-                    categoryFilter === "All" &&
-                    searchProducts === "" &&
-                    priceSort === "default" &&
-                    onlyAvailable === false
-                  }
-                  onClick={() => {
-                    setCategoryFilter("All");
-                    setSearchProducts("");
-                    setPriceSort("default");
-                    setOnlyAvailable(false);
-                  }}
-                >
-                  Reset filters
-                </button>
-                <p className="mt-[16px] text-[14px] text-[#6b6259]">
-                  Products shown: {filteredProducts.length}
-                </p>
-                <ProductList products={sortedProducts} />
-              </>
-            )}
+              )}
+            </>
           </>
         )}
       </section>

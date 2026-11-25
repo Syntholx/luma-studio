@@ -5,9 +5,12 @@ import userEvent from "@testing-library/user-event";
 import { CheckoutPage } from "../components/CheckoutPage";
 import { products } from "../products";
 import type { OrderConfirmation } from "../orders";
-import { createOrder } from "../services/orders";
+import { createOrder, OrderEmailValidationError } from "../services/orders";
 
-vi.mock("../services/orders", () => ({ createOrder: vi.fn() }));
+vi.mock("../services/orders", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../services/orders")>()),
+  createOrder: vi.fn(),
+}));
 const createOrderMock = vi.mocked(createOrder);
 
 afterEach(() => {
@@ -203,4 +206,34 @@ test("zatwierdza dostawę kurierem bez kodu punktu odbioru", async () => {
     expect.objectContaining({ deliveryMethodId: "courier", pickupPoint: null }),
     expect.any(String),
   );
+});
+
+test("shows the email error and lets the customer edit the address", async () => {
+  const message = "Use a fictional email address, e.g. demo@example.test.";
+  createOrderMock.mockRejectedValueOnce(new OrderEmailValidationError(message));
+  const onClearCart = vi.fn();
+  render(
+    <MemoryRouter>
+      <CheckoutPage
+        items={[{ productId: 1, variantId: 204, quantity: 1 }]}
+        products={products}
+        onClearCart={onClearCart}
+        isLoading={false}
+        catalogError=""
+        onRetry={vi.fn()}
+      />
+    </MemoryRouter>,
+  );
+  const user = userEvent.setup();
+  const email = screen.getByLabelText("Enter your email address");
+  await user.type(screen.getByLabelText("First name"), "Tester");
+  await user.type(email, "tester@example.com");
+  await user.type(screen.getByLabelText("Pickup point code"), "DEMO01");
+  await user.click(screen.getByRole("button", { name: "Place demo order" }));
+
+  expect(await screen.findByText(message)).toHaveAttribute("role", "alert");
+  expect(email).toHaveAccessibleDescription(message);
+  expect(email).toHaveAttribute("aria-invalid", "true");
+  expect(email).toBeEnabled();
+  expect(onClearCart).not.toHaveBeenCalled();
 });
