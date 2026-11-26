@@ -237,3 +237,35 @@ test("shows the email error and lets the customer edit the address", async () =>
   expect(email).toBeEnabled();
   expect(onClearCart).not.toHaveBeenCalled();
 });
+
+test("retries the order with the same payload and idempotency key after a network error", async () => {
+  createOrderMock.mockRejectedValueOnce(new Error("Network error"));
+  createOrderMock.mockResolvedValueOnce(pickupOrder);
+  render(
+    <MemoryRouter>
+      <CheckoutPage
+        items={[{ productId: 1, variantId: 204, quantity: 1 }]}
+        products={products}
+        onClearCart={vi.fn()}
+        isLoading={false}
+        catalogError=""
+        onRetry={vi.fn()}
+      />
+    </MemoryRouter>,
+  );
+  const user = userEvent.setup();
+  const email = screen.getByLabelText("Enter your email address");
+  await user.type(screen.getByLabelText("First name"), "Tester");
+  await user.type(email, "demo@example.test");
+  await user.type(screen.getByLabelText("Pickup point code"), "DEMO01");
+  await user.click(screen.getByRole("button", { name: "Place demo order" }));
+  const retryButton = await screen.findByRole("button", {
+    name: "Try submitting again",
+  });
+  await user.click(retryButton);
+  expect(
+    await screen.findByRole("heading", { name: "Demo order confirmed" }),
+  ).toBeInTheDocument();
+  expect(createOrderMock).toHaveBeenCalledTimes(2);
+  expect(createOrderMock.mock.calls[1]).toEqual(createOrderMock.mock.calls[0]);
+});
