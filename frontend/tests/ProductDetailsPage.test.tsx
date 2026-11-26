@@ -7,10 +7,10 @@ import { ProductDetailsPage } from "../components/ProductDetailsPage";
 test("selects a variant and adds it to the cart", async () => {
   const onAddCart = vi.fn();
   render(
-    <MemoryRouter initialEntries={["/produkty/bransoletka-aura"]}>
+    <MemoryRouter initialEntries={["/products/aura-bracelet"]}>
       <Routes>
         <Route
-          path="/produkty/:slug"
+          path="/products/:slug"
           element={
             <ProductDetailsPage
               products={products}
@@ -41,10 +41,10 @@ test("selects a variant and adds it to the cart", async () => {
 test("clears confirmation when the size changes", async () => {
   const onAddCart = vi.fn();
   render(
-    <MemoryRouter initialEntries={["/produkty/bransoletka-aura"]}>
+    <MemoryRouter initialEntries={["/products/aura-bracelet"]}>
       <Routes>
         <Route
-          path="/produkty/:slug"
+          path="/products/:slug"
           element={
             <ProductDetailsPage
               products={products}
@@ -81,10 +81,10 @@ test("clears confirmation when the size changes", async () => {
 test("prevents adding unavailable size L", async () => {
   const onAddCart = vi.fn();
   render(
-    <MemoryRouter initialEntries={["/produkty/bransoletka-aura"]}>
+    <MemoryRouter initialEntries={["/products/aura-bracelet"]}>
       <Routes>
         <Route
-          path="/produkty/:slug"
+          path="/products/:slug"
           element={
             <ProductDetailsPage
               products={products}
@@ -113,10 +113,10 @@ test("prevents adding unavailable size L", async () => {
 test("adds three units of the selected variant", async () => {
   const onAddCart = vi.fn();
   render(
-    <MemoryRouter initialEntries={["/produkty/bransoletka-aura"]}>
+    <MemoryRouter initialEntries={["/products/aura-bracelet"]}>
       <Routes>
         <Route
-          path="/produkty/:slug"
+          path="/products/:slug"
           element={
             <ProductDetailsPage
               products={products}
@@ -144,10 +144,10 @@ test("adds three units of the selected variant", async () => {
 test("enforces quantity limits from 1 to 10", async () => {
   const onAddCart = vi.fn();
   render(
-    <MemoryRouter initialEntries={["/produkty/bransoletka-aura"]}>
+    <MemoryRouter initialEntries={["/products/aura-bracelet"]}>
       <Routes>
         <Route
-          path="/produkty/:slug"
+          path="/products/:slug"
           element={
             <ProductDetailsPage
               products={products}
@@ -181,10 +181,10 @@ test("enforces quantity limits from 1 to 10", async () => {
 test("clears confirmation when the quantity changes", async () => {
   const onAddCart = vi.fn();
   render(
-    <MemoryRouter initialEntries={["/produkty/bransoletka-aura"]}>
+    <MemoryRouter initialEntries={["/products/aura-bracelet"]}>
       <Routes>
         <Route
-          path="/produkty/:slug"
+          path="/products/:slug"
           element={
             <ProductDetailsPage
               products={products}
@@ -230,10 +230,10 @@ test("hides purchase controls for unavailable products", async () => {
   });
 
   render(
-    <MemoryRouter initialEntries={["/produkty/bransoletka-aura"]}>
+    <MemoryRouter initialEntries={["/products/aura-bracelet"]}>
       <Routes>
         <Route
-          path="/produkty/:slug"
+          path="/products/:slug"
           element={
             <ProductDetailsPage
               products={catalogWithUnavailableAura}

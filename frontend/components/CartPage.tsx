@@ -70,7 +70,7 @@ export function CartPage(props: {
         <>
           <p className="mt-[24px]">Your cart is empty </p>
           <Link
-            to="/#kolekcja"
+            to="/#collection"
             className="mt-[16px] min-h-[44px] inline-flex items-center text-[#765341] font-[600] hover:underline"
           >
             Browse the collection
@@ -144,7 +144,7 @@ export function CartPage(props: {
               <div className="flex flex-col gap-[8px]">
                 <h2 className="text-[20px] font-[600]">
                   <Link
-                    to={`/produkty/${product.slug}`}
+                    to={`/products/${product.slug}`}
                     className="hover:underline"
                   >
                     {product.name}
@@ -215,7 +215,7 @@ export function CartPage(props: {
             </p>
           )}
           <Link
-            to={"/zamowienie"}
+            to={"/checkout"}
             className="mt-[24px] min-h-[44px] px-[24px] bg-[#765341] text-[white] rounded-[8px] w-auto inline-flex items-center "
           >
             Proceed to checkout

@@ -270,6 +270,19 @@ test("keeps controls available when search finds no products", async () => {
   expect(screen.getByRole("heading", { name: "Aura Bracelet" })).toBeInTheDocument();
 });
 
+test("opens the product from a legacy Polish link", async () => {
+  vi.stubGlobal("fetch", vi.fn<typeof fetch>().mockResolvedValue(
+    new Response(JSON.stringify(products)),
+  ));
+  render(
+    <MemoryRouter initialEntries={["/produkty/bransoletka-aura"]}>
+      <App />
+    </MemoryRouter>,
+  );
+  expect(await screen.findByRole("heading", { name: "Aura Bracelet" })).toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: "Aura Bracelet" })).toHaveProperty("tagName", "H1");
+});
+
 test("merges repeated additions of the same variant", async () => {
   localStorage.clear();
   const fetchMock = vi
@@ -278,7 +291,7 @@ test("merges repeated additions of the same variant", async () => {
 
   vi.stubGlobal("fetch", fetchMock);
   render(
-    <MemoryRouter initialEntries={["/produkty/bransoletka-aura"]}>
+    <MemoryRouter initialEntries={["/products/aura-bracelet"]}>
       <App />
     </MemoryRouter>,
   );

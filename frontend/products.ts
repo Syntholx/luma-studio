@@ -17,8 +17,8 @@ export const products: Product[] = [
     category: "Necklaces",
     price: 122,
     description: "A delicate necklace inspired by the warmth of the sun.",
-    slug: "naszyjnik-sol",
-    imageUrl: "/images/products/naszyjnik-sol.webp",
+    slug: "sol-necklace",
+    imageUrl: "/images/products/sol-necklace.webp",
     imageAlt:
       "Sol necklace with a fine gold chain and sun pendant",
     variants: [
@@ -36,8 +36,8 @@ export const products: Product[] = [
     category: "Bracelets",
     price: 89.5,
     description: "A delicate bracelet made with colourful beads.",
-    slug: "bransoletka-aura",
-    imageUrl: "/images/products/bransoletka-aura.webp",
+    slug: "aura-bracelet",
+    imageUrl: "/images/products/aura-bracelet.webp",
     imageAlt: "Aura bracelet with colourful beads and gold spacers",
     variants: [
       {
@@ -66,8 +66,8 @@ export const products: Product[] = [
     category: "Earrings",
     price: 109,
     description: "Lightweight earrings for everyday wear and special occasions.",
-    slug: "kolczyki-luna",
-    imageUrl: "/images/products/kolczyki-luna.webp",
+    slug: "luna-earrings",
+    imageUrl: "/images/products/luna-earrings.webp",
     imageAlt:
       "Luna earrings with gold hooks and cream crescent moon pendants",
     variants: [

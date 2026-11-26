@@ -47,7 +47,7 @@ export function ProductDetailsPage(props: {
       <section className="py-[48px]">
         <h1 className="text-[30px] font-[600]">Product not found</h1>
         <Link
-          to="/#kolekcja"
+          to="/#collection"
           className="mt-[24px] min-h-[44px]  inline-flex items-center text-[#765341] font-[600] hover:underline"
         >
           Back to the collection
@@ -172,7 +172,7 @@ export function ProductDetailsPage(props: {
         </div>
       )}
       <Link
-        to="/#kolekcja"
+        to="/#collection"
         className="mt-[24px] min-h-[44px]  inline-flex items-center text-[#765341] font-[600] hover:underline"
       >
         Back to the collection

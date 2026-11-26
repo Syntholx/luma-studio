@@ -31,7 +31,7 @@ export function ProductCard(props: { product: Product }) {
         </p>
       )}
       <Link
-        to={`/produkty/${props.product.slug}`}
+        to={`/products/${props.product.slug}`}
         className="mt-[16px] min-h-[44px] inline-flex items-center w-fit text-[#765341] font-[600] hover:underline"
       >
         View product

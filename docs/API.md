@@ -41,7 +41,7 @@ development, nie gotowego statycznego wdrożenia ani automatycznie preview.
 
 Produkt: id:number, name:string, category:string, price:number,
 description:string, slug:string, imageUrl:string, imageAlt:string, variants:tablica.
-imageUrl to ścieżka od korzenia frontendu, np. /images/products/bransoletka-aura.webp.
+imageUrl to ścieżka od korzenia frontendu, np. /images/products/aura-bracelet.webp.
 Pliki są w frontend/public/images/products, nie na hoście API. imageAlt opisuje
 zdjęcie. Obrazy są wygenerowanymi przez AI ilustracjami fikcyjnych produktów.
 Wspólny obraz awaryjny: /images/products/product-fallback.webp (pudełko na biżuterię).
@@ -59,7 +59,7 @@ Price produktu to bazowa cena katalogowa; cena wariantu dotyczy pozycji koszyka.
 Przyszłe zamówienie wymaga niezależnej walidacji i wyceny na serwerze.
 
 Aura ma id1, warianty204/S/89.50/dostępny,202/M/94.50/dostępny,
-203/L/89.50/niedostępny. Endpoint przykładowy: /api/products/bransoletka-aura.
+203/L/89.50/niedostępny. Endpoint przykładowy: /api/products/aura-bracelet.
 
 ## Testy
 

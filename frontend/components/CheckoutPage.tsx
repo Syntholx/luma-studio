@@ -154,7 +154,7 @@ export function CheckoutPage(props: {
           Total {formatPrice(orderConfirmation.grandTotal)}
         </p>
         <Link
-          to={"/#kolekcja"}
+          to={"/#collection"}
           className="mt-[24px] min-h-[44px] text-[#765341] font-[600] hover:underline inline-flex items-center"
         >
           Back to the collection
@@ -190,7 +190,7 @@ export function CheckoutPage(props: {
       <section className="py-[48px]">
         <h1 className="text-[36px] font-[600]">Your cart is empty</h1>
         <Link
-          to={"/#kolekcja"}
+          to={"/#collection"}
           className="mt-[24px] inline-flex items-center min-h-[44px] text-[#765341] font-[600] hover:underline"
         >
           Back to the collection
@@ -383,7 +383,7 @@ export function CheckoutPage(props: {
         </p>
       </section>
       <Link
-        to={"/koszyk"}
+        to={"/cart"}
         className="mt-[24px] min-h-[44px] text-[#765341] font-[600] hover:underline inline-flex items-center"
       >
         Back to cart

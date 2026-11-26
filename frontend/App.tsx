@@ -1,13 +1,31 @@
 import { HomePage } from "./components/HomePage";
-import { Routes, Route } from "react-router-dom";
+import { Navigate, Routes, Route, useLocation, useParams } from "react-router-dom";
 import { ProductDetailsPage } from "./components/ProductDetailsPage";
 import { Link } from "react-router-dom";
 import { CartPage } from "./components/CartPage";
 import { CheckoutPage } from "./components/CheckoutPage";
 import { useCatalog } from "./hooks/useCatalog";
 import { useCart } from "./hooks/useCart";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const legacySlugs = new Map([
+  ["naszyjnik-sol", "sol-necklace"],
+  ["bransoletka-aura", "aura-bracelet"],
+  ["kolczyki-luna", "luna-earrings"],
+]);
+
+function LegacyProductRedirect() {
+  const { slug = "" } = useParams();
+  return <Navigate replace to={`/products/${encodeURIComponent(legacySlugs.get(slug) ?? slug)}`} />;
+}
+
 export function App() {
+  const { pathname, hash } = useLocation();
+  useEffect(() => {
+    if (pathname === "/" && (hash === "#collection" || hash === "#kolekcja")) {
+      document.getElementById("collection")?.scrollIntoView?.();
+    }
+  }, [pathname, hash]);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchProducts, setSearchProducts] = useState("");
   const { catalogProducts, isCatalogLoading, catalogError, loadCatalog } =
@@ -30,7 +48,7 @@ export function App() {
 
         <nav aria-label="Main navigation" className="flex gap-6">
           <Link
-            to="/#kolekcja"
+            to="/#collection"
             className="min-h-[44px] inline-flex items-center"
           >
             Collection
@@ -42,7 +60,7 @@ export function App() {
           >
             🔍 Search
           </button>
-          <Link to="/koszyk" className="min-h-[44px] inline-flex items-center">
+          <Link to="/cart" className="min-h-[44px] inline-flex items-center">
             Cart ({cartQuantity})
           </Link>
         </nav>
@@ -60,6 +78,9 @@ export function App() {
           />
         )}
         <Routes>
+          <Route path="/produkty/:slug" element={<LegacyProductRedirect />} />
+          <Route path="/koszyk" element={<Navigate replace to="/cart" />} />
+          <Route path="/zamowienie" element={<Navigate replace to="/checkout" />} />
           <Route
             path="/"
             element={
@@ -74,7 +95,7 @@ export function App() {
             }
           />
           <Route
-            path={"/produkty/:slug"}
+            path={"/products/:slug"}
             element={
               <ProductDetailsPage
                 onAddCart={addToCart}
@@ -100,7 +121,7 @@ export function App() {
             }
           />
           <Route
-            path={"/koszyk"}
+            path={"/cart"}
             element={
               <CartPage
                 isLoading={isCatalogLoading}
@@ -115,7 +136,7 @@ export function App() {
             }
           />
           <Route
-            path={"/zamowienie"}
+            path="/checkout"
             element={
               <CheckoutPage
                 items={cart}

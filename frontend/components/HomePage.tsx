@@ -47,14 +47,14 @@ export function HomePage(props: {
           moments.
         </p>
         <a
-          href="#kolekcja"
+          href="#collection"
           className="mt-[32px] min-h-[44px] rounded-[8px] py-[12px] px-[24px] bg-[#765341] text-[white] text-center items-center inline-flex"
         >
           Explore the collection
         </a>
       </section>
       <section
-        id="kolekcja"
+        id="collection"
         className="py-[48px] border-t-[1px] border-[#e5ddd3]"
       >
         <h2 className="text-[30px] font-[600]">The collection</h2>

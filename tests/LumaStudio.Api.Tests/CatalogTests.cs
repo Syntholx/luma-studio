@@ -33,9 +33,9 @@ public sealed class CatalogTests : IClassFixture<DemoApiFactory>
     }
 
     [Theory]
-    [InlineData("naszyjnik-sol", 2)]
-    [InlineData("bransoletka-aura", 1)]
-    [InlineData("kolczyki-luna", 3)]
+    [InlineData("sol-necklace", 2)]
+    [InlineData("aura-bracelet", 1)]
+    [InlineData("luna-earrings", 3)]
     public async Task Details_match_list(string slug, int id)
     {
         var list = await client.GetFromJsonAsync<JsonElement>("/api/products");
@@ -47,7 +47,7 @@ public sealed class CatalogTests : IClassFixture<DemoApiFactory>
     [Fact]
     public async Task Aura_preserves_variants()
     {
-        var product = await client.GetFromJsonAsync<JsonElement>("/api/products/bransoletka-aura");
+        var product = await client.GetFromJsonAsync<JsonElement>("/api/products/aura-bracelet");
         var variants = product.GetProperty("variants").EnumerateArray().ToArray();
         Assert.Equal(new[] { 204, 202, 203 }, variants.Select(v => v.GetProperty("id").GetInt32()));
         Assert.Equal(new[] { 89.5m, 94.5m, 89.5m }, variants.Select(v => v.GetProperty("price").GetDecimal()));
