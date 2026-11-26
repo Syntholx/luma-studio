@@ -107,19 +107,20 @@ export function HomePage(props: {
                           Reset filters
                         </button>
                       )}
-                    <button
-                      type="button"
-                      aria-expanded={filtersOpen}
-                      onClick={() => setFiltersOpen((open) => !open)}
-                      className="min-h-[44px] rounded-lg border border-[#e5ddd3] bg-white px-3 text-sm font-medium text-[#29241f] hover:bg-[#f0e9e1] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#765341]"
-                    >
-                      Filters & sort
-                    </button>
+                      <button
+                        type="button"
+                        aria-expanded={filtersOpen}
+                        onClick={() => setFiltersOpen((open) => !open)}
+                        className="min-h-[44px] rounded-lg border border-[#e5ddd3] bg-white px-3 text-sm font-medium text-[#29241f] hover:bg-[#f0e9e1] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#765341]"
+                      >
+                        Filters & sort
+                      </button>
                     </div>
                   </div>
-                  <div>
-                    {filtersOpen && (
-                      <>
+
+                  {filtersOpen && (
+                    <div className="bg-[#f0e9e1] rounded-[8px] px-[16px] py-[16px]">
+                      <div className="flex flex-col">
                         <label
                           htmlFor="avialable-product"
                           className="flex items-center gap-[8px] min-h-[44px] mb-[16px]"
@@ -136,37 +137,47 @@ export function HomePage(props: {
                           ></input>
                           Available products only
                         </label>
-                        <label htmlFor="price-sort">Sort by</label>
-                        <select
-                          className="w-full max-w-[320px] min-h-[44px] px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px]"
-                          id="price-sort"
-                          name="price-sort"
-                          value={priceSort}
-                          onChange={(event) =>
-                            setPriceSort(event.currentTarget.value)
-                          }
-                        >
-                          <option value="default">Default</option>
-                          <option value="price-asc">Price: low to high</option>
-                          <option value="price-desc">Price: high to low</option>
-                        </select>
-                        <label htmlFor="category">Category</label>
-                        <select
-                          className="min-h-[44px] max-w-[320px] w-full px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px]"
-                          id="category"
-                          value={categoryFilter}
-                          onChange={(event) =>
-                            setCategoryFilter(event.currentTarget.value)
-                          }
-                        >
-                          <option value="All">All</option>
-                          <option value="Bracelets">Bracelets</option>
-                          <option value="Necklaces">Necklaces</option>
-                          <option value="Earrings">Earrings</option>
-                        </select>
-                      </>
-                    )}
-                  </div>
+                      </div>
+                      <div className="flex flex-col gap-[16px] md:flex-row">
+                        <div className="flex flex-col gap-[8px]">
+                          <label htmlFor="price-sort">Sort by</label>
+                          <select
+                            className="w-full max-w-[320px] min-h-[44px] px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px]"
+                            id="price-sort"
+                            name="price-sort"
+                            value={priceSort}
+                            onChange={(event) =>
+                              setPriceSort(event.currentTarget.value)
+                            }
+                          >
+                            <option value="default">Default</option>
+                            <option value="price-asc">
+                              Price: low to high
+                            </option>
+                            <option value="price-desc">
+                              Price: high to low
+                            </option>
+                          </select>
+                        </div>
+                        <div className="flex flex-col gap-[8px]">
+                          <label htmlFor="category">Category</label>
+                          <select
+                            className="min-h-[44px] max-w-[320px] w-full px-[12px] py-[10px] bg-[white] border-[1px] border-[#e5ddd3] rounded-[8px]"
+                            id="category"
+                            value={categoryFilter}
+                            onChange={(event) =>
+                              setCategoryFilter(event.currentTarget.value)
+                            }
+                          >
+                            <option value="All">All</option>
+                            <option value="Bracelets">Bracelets</option>
+                            <option value="Necklaces">Necklaces</option>
+                            <option value="Earrings">Earrings</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   <ProductList products={sortedProducts} />
                 </div>
               )}
