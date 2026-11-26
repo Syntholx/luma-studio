@@ -10,6 +10,7 @@ builder.Services.AddProblemDetails();
 builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 16 * 1024);
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<OrderStore>();
+builder.Services.AddSingleton<AccountStore>();
 builder.Services.AddHostedService<OrderRetentionService>();
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
@@ -20,6 +21,13 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 });
 builder.Services.AddRateLimiter(options =>
 {
+    options.AddPolicy("accounts", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 5, Window = TimeSpan.FromMinutes(1), QueueLimit = 0,
+            AutoReplenishment = true
+        }));
     options.AddPolicy("orders", context => RateLimitPartition.GetFixedWindowLimiter(
         context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
         _ => new FixedWindowRateLimiterOptions
@@ -43,14 +51,18 @@ app.UseExceptionHandler(errorApp => errorApp.Run(async context =>
     var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
     var status = exception is BadHttpRequestException badRequest ? badRequest.StatusCode : 500;
     await Results.Problem(statusCode: status,
-        title: status == 500 ? "Server error. Try again with the same key." : "Invalid request.",
+        title: status == 500
+            ? context.Request.Path.StartsWithSegments("/api/orders")
+                ? "Server error. Try again with the same key." : "Server error."
+            : "Invalid request.",
         extensions: new Dictionary<string, object?> { ["code"] = status == 500 ? "server_error" : "invalid_request" })
         .ExecuteAsync(context);
 }));
 app.UseForwardedHeaders();
 app.Use(async (context, next) =>
 {
-    if (context.Request.Path.StartsWithSegments("/api/orders"))
+    if (context.Request.Path.StartsWithSegments("/api/orders") ||
+        context.Request.Path.StartsWithSegments("/api/auth"))
         context.Response.Headers.CacheControl = "no-store";
     await next();
 });
@@ -88,5 +100,7 @@ app.MapPost("/api/orders", (OrderRequest request, HttpContext context, OrderStor
             extensions: new Dictionary<string, object?> { ["code"] = exception.Code });
     }
 }).RequireRateLimiting("orders");
+if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("Accounts:Enabled"))
+    app.MapAccounts();
 app.Run();
 public partial class Program { }
