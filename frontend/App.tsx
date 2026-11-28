@@ -1,5 +1,11 @@
 import { HomePage } from "./components/HomePage";
-import { Navigate, Routes, Route, useLocation, useParams } from "react-router-dom";
+import {
+  Navigate,
+  Routes,
+  Route,
+  useLocation,
+  useParams,
+} from "react-router-dom";
 import { ProductDetailsPage } from "./components/ProductDetailsPage";
 import { Link } from "react-router-dom";
 import { CartPage } from "./components/CartPage";
@@ -7,6 +13,7 @@ import { CheckoutPage } from "./components/CheckoutPage";
 import { useCatalog } from "./hooks/useCatalog";
 import { useCart } from "./hooks/useCart";
 import { useEffect, useState } from "react";
+import { RegisterPage } from "./components/RegisterPage";
 
 const legacySlugs = new Map([
   ["naszyjnik-sol", "sol-necklace"],
@@ -16,7 +23,12 @@ const legacySlugs = new Map([
 
 function LegacyProductRedirect() {
   const { slug = "" } = useParams();
-  return <Navigate replace to={`/products/${encodeURIComponent(legacySlugs.get(slug) ?? slug)}`} />;
+  return (
+    <Navigate
+      replace
+      to={`/products/${encodeURIComponent(legacySlugs.get(slug) ?? slug)}`}
+    />
+  );
 }
 
 export function App() {
@@ -80,7 +92,10 @@ export function App() {
         <Routes>
           <Route path="/produkty/:slug" element={<LegacyProductRedirect />} />
           <Route path="/koszyk" element={<Navigate replace to="/cart" />} />
-          <Route path="/zamowienie" element={<Navigate replace to="/checkout" />} />
+          <Route
+            path="/zamowienie"
+            element={<Navigate replace to="/checkout" />}
+          />
           <Route
             path="/"
             element={
@@ -148,6 +163,7 @@ export function App() {
               />
             }
           />
+          <Route path="/register" element={<RegisterPage />} />
         </Routes>
       </main>
       <footer className="max-w-[1120px] mx-auto py-[32px] px-[24px]">
