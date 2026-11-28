@@ -49,10 +49,10 @@ export function RegisterPage() {
   }
 
   return (
-    <section>
-      <h1 className="py-[48px] font-[600]">Register Page</h1>
+    <section className="max-w-[480px] py-[48px] items-center mx-auto ">
+      <h1 className="font-[600] text-[28px] mb-[24px]">Create an account</h1>
       <form onSubmit={handleSubmit}>
-        <div className="flex flex-col gap-[8px]">
+        <div className="flex flex-col gap-[8px] mt-[8px]">
           <label htmlFor="email">Email address</label>
           <input
             className="bg-[white] border-[#e5ddd3] rounded-[8px] min-h-[44px] px-[12px] py-[10px] border-[1px]"
@@ -63,9 +63,13 @@ export function RegisterPage() {
             autoComplete="email"
             onChange={() => setEmailMessage("")}
           ></input>
-          {EmailMessage !== "" && <p role="alert">{EmailMessage}</p>}
+          {EmailMessage !== "" && (
+            <p role="alert" className="text-[#9f2929]">
+              {EmailMessage}
+            </p>
+          )}
         </div>
-        <div className="flex flex-col gap-[8px]">
+        <div className="flex flex-col gap-[8px]  mt-[8px]">
           <label htmlFor="password">Password</label>
           <input
             className="bg-[white] border-[#e5ddd3] rounded-[8px] min-h-[44px] px-[12px] py-[10px] border-[1px]"
@@ -76,7 +80,7 @@ export function RegisterPage() {
             autoComplete="new-password"
           ></input>
         </div>
-        <div className="flex flex-col gap-[8px]">
+        <div className="flex flex-col gap-[8px]  mt-[8px]">
           <label htmlFor="confirm-password">Confirm Password</label>
           <input
             className="bg-[white] border-[#e5ddd3] rounded-[8px] min-h-[44px] px-[12px] py-[10px] border-[1px]"
@@ -89,7 +93,11 @@ export function RegisterPage() {
           {message !== "" && <p role="alert">{message}</p>}
         </div>
         <div>
-          <button type="submit" disabled={isSubmitting}>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="px-[24px] rounded-[8px] mt-[12px] inline-flex self-start items-center justify-center min-h-[44px] text-[white] bg-[#765341] font-[600] disabled:opacity-[50%] disabled:cursor-not-allowed"
+          >
             {isSubmitting ? "Creating account..." : "Create account"}
           </button>
           {registerMessage !== "" && <p role="alert">{registerMessage}</p>}

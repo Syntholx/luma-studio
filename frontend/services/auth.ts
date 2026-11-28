@@ -28,11 +28,11 @@ export async function registerAccount(email: string, password: string) {
     try {
       data = await authResponse.json();
     } catch (error) {
-      throw new EmailTakenError("Failed to create an account");
+      throw new Error("Failed to create an account");
     }
 
     if (isRecord(data) && data.code === "email_taken") {
-      throw new Error("This email is already registered.");
+      throw new EmailTakenError("This email is already registered.");
     }
   }
 
