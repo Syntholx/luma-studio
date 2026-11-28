@@ -23,6 +23,19 @@ export async function registerAccount(email: string, password: string) {
 
     return { id: data.id, email: data.email };
   }
+  if (authResponse.status === 409) {
+    let data: unknown;
+    try {
+      data = await authResponse.json();
+    } catch (error) {
+      throw new EmailTakenError("Failed to create an account");
+    }
+
+    if (isRecord(data) && data.code === "email_taken") {
+      throw new Error("This email is already registered.");
+    }
+  }
 
   throw new Error("Failed to create an account");
 }
+export class EmailTakenError extends Error {}

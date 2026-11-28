@@ -1,14 +1,17 @@
 import { useState, type FormEvent } from "react";
 import { registerAccount } from "../services/auth";
+import { EmailTakenError } from "../services/auth";
 
 export function RegisterPage() {
   const [message, setMessage] = useState("");
   const [registerMessage, setRegisterMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [EmailMessage, setEmailMessage] = useState("");
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (isSubmitting) return;
     setRegisterMessage("");
+    setEmailMessage("");
     const formData = new FormData(event.currentTarget);
     const email = formData.get("email");
     const confirmPassword = formData.get("confirm-password");
@@ -32,6 +35,12 @@ export function RegisterPage() {
       form.reset();
       setRegisterMessage("Account created");
     } catch (error) {
+      if (error instanceof EmailTakenError) {
+        setEmailMessage(
+          "An account with this email address already exists. Please use a different one.",
+        );
+        return;
+      }
       setRegisterMessage("Could not create your account");
       return;
     } finally {
@@ -52,7 +61,9 @@ export function RegisterPage() {
             type="email"
             required
             autoComplete="email"
+            onChange={() => setEmailMessage("")}
           ></input>
+          {EmailMessage !== "" && <p role="alert">{EmailMessage}</p>}
         </div>
         <div className="flex flex-col gap-[8px]">
           <label htmlFor="password">Password</label>
